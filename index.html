@@ -2114,7 +2114,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       <h4>${esc(r.pname || (p ? lineage(p, 3) : ''))}</h4>
       <div class="rq-m">${esc(bFmt(r.y, r.m, r.d))}${cur ? ` · الحالي: ${esc(cur)}` : ''}</div>
       <div class="rq-by">من: <b>${esc(r.by)}</b> · ${r.self ? 'الشخص نفسه' : 'الأب'}${phCell(r)}</div>${waBtn(r)}
-      ${others.length ? `<p class="rq-cf">فيه ${nCount(others.length + 1, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} لنفس الشخص: ${others.map(x => `${esc(bFmt(x.y, x.m, x.d))} (${x.self ? 'هو نفسه' : 'أبوه'})`).join('، ')}. إذا وافقت على واحد تنرفض الباقي تلقائياً.</p>` : ''}
+      ${others.length ? `<p class="rq-cf">فيه ${nCount(others.length + 1, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} لنفس الشخص: ${others.map(x => `${esc(bFmt(x.y, x.m, x.d))} (${x.self ? (p && p.gender === 'female' ? 'هي نفسها' : 'هو نفسه') : (p && p.gender === 'female' ? 'أبوها' : 'أبوه')})`).join('، ')}. إذا وافقت على واحد تنرفض الباقي تلقائياً.</p>` : ''}
       ${r.status === 'pending' ? rqActs(r, 'اقبل') : ''}${r.status === 'no' && r.why ? `<p class="rq-why-t">السبب: ${esc(r.why)}</p>` : ''}
     </article>`;
   }
@@ -3197,10 +3197,12 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     return `السلام عليكم ورحمة الله وبركاته،\n${first ? `${rsGen(x) === 'f' ? 'حيّاكِ' : 'حيّاك'} الله يا ${first}،\n` : ''}بخصوص ${k} في منصة أسرة الجنيدلي:\n«${rsSub(x)}»\n${line}\nأسرة الجنيدلي`;
   }
   const findSub = id => (S.reqs || []).concat(S.sugs || []).find(x => String(x.id) === String(id));
+  // v58: الرقم للعرض بمسافات وعلامة الدولة (+966 50 000 0111). الرابط يبقى بالرقم كما هو
+  const phDisp = n => { const d = String(n || '').replace(/\D/g, ''); return /^9665\d{8}$/.test(d) ? `+966 ${d.slice(3, 5)} ${d.slice(5, 8)} ${d.slice(8)}` : /^05\d{8}$/.test(d) ? `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}` : String(n || ''); };
   async function phFill(root) {
     root = root || document; const D = window.JNDKey;
     for (const el of [...root.querySelectorAll('[data-phc]')]) { const id = el.dataset.pid; let n = PHN[id]; if (!n && D) n = await D.dec(el.dataset.phc);
-      if (n) { PHN[id] = n; el.classList.remove('ph-c'); el.innerHTML = `<a href="tel:${esc(n)}" dir="ltr">${esc(n)}</a>`; } else el.textContent = D && D.hasSk() ? 'تعذّر فك الرقم' : 'مشفّر — فعّل حماية الأرقام'; }
+      if (n) { PHN[id] = n; el.classList.remove('ph-c'); el.innerHTML = `<a href="tel:${esc(n)}"><bdi dir="ltr">${esc(phDisp(n))}</bdi></a>`; } else el.textContent = D && D.hasSk() ? 'تعذّر فك الرقم' : 'مشفّر — فعّل حماية الأرقام'; }
     root.querySelectorAll('[data-wab]').forEach(a => { const x = findSub(a.dataset.wab); if (!x) return; const n = waNorm(x.phc ? PHN[x.id] : x.phone) || (x.phc ? String(PHN[x.id] || '').replace(/\D/g, '') : ''); if (!n) return;
       a.href = 'https://wa.me/' + n + '?text=' + encodeURIComponent(waText(x)); a.hidden = false;
       a.onclick = () => { if (!x.waAt) { x.waAt = new Date().toISOString(); a.textContent = 'تم التبليغ · ' + waAgain(x); setTimeout(() => { (S.sugs || []).includes(x) ? saveSugs() : saveReqs(); }, 600); } }; });
@@ -3219,7 +3221,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if (!cloudOn() || !window.JNDKey) return '';
     const pk = JNDKey.hasPk(), sk = JNDKey.hasSk();
     if (pk && sk) return '';   // الحماية شغّالة: تطلع تنبيه أخضر هادي في «بانتظارك»
-    return `<div class="al bad al-col" id="ph-card">${sv('shield')}<span><b>حماية أرقام واتساب ${!pk ? 'مو شغّالة' : 'مقفلة على هالجهاز'}</b>${!pk ? 'ما فعّلت الحماية للحين. اكتب كلمة مرور المشرف (نفس كلمة دخولك) مرة وحدة، وبعدها كل الأرقام تنحفظ مشفّرة.' : 'الأرقام مشفّرة. اكتب كلمة مرور المشرف عشان تنفتح على هالجهاز.'}</span>
+    return `<div class="al bad al-col" id="ph-card">${sv('shield')}<span><b>حماية أرقام الواتس ${!pk ? 'مو شغّالة' : 'مقفلة على هالجهاز'}</b>${!pk ? 'ما فعّلت الحماية للحين. اكتب كلمة مرور المشرف (نفس كلمة دخولك) مرة وحدة، وبعدها كل الأرقام تنحفظ مشفّرة.' : 'الأرقام مشفّرة. اكتب كلمة مرور المشرف عشان تنفتح على هالجهاز.'}</span>
       <div class="ph-row"><input id="ph-pw" type="password" autocomplete="current-password" placeholder="كلمة مرور المشرف" aria-label="كلمة مرور المشرف" dir="ltr"><button type="button" id="ph-go">${!pk ? 'فعّل الحماية' : 'افتح الأرقام'}</button></div><p class="ph-err" id="ph-err" hidden></p>
       ${pk && !sk ? '<button class="ph-reset" id="ph-reset" type="button">نسيت كلمة المرور؟ ابدأ الحماية من جديد (الأرقام القديمة ما تنفتح)</button>' : ''}</div>`;
   }
@@ -3251,7 +3253,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   function grAdminHtml() {
     const g = grActive(), days = g ? Math.floor((Date.now() - new Date(g.at)) / 864e5) : 0, left = g ? Math.max(1, GR[g.k].days - days) : 0;
     const since = days <= 0 ? 'بدأت اليوم' : days === 1 ? 'من أمس' : days === 2 ? 'من يومين' : `من ${ar(days)} ${days <= 10 ? 'أيام' : 'يوماً'}`;
-    const ends = left === 1 ? 'تنتهي بعد يوم' : left === 2 ? 'تنتهي بعد يومين' : `تنتهي بعد ${ar(left)} ${left <= 10 ? 'أيام' : 'يوماً'}`;
+    const ends = left === 1 ? 'تنتهي غداً' : left === 2 ? 'تنتهي بعد يومين' : `تنتهي بعد ${ar(left)} ${left <= 10 ? 'أيام' : 'يوماً'}`;
     return `<p class="as-note" style="margin:0 0 12px">كل فرد توصله بطاقة باسمه في الجرس والرئيسية.</p>
       ${g ? `<div class="gr-live"><i></i><div><b>التهنئة شغّالة: ${GR[g.k].b}</b><small>${since} · ${ends}</small></div></div>
         <div class="gr-acts"><a class="btn gold" id="gr-wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(grText(g))}">شارك في قروب الأسرة</a><button class="btn line" id="gr-copy" type="button">انسخ الرسالة</button><button class="btn line" id="gr-pv" type="button">شوف بطاقتي</button><button class="btn line gr-stop" id="gr-stop" type="button">أوقفها</button></div>` : '<p class="gr-none">ما فيه تهنئة شغّالة الحين</p>'}
@@ -4304,6 +4306,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   const sv = k => `<svg viewBox="0 0 24 24">${IC[k]}</svg>`;
   // v58: سهم واحد في كل المنصة: «كمّل» يشير لليسار، و«رجوع» نفس الأيقونة معكوسة لليمين
   const ARW = '<svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>', ARWB = ARW.replace('class="arw"', 'class="arw bk"');
+  const CHV = '<svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 6l-6 6 6 6"/></svg>';   // v58: شيفرون الصفوف اللي تنفتح (.adr)
   const row = (attr, c, k, t, d, extra = '') => `<${attr.startsWith('href') ? 'a' : 'button'} ${attr} class="st-row"><span class="st-ic c-${c}">${sv(k)}</span><span class="st-t"><b>${t}</b>${d ? `<small>${d}</small>` : ''}</span>${extra}<i class="st-chev">${ARW}</i></${attr.startsWith('href') ? 'a' : 'button'}>`;
   function openMore() {
     if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
@@ -4324,7 +4327,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       ${S.site.contact ? `<a class="gd-entry st-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(String(S.site.contact).replace(/\D/g, '').replace(/^0/, '966'))}" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#25D366,#128C7E)"><svg viewBox="0 0 24 24"><path d="M5 19l1.2-3.6A7.5 7.5 0 1 1 9 18.2z"/></svg></span><span class="st-t"><b>تواصل مع الإدارة</b><small>واتساب مباشر مع مشرف المنصة</small></span><i>راسل ${ARW}</i></a>` : ''}
       <h5>العرض</h5>
       <div class="st-grp st-pad">
-        <div class="st-set"><span class="st-ic c-teal"><svg viewBox="0 0 24 24"><path d="M4 7V5h11v2M9.5 5v14M7 19h5M14 12v-1h6v1M17 11v8M15.5 19h3"/></svg></span><span class="st-t"><b>حجم الخط</b><small>يتطبّق على كل الصفحات</small></span></div>
+        <div class="st-set"><span class="st-ic c-teal"><svg viewBox="0 0 24 24"><path d="M4 7V5h11v2M9.5 5v14M7 19h5M14 12v-1h6v1M17 11v8M15.5 19h3"/></svg></span><span class="st-t"><b>حجم الخط</b><small>يغيّر حجم خط الموقع</small></span></div>
         <div class="seg" id="fz">${[['s', 'صغير'], ['m', 'متوسط'], ['l', 'كبير']].map(([k, t]) => `<button data-fz="${k}" class="${(localStorage.getItem('jnd-fz') || 'm') === k ? 'on' : ''}">${t}</button>`).join('')}</div>
       </div>
       ${isAdmin() || canAdmin() ? '<h5>الإدارة</h5>' : ''}
@@ -4357,7 +4360,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       // v58: «بانتظارك» مهام، تبقى جديدة لين تنحل وتنعد بعددها (نفس رقم لوحة المشرف)، وما تتأثر بـ«خلّها مقروءة»
       if (r) L.push({ id: 'adm:r', k: 'adm', task: r, ic: 'inbox', c: 'teal', t: `${nCount(r, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} بانتظار موافقتك`, s: 'بانتظارك', when: 'الآن', ord: -200, go: () => adOpen('inbox', 'req') });
       if (g) L.push({ id: 'adm:s', k: 'adm', task: g, ic: 'pen', c: 'teal', t: nCount(g, ['اقتراح بانتظارك', 'اقتراحان بانتظارك', 'اقتراحات بانتظارك', 'اقتراحاً بانتظارك']), s: 'بانتظارك', when: 'الآن', ord: -199, go: () => adOpen('inbox', 'sug') });
-      if (bkDue()) { const d = bkDays(); L.push({ id: 'b:' + (d === Infinity ? 'x' : Math.floor(d / 7)), k: 'adm', ic: 'inbox', c: 'gold', t: d === Infinity ? 'ما نزّلت نسخة احتياطية للحين' : `مضى ${nCount(d, ['يوم', 'يومين', 'أيام', 'يوماً'])} على آخر نسخة احتياطية`, s: 'للإدارة · نزّلها من لوحة الإدارة', when: 'الآن', ord: -198, go: () => adOpen('bk') }); }
+      if (bkDue()) { const d = bkDays(); L.push({ id: 'b:' + (d === Infinity ? 'x' : Math.floor(d / 7)), k: 'adm', ic: 'inbox', c: 'gold', t: d === Infinity ? 'ما نزّلت نسخة احتياطية للحين' : `مضى ${nCount(d, ['يوم', 'يومان', 'أيام', 'يوماً'])} على آخر نسخة احتياطية`, s: 'للإدارة · نزّلها من لوحة الإدارة', when: 'الآن', ord: -198, go: () => adOpen('bk') }); }
       const dp = P.d; if (dp) L.push({ id: 'adm:d', k: 'adm', task: dp, ic: 'search', c: 'gold', t: `أسماء مكررة محتملة (${ar(dp)})`, s: 'بانتظارك · افحصها من لوحة المشرف', when: 'الآن', ord: -197, go: () => adOpen('dup') }); }
     return L.sort((a, b) => a.ord - b.ord).map(x => Object.assign(x, { unread: x.task ? true : !seen.includes(x.id) }));
   }
@@ -4674,8 +4677,8 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const ph = hasPh(x); if (!ph && !x.phq) return '';
     const f = rsGen(x) === 'f', st = decOf(x);
     const lab = !st ? 'تواصل بالواتس' : (x.waAt ? 'تم التبليغ · ' : '') + (f ? (x.waAt ? 'بلّغها مرة ثانية' : 'بلّغها بالواتس') : (x.waAt ? 'بلّغه مرة ثانية' : 'بلّغه بالواتس'));
-    const num = x.phc ? `<small dir="ltr"><span class="ph-c" data-phc="${esc(x.phc)}" data-pid="${esc(x.id)}">••••••••</span></small>`
-      : x.phone ? `<small dir="ltr"><a href="tel:${esc(x.phone)}">${esc(x.phone)}</a></small>` : '<small>الرقم بانتظار التشفير</small>';
+    const num = x.phc ? `<small><span class="ph-c" data-phc="${esc(x.phc)}" data-pid="${esc(x.id)}">••••••••</span></small>`
+      : x.phone ? `<small><a href="tel:${esc(x.phone)}"><bdi dir="ltr">${esc(phDisp(x.phone))}</bdi></a></small>` : '<small>الرقم بانتظار التشفير</small>';
     return `<div class="rq2-wa">${sv('chat')}<span>${f ? 'تبي' : 'يبي'} الرد على الواتس${num}</span>${ph ? `<a class="rq-wa" data-wab="${esc(x.id)}" target="_blank" rel="noopener" role="button" hidden>${lab}</a>` : ''}</div>`;
   }
   // أسباب الرفض الثابتة: قائمة عمودية، كل سبب سطر 44px. نفس محددات rjOpen (.rj و.rj-o و.rj-t و.rj-go و.rj-back)
@@ -4690,11 +4693,11 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if (sg) { if (!SGK[x.kind] && x.kind && x.kind !== 'أخرى') sub = x.kind; }
     else { [ic, lab] = RQK[t]; sub = t === 'event' ? (x.kind || '') : t === 'card' ? ((sd(() => ccMeta(sp.occ)) || {}).t || '') : ''; }
     const p = t === 'birth' ? S.byId[x.pid] : null, cur = p && p.birth ? (bFull(p) || p.birth + 'هـ') : '';
-    const title = t === 'birth' ? (x.pname || (p ? lineage(p, 3) : '')) : t === 'sug' ? '' : (x.title || '');
-    const det = t === 'event' ? rqLine('clock', esc(sd(() => wday(x.date) + ' ' + hStr(x.date))) + (x.time ? ' · <span class="nw">' + esc(sd(() => t12(x.time))) + '</span>' : '')) + rqLine('pin', x.venue ? esc(x.venue) : '')
-      : t === 'birth' ? rqLine('cal', `${esc(bFmt(x.y, x.m, x.d))} · المسجّل الحالي: ${cur ? esc(cur) : 'ما فيه'}`)
-      : t === 'card' ? rqLine('info', [sp.degree, sp.occ === 'birth' && sp.father ? (sp.mom ? 'الأم: ' : 'الأب: ') + sp.father : '', sp.date].filter(Boolean).map(v => esc(String(v))).join(' · '))
-      : (x.bd && x.bd.y ? rqLine('cal', 'تاريخ الميلاد: ' + esc(bFmt(x.bd.y, x.bd.m, x.bd.d))) : '');
+    const title = t === 'birth' ? (x.pname || (p ? lineage(p, 3) : '')) : t === 'sug' ? '' : t === 'card' ? (typeof sp.name === 'string' ? sp.name.slice(0, 60) : '') : (x.title || '');
+    const det = t === 'event' ? rqLine('clock', '<span class="nw">' + esc(sd(() => wday(x.date) + ' ' + hStr(x.date))) + '</span>' + (x.time ? ' · <span class="nw">' + esc(sd(() => t12(x.time))) + '</span>' : '')) + rqLine('pin', x.venue ? esc(x.venue) : '')
+      : t === 'birth' ? rqLine('cal', `<span class="nw">${esc(bFmt(x.y, x.m, x.d))}</span> · <span class="nw">المسجّل الحالي: ${cur ? esc(cur) : 'ما فيه'}</span>`)
+      : t === 'card' ? rqLine('info', [sp.degree, sp.occ === 'birth' && sp.father ? (sp.mom ? 'الأم: ' : 'الأب: ') + sp.father : '', sp.date].filter(Boolean).map(v => '<span class="nw">' + esc(String(v)) + '</span>').join(' · '))
+      : (x.bd && x.bd.y ? rqLine('cal', '<span class="nw">تاريخ الميلاد: ' + esc(bFmt(x.bd.y, x.bd.m, x.bd.d)) + '</span>') : '');
     const txt = t === 'event' ? x.note : t === 'sug' ? x.text : '';
     const others = t === 'birth' && open ? bReqOf({ id: x.pid }).filter(y => y !== x) : [];
     const res = !open ? `<p class="rq2-res ${st === 'ok' ? 'ok' : 'no'}">${sv(st === 'ok' ? 'check' : 'xmark')}<span>${st === 'ok' ? 'تمت الموافقة' : 'لم تتم الموافقة'}${st === 'no' && x.why ? ' · السبب: ' + esc(x.why) : ''}</span></p>` : '';
@@ -4707,10 +4710,10 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       <div class="rq2-h"><span class="rq2-k${sg ? ' k-sug' : ''}">${sv(ic)}${lab}${sub ? ' · ' + esc(sub) : ''}</span>${rev ? '<span class="rq2-rv">قيد المراجعة</span>' : ''}<time class="rq2-t">${esc(nDate(String(x.at || '')))}</time></div>
       ${title ? `<h4>${esc(title)}</h4>` : ''}${det ? `<div class="rq2-d">${det}</div>` : ''}${txt ? `<p class="rq2-q">${esc(txt)}</p>` : ''}
       <p class="rq2-by">${sv('user')}<span>من: <b>${esc(x.by || '')}</b>${t === 'birth' ? ' · ' + (x.self ? 'الشخص نفسه' : 'الأب') : ''}</span></p>
-      ${others.length ? `<p class="rq-cf">فيه ${nCount(others.length + 1, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} لنفس الشخص: ${others.map(y => `${esc(bFmt(y.y, y.m, y.d))} (${y.self ? 'هو نفسه' : 'أبوه'})`).join('، ')}. إذا وافقت على واحد تنرفض الباقي تلقائياً.</p>` : ''}
+      ${others.length ? `<p class="rq-cf">فيه ${nCount(others.length + 1, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} لنفس الشخص: ${others.map(y => `${esc(bFmt(y.y, y.m, y.d))} (${y.self ? (p && p.gender === 'female' ? 'هي نفسها' : 'هو نفسه') : (p && p.gender === 'female' ? 'أبوها' : 'أبوه')})`).join('، ')}. إذا وافقت على واحد تنرفض الباقي تلقائياً.</p>` : ''}
       ${rqWa(x)}${res}
-      ${open ? `<div class="rq2-a"><button type="button" class="ok" ${sg ? 'data-sgd' : 'data-rok'}="${id}">${sv('check')}${t === 'event' || t === 'card' ? 'اقبل وانشر' : 'اقبل'}</button><button type="button" class="no" ${sg ? 'data-sgn' : 'data-rno'}="${id}" aria-expanded="false">ارفض</button><button type="button" class="more" data-rq2-more="${id}" aria-expanded="${more}" aria-controls="rqx-${id}">${more ? 'إخفاء التفاصيل' : 'التفاصيل'}</button></div>`
-        : `<div class="rq2-a one"><button type="button" class="more" data-rq2-more="${id}" aria-expanded="${more}" aria-controls="rqx-${id}">${more ? 'إخفاء التفاصيل' : 'التفاصيل'}</button></div>`}
+      ${open ? `<div class="rq2-a"><button type="button" class="ok" ${sg ? 'data-sgd' : 'data-rok'}="${id}">${sv('check')}${t === 'event' || t === 'card' ? 'اقبل وانشر' : 'اقبل'}</button><button type="button" class="no" ${sg ? 'data-sgn' : 'data-rno'}="${id}" aria-expanded="false">ارفض</button><button type="button" class="more" data-rq2-more="${id}" aria-expanded="${more}" aria-controls="rqx-${id}">التفاصيل</button></div>`
+        : `<div class="rq2-a one"><button type="button" class="more" data-rq2-more="${id}" aria-expanded="${more}" aria-controls="rqx-${id}">التفاصيل</button></div>`}
       ${xb}${open ? rj2(x.id, !sg) : ''}
     </article>`;
   }
@@ -4730,7 +4733,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   const alRow = (c, ic, b, s, btn) => `<div class="al ${c}">${sv(ic)}<span><b>${b}</b>${s}</span>${btn || ''}</div>`;
   function adAlerts(P) {
     const A = [];
-    if (bkDue()) { const d = bkDays(); A.push(alRow('bad', 'save', d === Infinity ? 'ما نزّلت نسخة احتياطية للحين' : `مضى ${nCount(d, ['يوم', 'يومين', 'أيام', 'يوماً'])} على آخر نسخة احتياطية`, 'نزّل نسخة الحين واحفظها عندك', '<button type="button" data-bkgo>نزّلها</button>')); }
+    if (bkDue()) { const d = bkDays(); A.push(alRow('bad', 'save', d === Infinity ? 'ما نزّلت نسخة احتياطية للحين' : `مضى ${nCount(d, ['يوم', 'يومان', 'أيام', 'يوماً'])} على آخر نسخة احتياطية`, 'نزّل نسخة الحين واحفظها عندك', '<button type="button" data-bkgo>نزّلها</button>')); }
     if (P.d) A.push(alRow('warn', 'copy', `أسماء مكررة محتملة (${ar(P.d)})`, 'راجعها قبل لا تحذف شي', '<button type="button" data-adsec="dup">افحصها</button>'));
     if (cloudOn() && window.JNDKey) A.push(JNDKey.hasPk() && JNDKey.hasSk() ? alRow('ok', 'lock', 'حماية أرقام الواتس شغّالة', 'أرقام المرسلين محفوظة مشفّرة، وما تحتاج تسوي شي') : phAdminCard());
     const nE = errList().length; if (nE) A.push(alRow('warn', 'alert', 'المشاكل التقنية', `${nCount(nE, ['مشكلة واحدة', 'مشكلتين', 'مشاكل', 'مشكلة'])} على هالجهاز`, '<button type="button" data-ero>اعرضها</button>'));
@@ -4752,9 +4755,9 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         <b>${esc(x.title || rsSub(x) || x.pname || '')}</b>${x.bd && x.bd.y ? `<small>تاريخ الميلاد: ${esc(bFmt(x.bd.y, x.bd.m, x.bd.d))}</small>` : ''}<small>من: ${esc(x.by || '')} · ${esc(rsWhen(x))}</small>${x.status === 'no' && x.why ? `<p class="rq-why-t">السبب: ${esc(x.why)}</p>` : ''}</article>`;
     if (AD.ib === 'hist' && !nH) AD.ib = '';
     const last = H[0] ? rsWhen(H[0]) : '';
-    el.innerHTML = `<div class="adp-h"><h2>بانتظارك</h2>${tot ? `<small>${nCount(tot, ['أمر واحد', 'أمرين', 'أمور', 'أمراً'])} · الأحدث أول</small>` : ''}</div>
+    el.innerHTML = `<div class="adp-h"><h2>بانتظارك</h2>${tot ? `<small>${nCount(tot, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} · الأحدث أول</small>` : ''}</div>
       ${L.length ? L.map(([x, s]) => sd(() => rq2(x, s))).join('') : tot ? '' : `<div class="ad-zero"><i>${sv('check')}</i><b>ما فيه شي بانتظارك</b><small>أول ما يوصل طلب أو اقتراح يطلع هنا</small></div>`}
-      ${nH ? `<button type="button" class="adr" data-ib="hist" aria-expanded="${AD.ib === 'hist'}">${sv('clock')}<span><b>السابقة</b><small>${nCount(nH, ['قرار واحد', 'قراران', 'قرارات', 'قراراً'])}${last ? ' · آخرها ' + esc(last) : ''}</small></span>${ARW}</button>${AD.ib === 'hist' ? `<div class="ib-prev">${H1.map(x => sd(() => pv(x))).join('')}${H2.length ? (AD.arch ? H2.map(x => sd(() => pv(x))).join('') : `<button type="button" class="ib-old" data-arch>عرض الأقدم من شهر (${ar(H2.length)})</button>`) : ''}</div>` : ''}` : ''}
+      ${nH ? `<button type="button" class="adr" data-ib="hist" aria-expanded="${AD.ib === 'hist'}">${sv('clock')}<span><b>السابقة</b><small>${nCount(nH, ['قرار واحد', 'قراران', 'قرارات', 'قراراً'])}${last ? ' · آخرها ' + esc(last) : ''}</small></span>${CHV}</button>${AD.ib === 'hist' ? `<div class="ib-prev">${H1.map(x => sd(() => pv(x))).join('')}${H2.length ? (AD.arch ? H2.map(x => sd(() => pv(x))).join('') : `<button type="button" class="ib-old" data-arch>عرض الأقدم من شهر (${ar(H2.length)})</button>`) : ''}</div>` : ''}` : ''}
       <h3 class="adp-sub">التنبيهات</h3>${adAlerts(P)}`;
     rqBind(el); sugBind(el); phBind(); back(); rqCcFill(el);
     const ao = $('[data-arch]', el); if (ao) ao.onclick = () => { AD.arch = 1; adInbox(dups); };
@@ -4851,13 +4854,13 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   const errBody = () => `<p class="as-note" style="margin-top:0">إذا أحد اشتكى من الموقع، اطلب منه يضغط 5 مرات على «الإصدار» في آخر «المزيد» ويرسل لك التقرير.</p>
       <div class="as-bk"><button class="btn line" id="er-open" type="button">اعرض التقرير</button></div>`;
-  const logBody = () => `<div class="as-bk ad-acts">${S.cfg.persistLocal ? '<button type="button" class="btn line" data-cmd="export">أرسل تعديلات الجهاز للمطوّر</button>' : ''}<button type="button" class="btn line" data-cmd="exportlog">نزّل السجل (إكسل)</button></div>
+  const logBody = () => `<div class="as-bk ad-acts">${S.cfg.persistLocal ? '<button type="button" class="btn line" data-cmd="export">أرسل تعديلات الجهاز للمطوّر</button>' : ''}<button type="button" class="btn line" data-cmd="exportlog">نزّل سجل التعديلات (إكسل)</button></div>
       <div class="a-log" id="ad-log"></div>`;
   const AD_BODY = { ev: () => '<div class="ad-list" id="ad-lz-ev"></div>', nw: () => '<div class="ad-list" id="ad-lz-nw"></div>', gr: () => grAdminHtml(), dup: () => '<div id="ad-lz-dup"></div>',
     set: () => setBody(), sup: () => supHTML(), log: () => logBody(), err: () => errBody() };
   // صف ينفتح: الرأس .adr والجسم يتعبّى أول ما ينفتح
   const adf = (k, ic, t, sum) => { const o = AD.sec === k;
-    return `<section class="adf" id="ad-s-${k}"><button type="button" class="adr" data-fold="${k}" aria-expanded="${o}" aria-controls="ad-b-${k}">${sv(ic)}<span><b>${t}</b><small>${sum}</small></span>${ARW}</button><div class="adx" id="ad-b-${k}"${o ? ' data-f="1"' : ' hidden'}>${o ? AD_BODY[k]() : ''}</div></section>`; };
+    return `<section class="adf" id="ad-s-${k}"><button type="button" class="adr" data-fold="${k}" aria-expanded="${o}" aria-controls="ad-b-${k}">${sv(ic)}<span><b>${t}</b><small>${sum}</small></span>${CHV}</button><div class="adx" id="ad-b-${k}"${o ? ' data-f="1"' : ' hidden'}>${o ? AD_BODY[k]() : ''}</div></section>`; };
   const BK = ['jnd-rows', 'jnd-events-all', 'jnd-news', 'jnd-news-del', 'jnd-reqs', 'jnd-sugs', 'jnd-log', 'jnd-site', 'jnd-admins', 'jnd-greet'];
   function adBind() {
     const on = (s, ev, fn) => { const x = $(s); if (x) x[ev] = fn; };
@@ -4900,7 +4903,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const up = upcoming(), nL = newsSorted().length, g = grActive(), m = adMomHtml();
     return `${m}<div class="adp-h"><h2>المحتوى</h2><small>وش تشوفه الأسرة الحين</small></div>
       <div class="adrow2"><button type="button" class="abtn pri" data-adq="event">${sv('cal')}أضف مناسبة</button><button type="button" class="abtn line" data-adq="news">${sv('news')}أضف خبراً</button></div>
-      ${adf('ev', 'cal', 'المناسبات', up.length ? `${ar(up.length)} قادمة` : 'ما فيه قادمة')}
+      ${adf('ev', 'cal', 'المناسبات', up.length ? nCount(up.length, ['مناسبة قادمة', 'مناسبتان قادمتان', 'مناسبات قادمة', 'مناسبة قادمة']) : 'ما فيه قادمة')}
       ${adf('nw', 'news', 'الأخبار', nL ? nCount(nL, ['خبر واحد', 'خبرين', 'أخبار', 'خبراً']) : 'ما فيه أخبار')}
       ${adf('gr', 'mail', 'تهنئة الأسرة', g ? 'شغّالة: ' + GR[g.k].b : 'مو شغّالة')}`;
   }
@@ -4914,7 +4917,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         <input type="file" id="bk-file" accept=".json,application/json" hidden><div id="bk-conf" class="bk-conf" hidden></div></div>
       <div class="atl" id="ad-xl"><div class="atl-h"><span class="atl-ic gold">${sv('sheet')}</span><span><b>التصدير لإكسل</b><small>ملف فيه كل أفراد الشجرة، يفتح في إكسل.</small></span></div>
         <div class="atl-cols" aria-label="أعمدة الملف">${['الرقم', 'الاسم', 'رقم الأب', 'نسب الأب', 'الجنس', 'تاريخ الميلاد', 'حالة التأكيد'].map(t => `<span>${t}</span>`).join('')}</div>
-        <div class="adrow2 one"><button type="button" class="abtn line" data-xl="tree">${sv('down')}صدّر الشجرة لإكسل</button><button type="button" class="abtn line" data-cmd="exportlog">${sv('down')}صدّر سجل التعديلات</button></div></div>
+        <div class="adrow2 one"><button type="button" class="abtn line" data-xl="tree">${sv('down')}صدّر الشجرة لإكسل</button><button type="button" class="abtn line" data-cmd="exportlog">${sv('down')}نزّل سجل التعديلات (إكسل)</button></div></div>
       <div class="atl" id="ad-imp"><div class="atl-h"><span class="atl-ic">${sv('up')}</span><span><b>أضف أسماء من إكسل</b><small>لما يكون عندك أسماء كثيرة. قبل الإضافة تنحفظ نسخة احتياطية تلقائياً، وتقدر تتراجع.</small></span></div>
         <div class="atl-steps"><span>الملف</span><span>المراجعة</span><span>الإضافة</span></div>
         <button type="button" class="abtn pri full" data-xl="imp">استورد من إكسل${ARW}</button></div>
@@ -4931,9 +4934,9 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const ae = document.activeElement, fk = ae && box.contains(ae) && ae.id ? { id: ae.id, s: sd(() => ae.selectionStart), e: sd(() => ae.selectionEnd) } : null, back = whyKeep(box);
     const all = S.all.filter(n => !n.pending), dups = dupScan(), P = admPend(dups), tab = AD.tab, me = S.me || gateNode();
     if (AD.sec && AD_TAB[AD.sec] !== tab) AD.sec = '';
-    box.innerHTML = `<div class="adh"><div class="adh-t"><small>${sv('shield')}لوحة المشرف</small><h1>${me ? `حيّاك الله يا ${esc(me.name)}` : 'حيّاك الله'}</h1></div><button class="adh-out" type="button" data-cmd="logout">${sv('out')}اخرج</button></div>
+    box.innerHTML = `<div class="adh"><div class="adh-t"><small>${sv('shield')}لوحة المشرف</small><h1>${me ? `${me.gender === 'female' ? 'حيّاكِ' : 'حيّاك'} الله يا ${esc(me.name)}` : 'حيّاك الله'}</h1></div><button class="adh-out" type="button" data-cmd="logout">${sv('out')}اخرج</button></div>
       <nav class="adt" role="tablist" aria-label="أقسام لوحة المشرف">${AD_TABS.map(([k, ic, t]) => { const on = tab === k, n = k === 'inbox' ? P.n : 0;
-        return `<button type="button" role="tab" id="adt-${k}" aria-controls="adp-${k}" data-adt="${k}" aria-selected="${on}" tabindex="${on ? 0 : -1}"${n ? ` aria-label="${t}، ${nCount(n, ['أمر واحد', 'أمرين', 'أمور', 'أمراً'])}"` : ''}>${sv(ic)}<span>${t}</span>${n ? `<i class="adt-n" aria-hidden="true">${n > 99 ? '99+' : ar(n)}</i>` : ''}</button>`; }).join('')}</nav>
+        return `<button type="button" role="tab" id="adt-${k}" aria-controls="adp-${k}" data-adt="${k}" aria-selected="${on}" tabindex="${on ? 0 : -1}"${n ? ` aria-label="${t}، ${nCount(n, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])}"` : ''}>${sv(ic)}<span>${t}</span>${n ? `<i class="adt-n" aria-hidden="true">${n > 99 ? '99+' : ar(n)}</i>` : ''}</button>`; }).join('')}</nav>
       <section class="adp" id="adp-${tab}" role="tabpanel" aria-labelledby="adt-${tab}">${tab === 'tree' ? adTreeTab(all, dups) : tab === 'mom' ? adMomTab() : tab === 'tools' ? adToolsTab() : ''}</section>`;
     if (tab === 'inbox') adInbox(dups);
     adBindAll();
@@ -6861,10 +6864,10 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 .adt button svg{width:20px;height:20px}
 .adt button[aria-selected=true]{background:var(--g-dark);color:#fff}
 .adt button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.adt-n{position:absolute;top:2px;inset-inline-end:calc(50% - 34px);min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#C0533A;color:#fff;
+.adt-n{position:absolute;top:2px;inset-inline-end:auto;inset-inline-start:calc(50% + 14px);min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#C0533A;color:#fff;
   font-style:normal;font-size:12px;font-weight:700;line-height:20px;text-align:center;box-shadow:0 0 0 2px var(--paper)}
 .adt button[aria-selected=true] .adt-n{box-shadow:0 0 0 2px var(--g-dark)}
-@media (max-width:340px){.adt button{font-size:12.5px}.adt-n{inset-inline-end:calc(50% - 32px)}}
+@media (max-width:340px){.adt button{font-size:12.5px}.adt-n{inset-inline-end:auto;inset-inline-start:calc(50% + 12px)}}
 /* عنوان القسم */
 .adp-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:4px 2px 10px}
 .adp-h h2{margin:0;font-size:17px;color:var(--ink)}
@@ -6896,7 +6899,7 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 .rq2-wa{display:flex;align-items:center;gap:8px;margin-top:10px;padding:6px 6px 6px 12px;border-radius:14px;background:#EEF5F1;border:1px solid #D3E6DC}
 .rq2-wa>svg{width:18px;height:18px;color:#2F6B5F;flex:none;margin-inline-start:4px}
 .rq2-wa>span{flex:1;min-width:0;font-size:13px;font-weight:600;color:#2F6B5F;line-height:1.5}
-.rq2-wa>span small{display:block;font-weight:400;color:#4E6B62;text-align:right}
+.rq2-wa>span small{display:block;font-weight:400;color:#4E6B62;text-align:start}
 .rq2-wa>span small a{color:#1F5A4E}
 .rq2-wa .rq-wa{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:11px;background:#fff;border:1.5px solid #BFDCCD;color:#1F5A4E;font-size:13.5px;font-weight:700;text-decoration:none;white-space:normal;text-align:center;line-height:1.3}
 .rq2-wa .rq-wa[hidden]{display:none}
@@ -6911,8 +6914,8 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 .rq2-a .no{border:1.5px solid #EFCFC6;background:#FBEDEA;color:#A8432C}
 .rq2-a .no[aria-expanded=true]{background:#A8432C;border-color:#A8432C;color:#fff}
 .rq2-a .more{border:1.5px solid var(--line);background:#fff;color:var(--g-dark)}
-.rq2-a .more[aria-expanded=true]{background:var(--paper);font-size:13px}
-.rq2-a button:focus-visible,.rj2 label:focus-within,.adr:focus-visible,.abtn:focus-visible,.al button:focus-visible,.tf button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.rq2-a .more[aria-expanded=true]{background:#E6EFEC;border-color:#BFD3CE;color:var(--g-dark)}
+.rq2-a button:focus-visible,.adr:focus-visible,.abtn:focus-visible,.al button:focus-visible,.tf button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .rq2-a button:disabled{opacity:.6;cursor:default}
 /* «التفاصيل» */
 .rq2-x{margin-top:10px;padding:12px;border-radius:14px;background:var(--paper);border:1px solid var(--line);display:grid;gap:10px}
@@ -7054,6 +7057,18 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 #admin .ad-q input{flex:1;min-width:0;width:100%;min-height:44px;font-size:16px}
 /* نافذة التعديل: «أضف ابن أو بنت تحته» */
 .ed-addk{width:100%;margin-top:12px}
+/* v58 مراجعة المصمم للمرحلة الثانية */
+.abtn{flex-wrap:nowrap}
+#admin .dp-row{flex-wrap:wrap}
+#admin .dp-row>span{flex:1 1 100%}
+#admin .dp-row button{flex:1 1 0;min-height:44px}
+.rj2-l label:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+@media (max-width:340px){.rq2-wa{flex-wrap:wrap}.rq2-wa>span{flex:1 1 calc(100% - 32px)}.rq2-wa .rq-wa{flex:1 1 100%;justify-content:center}}
+@media (min-width:861px){.view .page.admin{max-width:720px}}
+/* رسائل الحفظ في اللوحة تطلع تحت (فوق الشريط السفلي) عشان ما تغطي شريط الأقسام الثابت */
+/* (فوق رسالة toast اللي تحت، عشان ما يتراكبون) */
+body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 66px + env(safe-area-inset-bottom))}
+@media (min-width:861px){body[data-view="admin"] .jnd-msg{bottom:76px}}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
