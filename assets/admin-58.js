@@ -3,7 +3,7 @@
    الكود منقول كما هو من index.html، والدوال المشتركة توصل له من J (نفس الكائنات، مو نسخ). */
 window.JNDAdmin = function (J) {
   'use strict';
-  const { $, $$, A, AD, AD_TAB, AD_TABS, ARW, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd } = J;
+  const { $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd } = J;
   function decideBirth(r, ok, why) {
     const p = S.byId[r.pid];
     if (ok) {
@@ -209,8 +209,8 @@ window.JNDAdmin = function (J) {
       const blob = new Blob([JSON.stringify({ app: 'jnd', v: 2, ver: JND_V, at: d.toISOString(), people: S.rows.length, keys: Object.keys(data), data })], { type: 'application/json' }), u = URL.createObjectURL(blob), a = document.createElement('a');
       a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000);
       try { localStorage.setItem('jnd-bk-at', String(Date.now())); localStorage.removeItem('jnd-bk-snz'); } catch (e) { }
-      toast('نزلت النسخة الاحتياطية'); bellBadge(); if (S.view === 'admin') adminRender();
-    } catch (e) { toast('ما نزلت النسخة، جرّب مرة ثانية'); }
+      toast('نزلت النسخة الاحتياطية'); bellBadge(); if (S.view === 'admin') adminRender(); return true;
+    } catch (e) { toast('ما نزلت النسخة، جرّب مرة ثانية'); return false; }
   }
   const CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>';
   function scrollKeep() {
@@ -413,8 +413,135 @@ window.JNDAdmin = function (J) {
     const j = e.key === 'Home' ? 0 : e.key === 'End' ? ks.length - 1 : (i + ((e.key === 'ArrowLeft') === rtl ? 1 : -1) + ks.length) % ks.length;
     e.preventDefault(); adTab(ks[j], true);
   }
-  // v58 المرحلة الرابعة: التصدير والاستيراد بإكسل (assets/xl-58.js يتحمّل عند الضغط). الواجهة هنا موصولة بالدالتين، والتنفيذ يكتمل هناك
-  const XL = { tree() { toast('تصدير الإكسل يجهز في التحديث الجاي'); }, imp() { toast('الاستيراد من إكسل يجهز في التحديث الجاي'); } };
+  // v58: التصدير والاستيراد بإكسل. القارئ assets/xl-58.js (window.JNDXL) ما يتحمّل إلا عند الضغط. كل نص منه يمر على esc()
+  const XL_URL = 'assets/xl-58.js';
+  const XL = {
+    p: null,
+    load() { return XL.p || (XL.p = new Promise((ok, no) => {
+      if (window.JNDXL) return ok(window.JNDXL);
+      const s = document.createElement('script'); s.src = XL_URL;
+      s.onload = () => window.JNDXL ? ok(window.JNDXL) : (XL.p = null, no(new Error('xl')));
+      s.onerror = () => { XL.p = null; s.remove(); no(new Error('xl-load')); };
+      document.head.appendChild(s); })); },
+    async need() { if (!window.JNDXL) toast('جاري تجهيز قارئ الإكسل…'); try { return await XL.load(); } catch (e) { toast('ما تحمّل قارئ الإكسل، تأكد من النت وجرّب مرة ثانية'); return null; } },
+    async tree() { const J = await XL.need(); if (!J) return;
+      try { J.save(J.exportTree(S.rows), J.names.tree(new Date())); toast(`نزل ملف الشجرة (${nCount(S.rows.length, J.NP)})`); } catch (e) { toast('ما نزل الملف، جرّب مرة ثانية'); } },
+    async imp() { const J = await XL.need(); if (!J) return; impOpen(J); },
+  };
+  /* ── نافذة الاستيراد: الملف ← المراجعة ← الإضافة ── */
+  let IMP = null;
+  const IMP_ST = ['الملف', 'المراجعة', 'الإضافة'];
+  const impIc = { ok: 'check', warn: 'info', err: 'xmark', skip: 'info' }, impCls = { ok: 'g', warn: 'y', err: 'r', skip: 's' };
+  function impOpen(J) {
+    impClose();
+    const d = document.createElement('div'); d.className = 'imp'; d.id = 'imp'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'imp-t');
+    document.body.appendChild(d); document.body.classList.add('sh-open');
+    IMP = { J, el: d, step: 1, rows: null, dec: {}, f: '', all: false, R: null, busy: '', err: '', ret: document.activeElement, rec: null, done: null, undo: false };
+    d.addEventListener('click', impClick); d.addEventListener('change', impChange);
+    IMP.key = e => { if (!IMP) return; if (e.key === 'Escape' && !IMP.busy) { e.preventDefault(); impClose(); }
+      if (e.key === 'Tab') { const F = $$('button:not([disabled]),input:not([type=file]),label.imp-drop', d).filter(x => x.offsetParent !== null); if (!F.length) return; const a = F.indexOf(document.activeElement);
+        if (e.shiftKey ? a <= 0 : a === F.length - 1) { e.preventDefault(); F[e.shiftKey ? F.length - 1 : 0].focus(); } } };
+    document.addEventListener('keydown', IMP.key, true);
+    impDraw(); setTimeout(() => { const x = $('.imp-x', d); try { x && x.focus({ preventScroll: true }); } catch (e) { } }, 30);
+  }
+  function impClose() {
+    if (!IMP) return; const { el, key, ret } = IMP; IMP = null; document.removeEventListener('keydown', key, true); el.remove(); document.body.classList.remove('sh-open');
+    try { ret && ret.focus && ret.focus({ preventScroll: true }); } catch (e) { }
+  }
+  const impVal = () => { IMP.R = IMP.J.validate(IMP.rows, S.rows, { decisions: IMP.dec }); return IMP.R; };
+  function impRow(it, done) {
+    const c = impCls[it.level], lid = 'ir-' + it.line;
+    const sub = [it.gender === 'female' ? 'أنثى' : it.gender === 'male' ? 'ذكر' : '', it.birth ? String(it.birth) : ''].filter(Boolean).join(' · ');
+    let m = '';
+    if (done) m = `<p class="ir-m">${esc(it.msg || '')}</p>`;
+    else if (it.level === 'err') m = `<p class="ir-m">${esc(it.msg || '')}${it.fix ? `<span class="ir-fix">الحل: ${esc(it.fix)}</span>` : ''}</p>${(it.errs || []).slice(1).map(x => `<p class="ir-m">${esc(x.msg)}${x.fix ? `<span class="ir-fix">الحل: ${esc(x.fix)}</span>` : ''}</p>`).join('')}`;
+    else m = `<p class="ir-m">${esc(it.msg || '')}</p>`;
+    const ch = !done && it.choices && it.choices.length ? `<div class="ir-c" role="radiogroup" aria-labelledby="${lid}">${it.choices.map(o => `<label><input type="radio" name="d${esc(String(it.line))}" data-xd="${esc(String(it.line))}" value="${esc(o.v)}"${it.decision === o.v ? ' checked' : ''}>${esc(o.t)}</label>`).join('')}</div>` : '';
+    return `<div class="ir ${c}"><div class="ir-h">${sv(impIc[it.level])}<span><b id="${lid}">${esc(it.name || '—')}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span><span class="ir-n">السطر ${ar(it.line)}</span></div>${m}${ch}</div>`;
+  }
+  function impDraw() {
+    if (!IMP) return; const d = IMP.el, s = IMP.step, J = IMP.J, keep = $('.imp-b', d) ? $('.imp-b', d).scrollTop : 0;
+    const stp = `<ol class="imp-stp">${IMP_ST.map((t, i) => `<li class="${i + 1 < s ? 'done' : i + 1 === s ? 'cur' : ''}"${i + 1 === s ? ' aria-current="step"' : ''}><i>${i + 1 < s ? sv('check') : ar(i + 1)}</i>${t}</li>`).join('')}</ol>`;
+    const head = `<div class="imp-h">${s === 2 ? `<button class="sh-x imp-bk" type="button" aria-label="رجوع">${ARWB}</button>` : ''}<h3 id="imp-t">أضف أسماء من إكسل</h3><button class="sh-x imp-x" type="button" aria-label="إغلاق">${sv('xmark')}</button></div>`;
+    let body = '', foot = '';
+    if (s === 1) {
+      body = `<div class="atl imp-tl"><div class="atl-h"><span class="atl-ic gold">${sv('sheet')}</span><span><b>أضف أسماء كثيرة دفعة وحدة</b><small>نزّل النموذج، واكتب فيه الأسماء، وارفعه هنا. نقبل ملف إكسل (xlsx) أو csv.</small></span></div>
+        <div class="imp-tw"><table class="imp-tbl"><thead><tr><th>الاسم</th><th>رقم الأب أو نسبه</th><th>الجنس</th><th>تاريخ الميلاد</th></tr></thead>
+          <tbody><tr><td>نورة</td><td>245</td><td>أنثى</td><td>1445/03/12</td></tr><tr><td>عبدالله</td><td>فهد بن عثمان بن إبراهيم</td><td>ذكر</td><td></td></tr></tbody></table></div>
+        <button type="button" class="abtn line full imp-tpl">${sv('down')}نزّل النموذج</button></div>
+        ${IMP.err ? `<p class="imp-err" role="alert">${sv('alert')}<span>${esc(IMP.err)}</span></p>` : ''}
+        <label class="imp-drop${IMP.busy ? ' busy' : ''}" tabindex="0">${sv('up')}<b>${IMP.busy ? esc(IMP.busy) : 'اختر الملف'}</b><small>إكسل (xlsx) أو csv</small><input type="file" class="imp-file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label>`;
+      foot = `<div class="imp-f one"><button type="button" class="abtn line imp-x2">إلغاء</button></div>`;
+    } else if (s === 2) {
+      const R = IMP.R || impVal(), n = R.n, f = IMP.f;
+      const grp = (lv, t) => { let L = R.items.filter(x => x.level === lv); if (!L.length || (f && f !== lv)) return '';
+        let more = ''; if (lv === 'ok' && L.length > 20 && !IMP.all) { more = `<button type="button" class="abtn line full imp-all">اعرض الكل (${ar(L.length)})</button>`; L = L.slice(0, 5); }
+        return `<h4 class="adp-sub">${t}</h4>${L.map(x => impRow(x)).join('')}${more}`; };
+      body = `<h3 class="imp-ti">راجع الأسماء قبل الإضافة</h3>
+        <div class="imp-rs" role="group" aria-label="تصفية الأسطر">${[['ok', 'g', 'check', 'جاهزة'], ['warn', 'y', 'info', 'تحتاج قرارك'], ['err', 'r', 'xmark', 'فيها خطأ']].map(([k, c, ic, t]) => `<button type="button" class="${c}" data-imf="${k}" aria-pressed="${f === k}"><b>${sv(ic)}${ar(n[k] || 0)}</b><small>${t}</small></button>`).join('')}</div>
+        ${grp('warn', 'تحتاج قرارك')}${grp('err', 'فيها خطأ، ما تنضاف')}${grp('ok', 'جاهزة')}${grp('skip', 'ما تنضاف')}
+        ${n.err ? `<p class="as-note">الأسطر الحمراء ما تنضاف. صلّحها في الملف وارفعه مرة ثانية، أو كمّل بالباقي.</p>` : ''}
+        <p class="imp-note">${sv('info')}<span>بنحفظ نسخة احتياطية قبل الإضافة، وتقدر تتراجع بعدها.</span></p>`;
+      const lab = IMP.busy ? esc(IMP.busy) : R.need > 0 ? `اختر قرارك في الأسطر الصفراء أول (باقي ${ar(R.need)})` : !R.add ? 'ما فيه أسطر جاهزة للإضافة' : `أضف ${esc(nCount(R.add, J.NP))}`;
+      foot = `<div class="imp-f"><button type="button" class="abtn pri imp-go"${R.need > 0 || !R.add || IMP.busy ? ' disabled' : ''}>${lab}</button><button type="button" class="abtn line imp-bk">${ARWB}غيّر الملف</button></div>`;
+    } else {
+      const D = IMP.done, miss = D.miss;
+      body = `<div class="imp-done"><i>${sv('check')}</i><h4>انضاف ${esc(nCount(D.n, J.NP))} للشجرة</h4><p>انحفظت نسخة احتياطية قبل الإضافة، وانسجّلت العملية في السجل.</p></div>
+        ${miss.length ? `<h4 class="adp-sub">ما انضاف ${esc(nCount(miss.length, ['سطر واحد', 'سطرين', 'أسطر', 'سطراً']))}:</h4>${miss.map(x => impRow(x, 1)).join('')}` : ''}
+        ${IMP.undo ? `<div class="imp-undo" role="alert"><p>بتنمسح الأسماء اللي انضافت في هالاستيراد (${ar(D.n)}). متأكد؟</p><div class="adrow2"><button type="button" class="abtn imp-redf imp-uy">نعم، تراجع</button><button type="button" class="abtn line imp-un">لا</button></div></div>` : ''}`;
+      foot = `<div class="imp-f"><button type="button" class="abtn pri imp-see">${sv('tree')}شوف الأسماء في الشجرة</button><button type="button" class="abtn imp-redl imp-u"${IMP.undo ? ' aria-expanded="true"' : ''}>تراجع</button></div>`;
+    }
+    d.innerHTML = head + stp + `<div class="imp-b">${body}</div>` + foot;
+    if (s === 2 && keep) $('.imp-b', d).scrollTop = keep;
+  }
+  async function impFile(file) {
+    if (!IMP || !file) return; IMP.err = ''; IMP.busy = 'جاري قراءة الملف…'; impDraw();
+    try { const rows = await IMP.J.parse(file); if (!IMP) return; IMP.rows = rows; IMP.dec = {}; IMP.f = ''; IMP.all = false; IMP.busy = ''; impVal(); IMP.step = 2; impDraw(); $('.imp-b', IMP.el).scrollTop = 0; }
+    catch (e) { if (!IMP) return; IMP.busy = ''; IMP.err = e && e.code ? String(e.message) : 'ما قدرنا نقرأ الملف. احفظه من إكسل مرة ثانية وجرّب'; impDraw(); }
+  }
+  async function impAdd() {
+    const R = impVal(); if (R.need > 0 || !R.add) { impDraw(); return; }
+    IMP.busy = 'جاري حفظ نسخة احتياطية…'; impDraw();
+    try { localStorage.setItem('jnd-imp-pre', JSON.stringify(S.rows)); } catch (e) { }
+    if (!bkDownload()) { IMP.busy = ''; impDraw(); toast('ما انحفظت النسخة الاحتياطية، فما أضفنا شي. جرّب مرة ثانية'); return; }
+    IMP.busy = 'جاري الإضافة…'; impDraw();
+    const J = IMP.J; let out;
+    try { out = J.build(R.plan); } catch (e) { IMP.busy = ''; impDraw(); toast('ما تمت الإضافة، جرّب مرة ثانية'); return; }
+    S.rows.push(...out.rows); saveRows(); logIt('استيراد من إكسل', nCount(out.rec.n, J.NP));
+    try { localStorage.setItem('jnd-imp-last', JSON.stringify(out.rec)); } catch (e) { }
+    refresh(); bellBadge();
+    IMP.rec = out.rec; IMP.added = out.rows; IMP.busy = ''; IMP.step = 3;
+    IMP.done = { n: out.rec.n, miss: R.items.filter(x => x.level === 'err' || x.level === 'skip') };
+    impDraw();
+  }
+  function impUndo() {
+    const J = IMP.J; let u;
+    try { u = J.undo(S.rows, IMP.rec); } catch (e) { toast('ما تم التراجع، جرّب مرة ثانية'); return; }
+    if (!u || !u.ok) { IMP.undo = false; impDraw(); toast(u && u.msg ? u.msg : 'ما تم التراجع، جرّب مرة ثانية'); return; }
+    S.rows = u.rows; saveRows(); logIt('تراجع عن استيراد', nCount(u.n, J.NP));
+    try { localStorage.removeItem('jnd-imp-last'); } catch (e) { }
+    impClose(); refresh(); bellBadge(); toast('تراجعنا، وانمسحت أسماء آخر استيراد');
+  }
+  function impClick(e) {
+    if (!IMP) return; const t = e.target, at = s => t.closest(s);
+    if (at('.imp-x,.imp-x2')) { if (!IMP.busy) impClose(); return; }
+    if (at('.imp-bk')) { if (IMP.busy) return; IMP.step = 1; IMP.err = ''; impDraw(); return; }
+    if (at('.imp-tpl')) { try { IMP.J.save(IMP.J.template(S.rows), IMP.J.names.template()); } catch (x) { toast('ما نزل الملف، جرّب مرة ثانية'); } return; }
+    let b;
+    if ((b = at('[data-imf]'))) { const k = b.dataset.imf; IMP.f = IMP.f === k ? '' : k; impDraw(); return; }
+    if (at('.imp-all')) { IMP.all = true; impDraw(); return; }
+    if (at('.imp-go')) { if (!IMP.busy) impAdd(); return; }
+    if (at('.imp-see')) { const r = IMP.added && IMP.added[0], n = r && (S.byId[r.father_id] || S.byId[r.id]); impClose(); go('tree', n); return; }
+    if (at('.imp-u')) { IMP.undo = !IMP.undo; impDraw(); return; }
+    if (at('.imp-un')) { IMP.undo = false; impDraw(); return; }
+    if (at('.imp-uy')) { impUndo(); return; }
+  }
+  function impChange(e) {
+    if (!IMP) return; const t = e.target;
+    if (t.classList.contains('imp-file')) { const f = t.files && t.files[0]; t.value = ''; impFile(f); return; }
+    if (t.dataset.xd != null) { IMP.dec[t.dataset.xd] = t.value; impVal(); impDraw(); toast('انحفظ قرارك');
+      const x = $(`input[name="d${CSS.escape(t.dataset.xd)}"]:checked`, IMP.el); if (x) try { x.focus({ preventScroll: true }); } catch (y) { } }
+  }
   function adClick(e) {
     const t = e.target, at = s => t.closest(s);
     let b;
