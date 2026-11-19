@@ -1622,11 +1622,12 @@ html,body{overflow-x:hidden}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="brRingG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E2AE"/><stop offset=".55" stop-color="#C9A866"/><stop offset="1" stop-color="#8E7038"/></linearGradient></defs></svg>
 <header class="hdr">
-  <a class="brand" href="#home" aria-label="الرئيسية">
-    <span class="br-logo"><img src="assets/logo.png" alt="شعار أسرة الجنيدلي"></span>
-    <span class="br-txt"><b>أسرة <em>الجنيدلي</em></b></span><span class="br-badge">منصة</span>
-  </a>
+  <div class="brand">
+    <button class="br-logo" type="button" id="br-logo" aria-label="الرئيسية"><img src="assets/logo.png" alt=""></button>
+    <a class="br-txt" href="#home"><b>أسرة <em>الجنيدلي</em></b></a><span class="br-badge">منصة</span>
+  </div>
   <nav class="tabs" aria-label="أقسام الموقع">
     <a href="#home" class="on">الرئيسية</a>
     <a href="#tree">الشجرة</a>
@@ -2918,6 +2919,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     try { strip(); } catch (e) { } if (T.svg) treeRender(); meBtn(); if (S.view && !['tree', 'poster'].includes(S.view)) rerenderView();
     applyRole();
     if (window.__afterGate) { const f = window.__afterGate; window.__afterGate = null; setTimeout(f, 1900); }
+    sd(momLogo); setTimeout(() => sd(momTipLater), 2600);
   }
   function gateChips() {
     const box = $('#gt-chips'), go = $('#gt-go'); if (!box) return;
@@ -4254,6 +4256,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if (S.sel) panelPerson(S.sel); else panelWelcome();
     if (S.view && S.view !== 'tree' && S.view !== 'poster') rerenderView();
     if (S.view === 'admin' && !isAdmin()) go('tree');
+    if (isAdmin()) setTimeout(() => sd(momSweep), 2500);
   }
   function bindAdmin() {
     document.addEventListener('click', e => {
@@ -4267,6 +4270,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       if (cmd === 'notifs') openNotifs();
       if (cmd === 'install') { document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); window.showInstall && window.showInstall(); }
       if (cmd === 'guide') { document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); window.openGuide && window.openGuide(); }
+      if (cmd === 'moments') momOpen();
       if (cmd === 'add-news') { $('#morem').classList.remove('open'); go('news'); setTimeout(() => openNewsEd(), 200); }
       if (cmd === 'share-app') { const u = S.cfg.shareBase || location.href.split('#')[0]; window.open('https://wa.me/?text=' + encodeURIComponent('منصة أسرة الجنيدلي: شجرة الأسرة ومناسباتها وأخبارها في مكان واحد\n' + u), '_blank'); }
       if (cmd === 'login') { if (!canAdmin()) { toast('هذا الخيار للمشرفين فقط'); return; } if (S.cfg.loginUrl) location.href = S.cfg.loginUrl; else { $('#lg-pw').value = ''; $('#lg-err').textContent = ''; $('#loginm').classList.add('open'); setTimeout(() => $('#lg-pw').focus(), 60); } }
@@ -4290,7 +4294,8 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     // v58: أيقونات لوحة المشرف (المصمم، القسم 1.10)
     pin: '<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>', chat: '<path d="M4 19.5l1.3-3.8A8 8 0 1 1 8.4 19z"/><path d="M9 10.5h6M9 13.5h4"/>',
     cake: '<path d="M4 20h16M5 20v-7h14v7"/><path d="M5 15.5c1.2 1 2.3 1 3.5 0s2.3-1 3.5 0 2.3 1 3.5 0 2.3-1 3.5 0"/><path d="M12 13V9.5M12 6.8c.9-.8.9-1.8 0-2.8-.9 1-.9 2 0 2.8z"/>',
-    mom: '<circle cx="12" cy="12" r="9" stroke-dasharray="3.2 2.2"/><circle cx="12" cy="12" r="5"/>', tools: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6z"/>',
+    mom: '<circle cx="12" cy="12" r="9" stroke-dasharray="3.2 2.2"/><circle cx="12" cy="12" r="5"/>',
+    baby: '<path d="M3.5 10.5h17a7 7 0 0 1-7 6.5h-3a7 7 0 0 1-7-6.5z"/><path d="M12.5 10.5V4a7 7 0 0 1 7 6.5"/><circle cx="8" cy="20" r="1.6"/><circle cx="16" cy="20" r="1.6"/>', img: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>', tools: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6z"/>',
     down: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14"/>', up: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 20h14"/>', sheet: '<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M4 9h16M4 15h16M10 9v12"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>',
     users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.8-3.4 3.2-5.2 6-5.2s5.2 1.8 6 5.2"/><circle cx="17" cy="9" r="2.6"/><path d="M15.8 14.6c2.3.2 4.1 1.8 4.7 4.4"/>',
@@ -4310,7 +4315,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   const row = (attr, c, k, t, d, extra = '') => `<${attr.startsWith('href') ? 'a' : 'button'} ${attr} class="st-row"><span class="st-ic c-${c}">${sv(k)}</span><span class="st-t"><b>${t}</b>${d ? `<small>${d}</small>` : ''}</span>${extra}<i class="st-chev">${ARW}</i></${attr.startsWith('href') ? 'a' : 'button'}>`;
   function openMore() {
     if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
-    const me = S.me, nN = noteCount(), pA = admPend().n;
+    const me = S.me, nN = noteCount(), pA = admPend().n; MOM.L = momList();
     $('#more-list').innerHTML = `
       <a href="#me" data-close class="st-me">
         <span class="st-av">${me ? esc(me.name[0]) : sv('user')}</span>
@@ -4322,7 +4327,8 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         <button data-cmd="share-app" class="q-green"><span>${sv('share')}</span><b>شارك</b></button>
         <a href="#about" data-close class="q-teal"><span>${sv('book')}</span><b>النسب</b></a>
       </div>
-      <button class="gd-entry" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك من الجرس' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد' : 'ابدأ'} ${ARW}</i></button>
+      ${MOM.L.length ? `<button class="gd-entry" data-cmd="moments"><span class="gd-e-ic mom">${sv('mom')}</span><span class="st-t"><b>لحظات الأسرة</b><small>${momNew().length ? nCount(momNew().length, ['لحظة جديدة', 'لحظتان جديدتان', 'لحظات جديدة', 'لحظة جديدة']) : 'صور وأخبار الأسرة لهالأيام'}</small></span><i>شوفها ${ARW}</i></button>` : ''}
+      <button class="gd-entry" data-cmd="guide"${MOM.L.length ? ' style="margin-top:8px"' : ''}><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك من الجرس' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد' : 'ابدأ'} ${ARW}</i></button>
       <button class="gd-entry" data-cmd="install" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#3F7C69,#2D6369)"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></span><span class="st-t"><b>ثبّت المنصة كتطبيق</b><small>على الشاشة الرئيسية لجوالك</small></span><i>ثبّت ${ARW}</i></button>
       ${S.site.contact ? `<a class="gd-entry st-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(String(S.site.contact).replace(/\D/g, '').replace(/^0/, '966'))}" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#25D366,#128C7E)"><svg viewBox="0 0 24 24"><path d="M5 19l1.2-3.6A7.5 7.5 0 1 1 9 18.2z"/></svg></span><span class="st-t"><b>تواصل مع الإدارة</b><small>واتساب مباشر مع مشرف المنصة</small></span><i>راسل ${ARW}</i></a>` : ''}
       <h5>العرض</h5>
@@ -4607,14 +4613,14 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const empty = f === 'all' ? (q ? 'ما لقينا الاسم، جرّب اسمه واسم أبوه' : '') : (q ? 'ما فيه اسم بهالحالة يطابق بحثك' : f === 'ok' ? 'ما فيه أسماء مؤكدة' : `<span class="ad-done">${sv('check')}</span>ما فيه أسماء ${SLP[f]}، كل شي تمام`);
     const rest = list.length - AD.limit;
     el.innerHTML = (!q && f === 'all') ? '<p class="ad-empty">اكتب الاسم واسم أبوه، مثل: فهد بن عثمان</p>' : !list.length ? `<p class="ad-empty">${empty}</p>` :
-      (f !== 'all' && !q ? `<p class="ad-count">${nCount(list.length, NP)} · ${SL[f]}</p>` : '') +
+      (f !== 'all' ? `<p class="ad-count ad-flt"><span>${q ? '' : nCount(list.length, NP) + ' · '}${SL[f]}</span><button type="button" data-adst="all">اعرض الكل</button></p>` : '') +
       `<div class="pl">${list.slice(0, AD.limit).map(n => `<div class="pl-r"><span class="pl-av">${esc(dispName(n)[0])}</span><div class="pl-t"><b>${esc(dispName(n))}</b>${relTag(n)}<small>${esc(lineage(n))}</small>
         <button type="button" class="pl-st ast-${n.lk}" data-adss="${esc(n.id)}" aria-expanded="${AD.open === String(n.id)}" aria-label="الحالة: ${SL[n.lk]}، غيّرها"><i></i>${SL[n.lk]}</button>
         </div>
         <div class="pl-b"><button type="button" data-ed="${esc(n.id)}" title="عدّل" aria-label="عدّل">${sv('pen')}</button><button type="button" data-gox="${esc(n.id)}" title="شوفه في الشجرة" aria-label="شوفه في الشجرة">${sv('locate')}</button></div>
         ${AD.open === String(n.id) ? `<div class="ad-seg-w"><small>الحالة:</small>${segHtml(n.link, n.id)}</div>` : ''}</div>`).join('')}</div>`
       + (rest > 0 ? `<button type="button" class="ad-more" id="ad-more">اعرض ${ar(Math.min(25, rest))} زيادة</button>` : '');
-    $$('#admin [data-adst]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.adst === AD.st)));
+    $$('#admin [data-adh]').forEach(b => b.setAttribute('aria-pressed', String(AD.tab === 'tree' && b.dataset.adh === AD.st)));
   }
 
   /* ── قوائم الصفوف (ما تنرسم إلا لما ينفتح الصف) ── */
@@ -4767,7 +4773,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
 
   /* ── الصفوف اللي تنفتح، والتنقل بين الأقسام (الجرس والتنبيهات والروابط القديمة) ── */
   function adSave() { try { sessionStorage.setItem('jnd-adtab', AD.tab); sessionStorage.setItem('jnd-adsec', AD.sec); } catch (e) { } }
-  function adBindAll() { phBind(); grBind(); bindSup(); adBind(); }
+  function adBindAll() { phBind(); grBind(); bindSup(); adBind(); momAdBind(); }
   function adToggle(k, force) {
     const hd = $(`#admin [data-fold="${k}"]`), bd = $('#ad-b-' + k); if (!hd || !bd) return;
     const y0 = hd.getBoundingClientRect().top, open = force === true || AD.sec !== k;
@@ -4780,7 +4786,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   // بعد تبديل القسم: إذا كان الشريط ملزوق فوق، نرجع لأول القسم الجديد
   function adTop() {
-    const sc = adScroller(), h = $('#admin .adh'); if (!h) return;
+    const sc = adScroller(), h = $('#admin .ad-hero'); if (!h) return;
     const base = sc === document.scrollingElement || sc === document.documentElement || sc === document.body ? 0 : sc.getBoundingClientRect().top;
     const nat = h.getBoundingClientRect().bottom - base + sc.scrollTop; if (sc.scrollTop > nat) sc.scrollTop = nat;
   }
@@ -4819,6 +4825,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if ((b = at('[data-rq2-more]'))) { const k = b.dataset.rq2More; if (AD.more.has(k)) AD.more.delete(k); else AD.more.add(k); adInbox(dupScan());
       const nb = $(`#adp-inbox [data-rq2-more="${CSS.escape(k)}"]`); if (nb) nb.focus({ preventScroll: true }); return; }
     if ((b = at('[data-adx]'))) { const k = b.dataset.adx; AD[k] = !AD[k]; adFill(k === 'nwAll' ? 'nw' : 'ev'); return; }
+    if ((b = at('[data-adh]'))) { const k = b.dataset.adh; AD.st = AD.tab === 'tree' && AD.st === k ? 'all' : k; AD.limit = 25; AD.open = null; if (AD.tab !== 'tree') adTab('tree'); else adDraw(); return; }
     if ((b = at('[data-adst]'))) { const k = b.dataset.adst; AD.st = AD.st === k ? 'all' : k; AD.limit = 25; AD.open = null; adDraw(); return; }
     const id = (k, a) => (b = at('[' + k + ']')) && b.dataset[a];
     let v;
@@ -4888,17 +4895,14 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
 
   /* ── الأقسام الأربعة ── */
   function adTreeTab(all, dups) {
-    const cnt = { ok: all.filter(n => n.lk === 'ok').length, pr: all.filter(n => n.lk === 'pr').length, un: all.filter(n => n.lk === 'un').length }, o = AD.sec === 'dup';
+    const o = AD.sec === 'dup';
     return `<div class="adp-h"><h2>أفراد الشجرة</h2><small>${nCount(all.length, NP)}</small></div>
       <div class="adrow2"><button type="button" class="abtn pri" data-adq="person">${sv('plus')}أضف فرداً</button><button type="button" class="abtn line" data-fold="dup" aria-expanded="${o}" aria-controls="ad-b-dup">${sv('copy')}المكررة (${ar(dups.length)})</button></div>
       <section class="adf" id="ad-s-dup"><div class="adx" id="ad-b-dup"${o ? ' data-f="1"' : ' hidden'}>${o ? AD_BODY.dup() : ''}</div></section>
-      <h3 class="adp-sub">حالة الأسماء</h3>
-      <div class="tf" role="group" aria-label="حالة الأسماء">${[['ok', 'مؤكد'], ['pr', 'غير مؤكد'], ['un', 'غير واضح']].map(([k, t]) => `<button type="button" class="ast-${k}" data-adst="${k}" aria-pressed="${AD.st === k}"><b>${ar(cnt[k])}</b><small><i></i>${t}</small></button>`).join('')}</div>
       <label class="ad-q2">${sv('search')}<input id="ad-q" type="search" placeholder="ابحث عن اسم في الشجرة" aria-label="ابحث عن اسم في الشجرة" autocomplete="off" value="${esc(AD.q)}"></label>
       <div id="ad-list"></div>`;
   }
-  // v58 المرحلة الثالثة: إدارة لحظات الأسرة (أضف لحظة، المنشورة الحين، اللحظات التلقائية) تنرسم هنا فوق «المحتوى». في المرحلة الثانية فاضية
-  const adMomHtml = () => '';
+  // v58: إدارة لحظات الأسرة (adMomHtml في قسم «لحظات الأسرة» تحت) تنرسم فوق «المحتوى»
   function adMomTab() {
     const up = upcoming(), nL = newsSorted().length, g = grActive(), m = adMomHtml();
     return `${m}<div class="adp-h"><h2>المحتوى</h2><small>وش تشوفه الأسرة الحين</small></div>
@@ -4934,7 +4938,13 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const ae = document.activeElement, fk = ae && box.contains(ae) && ae.id ? { id: ae.id, s: sd(() => ae.selectionStart), e: sd(() => ae.selectionEnd) } : null, back = whyKeep(box);
     const all = S.all.filter(n => !n.pending), dups = dupScan(), P = admPend(dups), tab = AD.tab, me = S.me || gateNode();
     if (AD.sec && AD_TAB[AD.sec] !== tab) AD.sec = '';
-    box.innerHTML = `<div class="adh"><div class="adh-t"><small>${sv('shield')}لوحة المشرف</small><h1>${me ? `${me.gender === 'female' ? 'حيّاكِ' : 'حيّاك'} الله يا ${esc(me.name)}` : 'حيّاك الله'}</h1></div><button class="adh-out" type="button" data-cmd="logout">${sv('out')}اخرج</button></div>
+    const gens = all.length ? Math.max(...all.map(n => n.depth)) + 1 : 0, cnt = { ok: all.filter(n => n.lk === 'ok').length, pr: all.filter(n => n.lk === 'pr').length, un: all.filter(n => n.lk === 'un').length };
+    box.innerHTML = `<header class="ad-hero">
+        <div class="ad-top"><span class="ad-badge">${sv('gear')}لوحة المشرف</span><button class="ad-out" type="button" data-cmd="logout">${sv('out')}اخرج</button></div>
+        <h1>${me ? `${me.gender === 'female' ? 'حيّاكِ' : 'حيّاك'} الله يا ${esc(me.name)}` : 'حيّاك الله'}</h1>
+        <div class="ad-k"><div><b>${ar(all.length)}</b><small>فرد</small></div><div><b>${ar(gens)}</b><small>أجيال</small></div><div><b>${ar(upcoming().length)}</b><small>مناسبة قادمة</small></div><div><b>${ar(newsSorted().length)}</b><small>خبر</small></div></div>
+        <div class="ad-st" role="group" aria-label="حالة الأسماء، تفتح في «الشجرة»">${[['ok', 'مؤكد'], ['pr', 'غير مؤكد'], ['un', 'غير واضح']].map(([k, t]) => `<button type="button" class="ast-${k}" data-adh="${k}" aria-pressed="${tab === 'tree' && AD.st === k}"><i></i><b>${ar(cnt[k])}</b><small>${t}</small></button>`).join('')}</div>
+      </header>
       <nav class="adt" role="tablist" aria-label="أقسام لوحة المشرف">${AD_TABS.map(([k, ic, t]) => { const on = tab === k, n = k === 'inbox' ? P.n : 0;
         return `<button type="button" role="tab" id="adt-${k}" aria-controls="adp-${k}" data-adt="${k}" aria-selected="${on}" tabindex="${on ? 0 : -1}"${n ? ` aria-label="${t}، ${nCount(n, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])}"` : ''}>${sv(ic)}<span>${t}</span>${n ? `<i class="adt-n" aria-hidden="true">${n > 99 ? '99+' : ar(n)}</i>` : ''}</button>`; }).join('')}</nav>
       <section class="adp" id="adp-${tab}" role="tabpanel" aria-labelledby="adt-${tab}">${tab === 'tree' ? adTreeTab(all, dups) : tab === 'mom' ? adMomTab() : tab === 'tools' ? adToolsTab() : ''}</section>`;
@@ -5215,7 +5225,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         const r = S.cfg.addChildren ? await S.cfg.addChildren(A.father, kids, who) : { pending: false };
         const pending = !r || r.pending !== false;
         kids.forEach((k, i) => S.rows.push({ id: (r && r.ids && r.ids[i]) || 'n' + Date.now() + i, father_id: A.father.id, name: k.name, gender: k.gender, birth: k.birth,
-          kind: 'ورقة', link: pending ? 'محتمل' : 'مؤكد', name_c: 'واضح', note: null, x: null, y: null, pending }));
+          kind: 'ورقة', link: pending ? 'محتمل' : 'مؤكد', name_c: 'واضح', note: null, x: null, y: null, pending, at: new Date().toISOString() }));
         const father = A.father; father.collapsed = false;
         logIt('إضافة', `${kids.map(k => k.name).join('، ')} تحت ${lineage(father, 3)}`);
         refresh(); saveRows(); const f = S.byId[father.id];
@@ -5261,6 +5271,9 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     show(location.hash.slice(1) || 'home');
     setTimeout(() => { const g = grActive(); if (g && !seenN().includes('gr:' + g.id) && !$$('.modal.open').length) toast('وصلتك تهنئة من أسرة الجنيدلي، بطاقتك على الرئيسية'); }, 3000);
     setTimeout(() => dnPush(mineNotifs()), 1800);
+    { const lg = $('#br-logo'); if (lg) lg.onclick = () => { momTipClose(); if (lg.classList.contains('has-mom') && !lg.classList.contains('seen')) momOpen(); else go('home'); }; }
+    setTimeout(momLoad, 1200);   // v58: فهرس اللحظات بقراءة وحدة بعد ما تفتح الصفحة (الصور ما تنحمّل إلا مع العارض)
+    setInterval(() => { if (!document.hidden && MOM.at && Date.now() - MOM.at > 6e5) momLoad(); }, 6e4);
     setTimeout(phqFlush, 2500);   // v57: أرقام تنتظر التشفير من زيارة سابقة   // v56: قرارات الإدارة اللي ما انعرضت تطلع أعلى الصفحة
     if (cfg.startId && S.byId[cfg.startId]) select(S.byId[cfg.startId]);
   }
@@ -5310,9 +5323,350 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       const ga = grActive(); if (ga && (!gb || gb.id !== ga.id) && !seenN().includes('gr:' + ga.id)) toast('وصلتك تهنئة من أسرة الجنيدلي');
       const fresh = mineNotifs().filter(x => !before.has(x.id) && !seenN().includes(x.id)); dnPush(fresh.length ? fresh : mineNotifs());
       if (ks.has('jnd-pk')) ['sg', 'rq'].forEach(waNote);
+      if (ks.has('jnd-rows') || ks.has('jnd-events-all') || ks.has('jnd-news') || ks.has('jnd-news-del') || ks.has('jnd-site')) sd(momLogo);
       phqFlush();   // v57: وصل مفتاح الحماية أو تحدّثت الطلبات ← نشفّر الأرقام المؤجّلة ونرفعها
       if ([...ks].some(k => !['jnd-log', 'jnd-reqs', 'jnd-sugs', 'jnd-pk'].includes(k))) toast('تحدّثت البيانات');
     } catch (e) { console.error(e); }
+  }
+  /* ═════════ v58 · لحظات الأسرة (المرحلة الثالثة) ═════════
+     - الفهرس مستند صغير mom/idx: قراءة وحدة تكفي الشعار. كل صورة مستند mom/{id}، وما تنحمّل إلا مع فتح العارض
+     - التلقائية (مولود جديد، مناسبة اليوم، خبر جديد) تنحسب من بيانات الأسرة اللي عندنا أصلاً، بدون قراءة زيادة
+     - الحفظ المحلي في IndexedDB (الفهرس والصور)، واللي شافه العضو في localStorage
+     - كل نص يمر على esc()، وبيانات الفهرس تنظّف قبل الاستخدام (momClean) */
+  const MOM = { idx: null, L: [], v: null, at: 0, busy: 0, swept: 0 };
+  const MOM_SEEN = 'jnd-mom-seen', MOM_TIP = 'jnd-mom-tip', MOM_MAX = 20, MOM_CAP = 120, MOM_DAY = 864e5, MOM_IDX_MAX = 60000;
+  const MOM_ID = /^m[0-9a-z]{6,40}$/, MOM_B64 = /^[A-Za-z0-9+/]+={0,2}$/;
+  const momCloud = () => !!(window.JNDCloud && JNDCloud.on && JNDCloud.momGet);
+  // IndexedDB بسيط (مفتاح ← قيمة)، وإذا ما اشتغل (تصفح خاص مثلاً) نكمّل من الذاكرة
+  const IDB = (() => {
+    let p = null; const mem = {};
+    const db = () => p || (p = new Promise((res, rej) => { try { const r = indexedDB.open('jnd-mom', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }));
+    const tx = (m, f) => db().then(d => new Promise((res, rej) => { const t = d.transaction('kv', m), q = f(t.objectStore('kv')); t.oncomplete = () => res(q && q.result); t.onerror = t.onabort = () => rej(t.error); }));
+    return {
+      get: k => tx('readonly', s => s.get(k)).then(v => v === undefined ? mem[k] : v).catch(() => mem[k]),
+      set: (k, v) => { mem[k] = v; return tx('readwrite', s => s.put(v, k)).catch(() => { }); },
+      del: k => { delete mem[k]; return tx('readwrite', s => s.delete(k)).catch(() => { }); },
+      keys: () => tx('readonly', s => s.getAllKeys()).catch(() => Object.keys(mem)),
+    };
+  })();
+  // تنظيف الفهرس (يكتبه المشرف بس، لكن ننظفه مثل أي بيانات من السحابة)
+  function momClean(o) {
+    o = o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+    const l = (Array.isArray(o.l) ? o.l : []).filter(x => x && typeof x === 'object' && MOM_ID.test(String(x.id)) && Number.isFinite(+x.at) && Number.isFinite(+x.exp))
+      .map(x => ({ id: String(x.id), at: +x.at, exp: +x.exp, cap: typeof x.cap === 'string' ? x.cap.replace(/[\u0000-\u001f]/g, ' ').slice(0, MOM_CAP) : '' })).slice(0, 60);
+    const a = o.auto && typeof o.auto === 'object' ? o.auto : {}, hid = {};
+    if (o.hid && typeof o.hid === 'object' && !Array.isArray(o.hid)) Object.keys(o.hid).slice(0, 300).forEach(k => { if (/^[bne]:[\w:.\-]{1,120}$/.test(k) && Number.isFinite(+o.hid[k])) hid[k] = +o.hid[k]; });
+    return { l, auto: { b: a.b !== false, e: a.e !== false, n: a.n !== false }, hid };
+  }
+  const momDay0 = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return +d; };
+  // مولود جديد: تاريخ ميلاده الهجري كامل وخلال آخر أسبوع، أو انضاف للشجرة خلال أسبوع وسنة ميلاده هالسنة أو اللي قبلها
+  function momBornAt(n) {
+    const b = bGet(n), now = Date.now(), hy = hYearNow(); if (!b.y || b.y < hy - 1) return 0;
+    if (b.m && b.d) for (let i = 0; i < 7; i++) { const g = new Date(now - i * MOM_DAY), h = sd(() => hp(utc(ymd(g)))); if (h && h.y === b.y && h.m === b.m && h.d === b.d) return momDay0(g); }
+    const at = Date.parse(String(n.at || '')); return at && at <= now + 6e5 && now - at < 7 * MOM_DAY ? at : 0;
+  }
+  // كل اللحظات الشغّالة الحين، من الأقدم للأحدث
+  function momList() {
+    const now = Date.now(), I = MOM.idx || momClean({}), out = [], t0 = momDay0(now), td = ymd(new Date());
+    I.l.forEach(x => { if (x.exp > now) out.push(Object.assign({ k: 'p' }, x)); });
+    if (I.auto.b) S.all.filter(n => !n.pending && n.parent).map(n => [n, momBornAt(n)]).filter(x => x[1]).sort((a, b) => b[1] - a[1]).slice(0, 5)
+      .forEach(([n, at]) => out.push({ id: 'b:' + n.id, k: 'b', at, exp: at + 7 * MOM_DAY, n }));
+    if (I.auto.e) (S.events || []).forEach(e => { if (e && e.id != null && e.date === td) out.push({ id: 'e:' + e.id + ':' + td, k: 'e', at: t0, exp: t0 + MOM_DAY, e }); });
+    if (I.auto.n && !hidden('news')) (S.news || []).forEach(n => { const t = Date.parse(String(n.date || '')); if (n && n.id != null && t && now - t < 3 * MOM_DAY && t - now < MOM_DAY) out.push({ id: 'n:' + n.id, k: 'n', at: Math.min(t, now), exp: t + 3 * MOM_DAY, n }); });
+    return out.filter(x => x.k === 'p' || !(x.id in I.hid)).sort((a, b) => a.at - b.at);
+  }
+  const momSeen = () => { try { const v = JSON.parse(localStorage.getItem(MOM_SEEN) || '[]'); return Array.isArray(v) ? v.map(String) : []; } catch (e) { return []; } };
+  const momSee = id => { const s = momSeen(); if (s.includes(id)) return; s.push(id); try { localStorage.setItem(MOM_SEEN, JSON.stringify(s.slice(-300))); } catch (e) { } };
+  const momNew = () => { const s = momSeen(); return MOM.L.filter(x => !s.includes(x.id)); };
+  const momGF = () => !!(S.me && S.me.gender === 'female');
+  const momLogoSrc = () => S.cfg.logo || ($('.brand img') || {}).src || '';
+  // الشعار: إطار ذهبي وعلامة «جديد» إذا فيه لحظات ما شافها. ينرسم مرة وحدة في الجلسة ثم يثبت
+  function momLogo() {
+    const b = $('#br-logo'); if (!b) return;
+    MOM.L = momList(); const n = momNew().length;
+    if (n) {
+      b.classList.remove('seen');
+      if (!$('.br-ring', b)) {
+        b.insertAdjacentHTML('beforeend', '<svg class="br-ring" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="25.5" pathLength="100"/></svg><span class="br-new" aria-hidden="true">جديد</span>');
+        let drawn = false; try { drawn = sessionStorage.getItem('jnd-mom-drawn') === '1'; sessionStorage.setItem('jnd-mom-drawn', '1'); } catch (e) { }
+        b.classList.toggle('draw', !drawn);
+      }
+      b.classList.add('has-mom'); b.setAttribute('aria-haspopup', 'dialog'); b.setAttribute('aria-label', 'لحظات الأسرة، فيه جديد');
+    } else {
+      b.removeAttribute('aria-haspopup'); b.setAttribute('aria-label', 'الرئيسية'); momTipClose();
+      if (b.classList.contains('has-mom') && !b.classList.contains('seen')) {
+        b.classList.add('seen');   // شاف الكل: الإطار يتلاشى، ثم ينشال لين تنزل لحظة جديدة
+        setTimeout(() => { if (!b.classList.contains('seen')) return; b.classList.remove('has-mom', 'draw', 'seen'); $$('.br-ring,.br-new', b).forEach(e => e.remove()); }, dnRM() ? 0 : 450);
+      }
+    }
+  }
+  // التلميح أول مرة (مرة وحدة طول العمر): بعد البوابة والدليل وفقاعة الجرس
+  function momTipLater(k = 0) {
+    clearTimeout(MOM.tipT); let done = '1'; try { done = localStorage.getItem(MOM_TIP) || ''; } catch (e) { }
+    if (done || $('#mm-tip') || !momNew().length || k > 60) return;
+    // فقاعة الجرس (تطلع بعد 1.8 ثانية) لها الأولوية: ما نطلع التلميح قبل 3 ثواني من فتح الصفحة
+    const busy = performance.now() < 3200 || document.body.classList.contains('gated') || window.__afterGate || $$('.modal.open').length || DN.cur || DN.q.length || MOM.v || document.hidden || $('.sh');
+    if (busy) { MOM.tipT = setTimeout(() => momTipLater(k + 1), 1500); return; }
+    const hdr = $('.hdr'), logo = $('#br-logo'); if (!hdr || !logo || logo.offsetParent === null) return;
+    try { localStorage.setItem(MOM_TIP, '1'); } catch (e) { }
+    hdr.insertAdjacentHTML('beforeend', `<div class="mm-tip" id="mm-tip" role="status"><p>${momGF() ? 'اضغطي على الشعار وشوفي لحظات الأسرة' : 'اضغط على الشعار وشف لحظات الأسرة'}</p><button type="button">تم</button></div>`);
+    const tip = $('#mm-tip'), lr = logo.getBoundingClientRect(), hr = hdr.getBoundingClientRect();
+    tip.style.top = Math.round(lr.bottom - hr.top + 14) + 'px';
+    const r = tip.getBoundingClientRect(); tip.style.setProperty('--ax', Math.round(Math.max(10, Math.min(r.width - 24, r.right - (lr.left + lr.width / 2) - 7))) + 'px');
+    $('button', tip).onclick = () => momTipClose();
+    const EV = ['scroll', 'wheel', 'touchmove'], h = () => { EV.forEach(ev => window.removeEventListener(ev, h, true)); momTipClose(); };
+    EV.forEach(ev => window.addEventListener(ev, h, { capture: true, passive: true }));
+  }
+  function momTipClose() { const t = $('#mm-tip'); if (t) t.remove(); }
+  // نقرأ الفهرس: من الجهاز أول (الشعار يطلع فوراً)، ثم من السحابة بقراءة وحدة
+  async function momLoad() {
+    if (MOM.busy) return; MOM.busy = 1;
+    try {
+      if (!MOM.idx) { const c = await IDB.get('idx'); if (c) { MOM.idx = momClean(c); momLogo(); } }
+      if (momCloud() && navigator.onLine) {
+        const d = await JNDCloud.momGet('idx'); let o = {}; if (d && typeof d.v === 'string') try { o = JSON.parse(d.v); } catch (e) { }
+        MOM.idx = momClean(o); MOM.at = Date.now(); IDB.set('idx', MOM.idx);
+        const keep = new Set(MOM.idx.l.map(x => 'img:' + x.id)); (await IDB.keys() || []).forEach(k => { if (String(k).startsWith('img:') && !keep.has(k)) IDB.del(k); });
+      }
+    } catch (e) { }
+    if (!MOM.idx) MOM.idx = momClean({});
+    MOM.busy = 0; momLogo(); momTipLater();
+    if (isAdmin() && S.view === 'admin' && AD.tab === 'mom') adminRender();
+  }
+  async function momImg(id) {
+    const k = 'img:' + id; let b = await IDB.get(k);
+    if (typeof b !== 'string' || !MOM_B64.test(b)) { const d = await JNDCloud.momGet(id); b = d && d.b; if (typeof b !== 'string' || !MOM_B64.test(b)) throw new Error('mom'); IDB.set(k, b); }
+    return 'data:image/jpeg;base64,' + b;
+  }
+  /* ── العارض بملء الشاشة ── */
+  function momAutoHtml(m) {
+    const f = momGF(); let ic, k, t, p = '', cta;
+    if (m.k === 'b') { const g = m.n.gender === 'female'; ic = 'baby'; k = g ? 'مولودة جديدة' : 'مولود جديد'; t = lineage(m.n, 2);
+      p = g ? 'ألف مبروك، جعلها الله قرة عين لوالديها' : 'ألف مبروك، جعله الله قرة عين لوالديه'; cta = (f ? 'شوفي' : 'شوف') + (g ? ' مكانها' : ' مكانه') + ' في الشجرة'; }
+    else if (m.k === 'e') { const e = m.e; ic = 'cal'; k = 'مناسبة اليوم'; t = `اليوم ${evTitle(e)}، ${f ? 'لا تفوّتكِ' : 'لا تفوّتك'}`;
+      p = [e.time ? sd(() => t12(e.time)) : '', e.venue || ''].filter(Boolean).join(' · '); cta = 'تفاصيل المناسبة'; }
+    else { const n = m.n; ic = 'news'; k = 'خبر جديد'; t = `خبر جديد: ${n.title || ''}`; const l1 = String(n.body || '').split('\n').map(s => s.trim()).find(Boolean) || '';
+      p = l1.length > 90 ? l1.slice(0, 88) + '…' : l1; cta = 'اقرأ الخبر'; }
+    return `<article class="mv-auto"><span class="mv-ai">${sv(ic)}</span><span class="mv-ak">${k}</span><h3>${esc(t)}</h3>${p ? `<p>${esc(p)}</p>` : ''}<button type="button" class="mv-cta">${esc(cta)}${ARW}</button></article>`;
+  }
+  function momOpen() {
+    MOM.L = momList(); if (!MOM.L.length) { toast('ما فيه لحظات الحين'); return; }
+    momTipClose(); if (DN.cur) dnClose(true, 1); $$('.modal.open').forEach(m => m.classList.remove('open'));
+    const s = momSeen(); let i = MOM.L.findIndex(x => !s.includes(x.id)); if (i < 0) i = 0;
+    const v = document.createElement('div'); v.className = 'mv'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-label', 'لحظات الأسرة');
+    v.innerHTML = `<div class="mv-in"><div class="mv-st"></div>
+      <button class="mv-prev" type="button" aria-label="اللحظة السابقة"></button><button class="mv-next" type="button" aria-label="اللحظة التالية"></button>
+      <div class="mv-top"><ol class="mv-bars" aria-hidden="true">${MOM.L.map(() => '<li><i></i></li>').join('')}</ol>
+        <div class="mv-meta"><span class="mv-logo"><img src="${esc(momLogoSrc())}" alt=""></span><span class="mv-who"><b>لحظات الأسرة</b><small class="mv-src"></small></span><span class="mv-n"></span><button class="mv-x" type="button" aria-label="إغلاق">${sv('xmark')}</button></div></div>
+      <p class="mv-cap" hidden></p><p class="sr mv-live" aria-live="polite"></p></div>`;
+    document.body.appendChild(v); document.body.classList.add('mv-open');
+    const V = MOM.v = { el: v, i, ret: document.activeElement, raf: 0, acc: 0, t0: 0, dur: 0, run: false, hold: false, drag: false, eat: false, n: 0 };
+    const nav = d => { if (V.eat) { V.eat = false; return; } d > 0 ? momNext() : momPrev(); };
+    $('.mv-next', v).onclick = () => nav(1); $('.mv-prev', v).onclick = () => nav(-1);
+    $('.mv-x', v).onclick = () => momClose();
+    // الضغطة المطوّلة توقف، والسحب للأسفل يقفل
+    let x0 = 0, y0 = 0, pid = null, ht = 0;
+    v.addEventListener('pointerdown', e => {
+      if (e.target.closest('.mv-x,.mv-cta') || pid !== null) return; pid = e.pointerId; x0 = e.clientX; y0 = e.clientY; V.eat = false;
+      clearTimeout(ht); ht = setTimeout(() => { if (pid === null || V.drag) return; V.hold = true; v.classList.add('hold'); momPause(true); $('.mv-live', v).textContent = 'موقوفة، ارفع إصبعك وتكمل'; }, 350);
+    });
+    v.addEventListener('pointermove', e => {
+      if (e.pointerId !== pid) return; const dx = e.clientX - x0, dy = e.clientY - y0;
+      if (!V.drag && dy > 12 && Math.abs(dy) > Math.abs(dx) * 1.2) { V.drag = true; clearTimeout(ht); v.classList.add('drag'); momPause(true); }
+      if (V.drag) { const y = Math.max(0, dy); v.style.setProperty('--dy', y + 'px'); v.style.setProperty('--dy-n', Math.min(1, y / 300)); }
+    });
+    const up = e => {
+      if (e.pointerId !== pid) return; pid = null; clearTimeout(ht); const dy = e.clientY - y0;
+      if (V.drag) { V.drag = false; V.eat = true; v.classList.remove('drag'); if (e.type === 'pointerup' && dy > 90) { momClose(); return; } v.style.setProperty('--dy', '0px'); v.style.setProperty('--dy-n', 0); momPause(false); }
+      if (V.hold) { V.hold = false; V.eat = true; v.classList.remove('hold'); $('.mv-live', v).textContent = ''; momPause(false); }
+      setTimeout(() => { V.eat = false; }, 400);
+    };
+    v.addEventListener('pointerup', up); v.addEventListener('pointercancel', up);
+    v.addEventListener('contextmenu', e => e.preventDefault());
+    // لوحة المفاتيح: Esc يقفل، والأسهم (RTL: اليسار للتالية)، والتركيز محبوس داخل العارض
+    V.key = e => {
+      if (!MOM.v) return;
+      if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); momClose(); return; }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); momNext(); return; }
+      if (e.key === 'ArrowRight') { e.preventDefault(); momPrev(); return; }
+      if (e.key === 'Tab') { const F = $$('button', v).filter(b => b.offsetParent !== null); if (!F.length) return; const a = F.indexOf(document.activeElement);
+        e.preventDefault(); F[(a + (e.shiftKey ? -1 : 1) + F.length) % F.length].focus(); }
+    };
+    window.addEventListener('keydown', V.key, true);
+    V.hc = () => momClose(); window.addEventListener('hashchange', V.hc);
+    V.vis = () => momPause(document.hidden); document.addEventListener('visibilitychange', V.vis);
+    setTimeout(() => { try { $('.mv-x', v).focus({ preventScroll: true }); } catch (e) { } }, 30);
+    momShow(i);
+  }
+  async function momShow(i) {
+    const V = MOM.v; if (!V) return; const L = MOM.L, m = L[i], v = V.el, tok = ++V.n; V.i = i; cancelAnimationFrame(V.raf); V.run = false; V.acc = 0;
+    $$('.mv-bars li', v).forEach((li, k) => { li.className = k < i ? 'done' : ''; li.firstChild.style.setProperty('--p', k < i ? 1 : 0); });
+    $('.mv-n', v).textContent = `${ar(i + 1)} من ${ar(L.length)}`;
+    $('.mv-src', v).textContent = (m.k === 'p' ? 'من المشرف' : 'من أخبار الأسرة') + ' · ' + nDate(ymd(new Date(m.at)));
+    const st = $('.mv-st', v), cap = $('.mv-cap', v);
+    cap.hidden = !(m.k === 'p' && m.cap); cap.textContent = m.k === 'p' ? m.cap || '' : '';
+    if (m.k === 'p') {
+      st.innerHTML = '<p class="mv-msg">جاري التحميل…</p>';
+      let src = null; try { src = await momImg(m.id); } catch (e) { }
+      if (MOM.v !== V || V.n !== tok) return;
+      if (!src) { st.innerHTML = `<p class="mv-msg">ما انحمّلت اللحظة، ${momGF() ? 'تأكدي' : 'تأكد'} من النت و${momGF() ? 'جرّبي' : 'جرّب'} مرة ثانية</p>`; momRun(5000); return; }
+      const img = new Image(); img.alt = m.cap || 'صورة من المشرف'; img.src = src; try { await img.decode(); } catch (e) { }
+      if (MOM.v !== V || V.n !== tok) return; st.replaceChildren(img); momRun(6000);
+    } else {
+      st.innerHTML = momAutoHtml(m); momRun(7000);
+      const c = $('.mv-cta', st); c.onclick = e => { e.stopPropagation(); momClose(); setTimeout(() => {
+        if (m.k === 'b') go('tree', S.byId[m.n.id]); else if (m.k === 'e') { W.sel = m.e.id; W.tab = 'up'; go('weddings'); } else { go('news'); setTimeout(() => openNews(m.n.id), 200); } }, 0); };
+    }
+    momSee(m.id);
+    const nx = L[i + 1]; if (nx && nx.k === 'p') momImg(nx.id).then(s => { new Image().src = s; }).catch(() => { });
+  }
+  // خط التقدّم الحالي يتعبّى، وإذا كمل ننتقل للتالية
+  function momRun(dur) { const V = MOM.v; if (!V) return; V.dur = dur; V.acc = 0; V.run = !V.hold && !V.drag && !document.hidden; V.t0 = performance.now(); momTick(); }
+  function momTick() {
+    const V = MOM.v; if (!V) return; cancelAnimationFrame(V.raf);
+    const bar = $$('.mv-bars li', V.el)[V.i], fill = bar && bar.firstChild;
+    const f = now => { if (MOM.v !== V) return; if (V.run && V.dur) { const p = Math.min(1, V.acc + (now - V.t0) / V.dur); if (fill) fill.style.setProperty('--p', p); if (p >= 1) { momNext(); return; } } V.raf = requestAnimationFrame(f); };
+    V.raf = requestAnimationFrame(f);
+  }
+  function momPause(on) { const V = MOM.v; if (!V || !V.dur) return; const now = performance.now();
+    if (on && V.run) { V.acc = Math.min(1, V.acc + (now - V.t0) / V.dur); V.run = false; } else if (!on && !V.run && !V.hold && !V.drag && !document.hidden) { V.t0 = now; V.run = true; } }
+  function momNext() { const V = MOM.v; if (!V) return; if (V.i < MOM.L.length - 1) momShow(V.i + 1); else momClose(); }
+  function momPrev() { const V = MOM.v; if (!V) return; momShow(Math.max(0, V.i - 1)); }
+  function momClose() {
+    const V = MOM.v; if (!V) return; MOM.v = null; cancelAnimationFrame(V.raf);
+    window.removeEventListener('keydown', V.key, true); window.removeEventListener('hashchange', V.hc); document.removeEventListener('visibilitychange', V.vis);
+    V.el.remove(); document.body.classList.remove('mv-open'); momLogo();
+    const r = V.ret && document.body.contains(V.ret) ? V.ret : $('#br-logo'); try { r && r.focus({ preventScroll: true }); } catch (e) { }
+  }
+  /* ── المشرف ── */
+  const momLeft = x => { const d = Math.round((momDay0(x.exp - 1) - momDay0(Date.now())) / MOM_DAY);
+    return d <= 0 ? 'تختفي اليوم' : d === 1 ? 'تختفي غداً' : d === 2 ? 'تختفي بعد يومين' : `تختفي بعد ${ar(d)} ${d <= 10 ? 'أيام' : 'يوماً'}`; };
+  const momTitle = m => m.k === 'p' ? (m.cap || 'صورة بدون تعليق') : m.k === 'b' ? `${m.n.gender === 'female' ? 'مولودة جديدة' : 'مولود جديد'}: ${lineage(m.n, 2)}` : m.k === 'e' ? `اليوم ${evTitle(m.e)}` : `خبر جديد: ${m.n.title || ''}`;
+  const MOM_AUTO = [['b', 'baby', 'مولود جديد'], ['e', 'cal', 'مناسبة اليوم'], ['n', 'news', 'خبر جديد']];
+  function adMomHtml() {
+    const L = momList().slice().reverse(), I = MOM.idx || momClean({});
+    return `<div class="adp-h"><h2>لحظات الأسرة</h2><small>تطلع للأسرة في الشعار فوق</small></div>
+      <button type="button" class="abtn gold full" data-mom-add>${sv('plus')}أضف لحظة</button>
+      <h3 class="adp-sub">المنشورة الحين (${ar(L.length)})</h3>
+      ${L.length ? `<div class="mm-l">${L.map(m => `<div class="mm-r">${m.k === 'p' ? `<span class="mm-th" data-mmth="${esc(m.id)}">${sv('img')}</span>` : `<span class="mm-th auto">${sv(m.k === 'b' ? 'baby' : m.k === 'e' ? 'cal' : 'news')}</span>`}
+        <div class="mm-t"><b>${esc(momTitle(m))}</b><small><span class="mm-k${m.k === 'p' ? '' : ' auto'}">${m.k === 'p' ? 'صورة' : 'تلقائي'}</span>${momLeft(m)}</small></div>
+        <button type="button" class="mm-del" data-mmdel="${esc(m.id)}" aria-label="احذف اللحظة">${sv('trash')}</button></div>`).join('')}</div>`
+        : '<p class="ad-empty mm-none">ما فيه لحظات منشورة الحين. اضغط «أضف لحظة» وابدأ.</p>'}
+      <h3 class="adp-sub">اللحظات التلقائية</h3><p class="mm-sub">تطلع لحالها من بيانات الأسرة</p>
+      <div class="mm-sw">${MOM_AUTO.map(([k, ic, t]) => `<label>${sv(ic)}<span><b>${t}</b></span><input type="checkbox" data-mmsw="${k}"${I.auto[k] ? ' checked' : ''}><i aria-hidden="true"></i></label>`).join('')}</div>`;
+  }
+  function momAdBind() {
+    const box = $('#admin'); if (!box || AD.tab !== 'mom') return;
+    const add = $('[data-mom-add]', box); if (add) add.onclick = momAddOpen;
+    $$('[data-mmdel]', box).forEach(b => b.onclick = () => armDelete(b, () => momDelete(b.dataset.mmdel, b)));
+    $$('[data-mmsw]', box).forEach(c => c.onchange = async () => {
+      const k = c.dataset.mmsw, on = c.checked; c.disabled = true;
+      try { await momIdxWrite(I => { I.auto[k] = on; }); logIt('لحظات الأسرة', (on ? 'تشغيل' : 'إيقاف') + ' اللحظات التلقائية: ' + (MOM_AUTO.find(x => x[0] === k) || [])[2]); toast('انحفظ'); }
+      catch (e) { c.checked = !on; toast('ما انحفظ، جرّب مرة ثانية'); }
+      c.disabled = false; if (AD.tab === 'mom' && S.view === 'admin') adminRender();
+    });
+    $$('[data-mmth]', box).forEach(async el => { try { const s = await momImg(el.dataset.mmth); if (document.body.contains(el)) el.innerHTML = `<img src="${s}" alt="">`; } catch (e) { } });
+  }
+  // نقرأ الفهرس من السحابة قبل الكتابة (مشرف ثاني يمكن عدّله)، ونطبّق التعديل، ونكتبه
+  async function momIdxWrite(fn) {
+    if (!momCloud()) throw new Error('cloud');
+    const d = await JNDCloud.momGet('idx'); let o = {}; if (d && typeof d.v === 'string') try { o = JSON.parse(d.v); } catch (e) { }
+    const I = momClean(o), now = Date.now(); fn(I); Object.keys(I.hid).forEach(k => { if (I.hid[k] < now) delete I.hid[k]; });
+    const v = JSON.stringify(I); if (v.length > MOM_IDX_MAX) throw new Error('full');
+    await JNDCloud.momPut('idx', { v }); MOM.idx = I; MOM.at = now; IDB.set('idx', I); momLogo(); return I;
+  }
+  async function momDelete(id, btn) {
+    const m = momList().find(x => x.id === id); if (!m) { adminRender(); return; } if (btn) btn.disabled = true;
+    try {
+      if (m.k === 'p') { await JNDCloud.momDel(id); await momIdxWrite(I => { I.l = I.l.filter(x => x.id !== id); }); IDB.del('img:' + id); }
+      else await momIdxWrite(I => { I.hid[id] = m.exp; });
+      logIt('لحظات الأسرة', 'حذف لحظة: ' + momTitle(m)); toast('انحذفت اللحظة');
+    } catch (e) { toast('ما انحذفت، جرّب مرة ثانية'); }
+    adminRender();
+  }
+  // المنتهية: يمسحها المشرف أول ما يدخل (مرة في الجلسة)، ومعها أي صورة يتيمة (انرفعت وما دخلت الفهرس)
+  async function momSweep() {
+    if (MOM.swept || !isAdmin() || !momCloud() || !JNDCloud.hasTok()) return; MOM.swept = 1;
+    try {
+      const now = Date.now(), d = await JNDCloud.momGet('idx'); let o = {}; if (d && typeof d.v === 'string') try { o = JSON.parse(d.v); } catch (e) { }
+      const I = momClean(o), old = I.l.filter(x => x.exp <= now).map(x => x.id);
+      let orph = []; try { orph = (await JNDCloud.momList()).filter(x => x.id !== 'idx' && !I.l.some(y => y.id === x.id) && now - x.ct > MOM_DAY).map(x => x.id); } catch (e) { }
+      const staleHid = Object.keys(I.hid).some(k => I.hid[k] < now);
+      if (!old.length && !orph.length && !staleHid) return;
+      for (const id of old.concat(orph)) { try { await JNDCloud.momDel(id); } catch (e) { } IDB.del('img:' + id); }
+      if (old.length || staleHid) await momIdxWrite(J => { J.l = J.l.filter(x => x.exp > now); });
+      if (old.length) { toast(`انمسحت ${nCount(old.length, ['لحظة منتهية', 'لحظتان منتهيتان', 'لحظات منتهية', 'لحظة منتهية'])}`); logIt('لحظات الأسرة', 'مسح اللحظات المنتهية'); }
+      if (S.view === 'admin' && AD.tab === 'mom') adminRender();
+    } catch (e) { MOM.swept = 0; }
+  }
+  /* ── ضغط الصورة في الجوال: عرض 1080 بالكثير وحجم ≈120KB، والرسم على canvas يمسح بيانات الصورة (ومنها الموقع) ── */
+  const momB64Size = s => Math.floor(s.length * 3 / 4);
+  function momDecode(file) {
+    return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image(); im.onload = () => { URL.revokeObjectURL(u); res(im); }; im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('decode')); }; im.src = u; });
+  }
+  async function momCompress(file) {
+    const im = await momDecode(file), W0 = im.naturalWidth, H0 = im.naturalHeight; if (!W0 || !H0) throw new Error('decode');
+    let s = Math.min(1, 1080 / W0, 1920 / H0), out = '';
+    for (let round = 0; round < 4; round++) {
+      const w = Math.max(1, Math.round(W0 * s)), h = Math.max(1, Math.round(H0 * s)), c = document.createElement('canvas'); c.width = w; c.height = h;
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.imageSmoothingQuality = 'high'; g.drawImage(im, 0, 0, w, h);
+      for (const q of [0.82, 0.74, 0.66, 0.58, 0.5]) { out = c.toDataURL('image/jpeg', q).split(',')[1] || ''; if (momB64Size(out) <= 125000) return { b: out, w, h, kb: Math.round(momB64Size(out) / 1024) }; }
+      s *= 0.8; c.width = c.height = 0;
+    }
+    if (out && momB64Size(out) <= 200000) return { b: out, kb: Math.round(momB64Size(out) / 1024) };
+    throw new Error('size');
+  }
+  function momAddOpen() {
+    if (!momCloud() || !JNDCloud.hasTok()) { toast('سجّل دخول الإدارة عشان تنشر لحظة'); return; }
+    const old = $('#mom-add'); if (old) old.remove();
+    const MA = { b: '' }, ret = document.activeElement;
+    const d = document.createElement('div'); d.className = 'sh'; d.id = 'mom-add'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'ma-h');
+    d.innerHTML = `<div class="sh-c"><div class="sh-grip"></div>
+      <div class="sh-h"><h3 id="ma-h">أضف لحظة</h3><button class="sh-x" type="button" aria-label="إغلاق">${sv('xmark')}</button></div>
+      <div id="ma-ph"></div><input type="file" id="ma-file" accept="image/*" hidden>
+      <label class="fld"><span>تعليق قصير (اختياري)<small id="ma-n">${ar(0)} من ${ar(MOM_CAP)}</small></span><input id="ma-cap" maxlength="${MOM_CAP}" placeholder="مثال: من اجتماع الأسرة في بريدة" autocomplete="off"></label>
+      <div class="fld"><span id="ma-dl">تختفي بعد</span><div class="seg3" role="radiogroup" aria-labelledby="ma-dl">${[[1, 'يوم'], [3, '3 أيام'], [7, 'أسبوع']].map(([v, t]) => `<label><input type="radio" name="ma-d" value="${v}"${v === 3 ? ' checked' : ''}><span>${t}</span></label>`).join('')}</div></div>
+      <p class="ma-err" id="ma-err" role="alert" hidden></p>
+      <p class="note">${sv('info')}<span>المنصة مفتوحة لكل من عنده الرابط، فاختر الصور بعناية.</span></p>
+      <div class="adrow2"><button type="button" class="abtn gold" id="ma-go">انشر اللحظة</button><button type="button" class="abtn line" id="ma-no">إلغاء</button></div></div>`;
+    document.body.appendChild(d); document.body.classList.add('sh-open');
+    const ph = $('#ma-ph', d), file = $('#ma-file', d), cap = $('#ma-cap', d), go = $('#ma-go', d), er = $('#ma-err', d);
+    const err = t => { er.textContent = t; er.hidden = !t; };
+    const pick = () => { file.value = ''; file.click(); };
+    const draw = (t) => { ph.innerHTML = MA.b ? `<div class="ph-pick"><img src="data:image/jpeg;base64,${MA.b}" alt="معاينة الصورة"><button type="button" class="ph-chg" id="ma-chg">${sv('img')}غيّر الصورة</button></div>`
+      : `<button type="button" class="ph-empty" id="ma-pick"${t ? ' disabled' : ''}>${sv('img')}${t || 'اختر صورة'}</button>`; const b = $('#ma-pick, #ma-chg', ph); if (b) b.onclick = pick; };
+    draw();
+    file.onchange = async () => {
+      const f = file.files && file.files[0]; if (!f) return; err('');
+      const heic = /hei[cf]/i.test(f.type) || /\.hei[cf]$/i.test(f.name || '');
+      if (!heic && !/^image\//.test(f.type || '')) { err('الملف مو صورة، اختر صورة JPG أو PNG'); return; }
+      const keep = MA.b; MA.b = ''; draw('جاري تجهيز الصورة…'); go.disabled = true;
+      try { const r = await momCompress(f); MA.b = r.b; MA.kb = r.kb; }
+      catch (e) { MA.b = keep; err(heic ? 'صورة HEIC ما انفتحت في هالمتصفح، اختر صورة JPG أو PNG' : String(e && e.message) === 'decode' ? 'الملف مو صورة، اختر صورة JPG أو PNG' : 'ما تجهّزت الصورة، جرّب صورة ثانية'); }
+      go.disabled = false; draw();
+    };
+    cap.oninput = () => { $('#ma-n', d).textContent = `${ar(cap.value.length)} من ${ar(MOM_CAP)}`; };
+    const close = () => { d.remove(); document.body.classList.remove('sh-open'); document.removeEventListener('keydown', key, true); try { ret && ret.focus({ preventScroll: true }); } catch (e) { } };
+    const key = e => { if (e.key === 'Escape' && !go.disabled) { e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+    document.addEventListener('keydown', key, true);
+    $('.sh-x', d).onclick = $('#ma-no', d).onclick = close;
+    d.addEventListener('click', e => { if (e.target === d && !go.disabled) close(); });
+    go.onclick = async () => {
+      err(''); const c = cap.value.trim().replace(/\s+/g, ' ');
+      if (!MA.b) { err('اختر صورة أول'); return; }
+      if (c.length > MOM_CAP) { err('التعليق طويل، اختصره'); return; }
+      if ((MOM.idx || momClean({})).l.filter(x => x.exp > Date.now()).length >= MOM_MAX) { err('مساحة اللحظات شبه ممتلئة، احذف بعض اللحظات أول'); return; }
+      const dur = +(($('input[name=ma-d]:checked', d) || {}).value || 3), id = 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      go.disabled = true; go.textContent = 'جاري النشر…'; $('#ma-no', d).disabled = true;
+      try {
+        await JNDCloud.momPut(id, { b: MA.b });
+        const now = Date.now();
+        try { await momIdxWrite(I => { if (I.l.filter(x => x.exp > now).length >= MOM_MAX) throw new Error('full'); I.l.push({ id, at: now, exp: now + dur * MOM_DAY, cap: c }); }); }
+        catch (e) { JNDCloud.momDel(id).catch(() => { }); throw e; }
+        IDB.set('img:' + id, MA.b); logIt('لحظات الأسرة', 'نشر لحظة' + (c ? ': ' + c : '')); close(); toast('نُشرت اللحظة، وتطلع للأسرة في الشعار'); adminRender();
+      } catch (e) { go.disabled = false; go.textContent = 'انشر اللحظة'; $('#ma-no', d).disabled = false; err(String(e && e.message) === 'full' ? 'مساحة اللحظات شبه ممتلئة، احذف بعض اللحظات أول' : 'ما تم النشر، جرّب مرة ثانية'); }
+    };
+    setTimeout(() => { const b = $('#ma-pick', d); try { b && b.focus({ preventScroll: true }); } catch (e) { } }, 50);
   }
   window.JunaidliApp = { init, normalize: norm, reload, afterUnlock, wantKeys: () => { try { return mineAll().some(x => !['ok', 'done', 'no'].includes(x.status)) ? ['jnd-reqs', 'jnd-sugs'] : []; } catch (e) { return []; } } };
 })();
@@ -5658,7 +6012,28 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
     }).catch(function () { return false; }).then(function (r) { delete needP[k]; return r; });
     return needP[k];
   }
-  window.JNDCloud = { start: function (cfg) { try { start(cfg); } catch (e) { console.error(e); window.JunaidliApp.init(cfg); } }, on: ON, poll: poll, need: need, verify: function (pw) { return signIn(pw); } };
+  /* v58: لحظات الأسرة — مجموعة mom: الفهرس mom/idx {v} وكل صورة mom/m… {b}. القراءة بالمعرّف للكل، والسرد والكتابة والحذف للمشرف (القواعد) */
+  var MROOT = 'https://firestore.googleapis.com/v1/projects/' + C.projectId + '/databases/(default)/documents/mom';
+  // القراءة بـ batchGet: المستند الناقص يرجع «missing» بدل 404 (ما يطلع خطأ في الكونسول لما ما فيه لحظات)
+  function momGet(id) {
+    var name = 'projects/' + C.projectId + '/databases/(default)/documents/mom/' + id;
+    return fetch('https://firestore.googleapis.com/v1/projects/' + C.projectId + '/databases/(default)/documents:batchGet' + KEYQ, { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ documents: [name] }) })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (arr) { var x = Array.isArray(arr) ? arr.filter(function (y) { return y && (y.found || y.missing); })[0] : null; if (!x) throw new Error('bad'); if (!x.found) return null;
+        var f = x.found.fields || {}, o = { ut: x.found.updateTime }; Object.keys(f).forEach(function (k) { if (f[k] && typeof f[k].stringValue === 'string') o[k] = f[k].stringValue; }); return o; });
+  }
+  function momAuth() { return idToken().then(function (t) { if (!t) throw new Error('nologin'); return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }; }); }
+  function momPut(id, o) {
+    return momAuth().then(function (h) { var fields = {}; Object.keys(o).forEach(function (k) { fields[k] = { stringValue: String(o[k]) }; });
+      return fetch(MROOT + '/' + encodeURIComponent(id), { method: 'PATCH', headers: h, body: JSON.stringify({ fields: fields }) }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return true; }); });
+  }
+  function momDel(id) { return momAuth().then(function (h) { return fetch(MROOT + '/' + encodeURIComponent(id), { method: 'DELETE', headers: h }).then(function (r) { if (!r.ok && r.status !== 404) throw new Error('http ' + r.status); return true; }); }); }
+  function momList() {
+    return momAuth().then(function (h) { return fetch(MROOT + KEYQ + '&pageSize=100&mask.fieldPaths=_', { cache: 'no-store', headers: h }); }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (j) { return ((j && j.documents) || []).map(function (d) { return { id: String(d.name || '').split('/').pop(), ct: Date.parse(d.createTime) || 0 }; }); });
+  }
+  window.JNDCloud = { start: function (cfg) { try { start(cfg); } catch (e) { console.error(e); window.JunaidliApp.init(cfg); } }, on: ON, poll: poll, need: need, verify: function (pw) { return signIn(pw); },
+    momGet: momGet, momPut: momPut, momDel: momDel, momList: momList, hasTok: function () { return !!tok(); } };
 })();
 if (!window.JNDCloud) window.JNDCloud = { start: function (c) { window.JunaidliApp.init(c); }, on: false };
 </script>
@@ -6846,14 +7221,33 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 @media (min-width:861px){html[data-fz="s"] .view .page.admin{zoom:1}}
 .page.admin{padding:12px 16px calc(var(--bnav,68px) + 24px + env(safe-area-inset-bottom));max-width:720px;margin-inline:auto}
 @media (max-width:860px){.app.nostage .page.admin,.view .page.admin{padding-bottom:calc(var(--bnav,68px) + 28px + env(safe-area-inset-bottom))!important}}
-/* 1) رأس اللوحة المختصر */
-.adh{display:flex;align-items:center;gap:12px;padding:4px 2px 12px}
-.adh-t{flex:1;min-width:0}
-.adh-t small{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--gold-dark)}
-.adh-t small svg{width:15px;height:15px}
-.adh-t h1{margin:2px 0 0;font-family:var(--display);font-weight:700;font-size:24px;line-height:1.3;color:var(--g-dark);overflow-wrap:anywhere}
-.adh-out{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font:inherit;font-size:13.5px;font-weight:700;color:var(--g-dark);cursor:pointer}
-.adh-out svg{width:18px;height:18px}
+/* ── HERO-START: بطاقة اللوحة (فكرة 57 بطلب المالك، بمقاسات حقيقية بدون تصغير). كتلة معزولة تنبدل بتصميم المصمم ── */
+.ad-hero{position:relative;overflow:hidden;margin:0 0 12px;padding:16px 16px 14px;border-radius:24px;color:#fff;background:radial-gradient(130% 150% at 100% 0%,#4A8A75,#2D6369 50%,#173A3E);box-shadow:0 14px 30px rgba(23,58,62,.24)}
+.ad-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(255,255,255,.028) 22px 23px);pointer-events:none}
+.ad-hero::after{content:'';position:absolute;inset-inline-start:-50px;top:-60px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(201,168,102,.35);box-shadow:0 0 0 20px rgba(201,168,102,.05);pointer-events:none}
+.ad-hero>*{position:relative;z-index:1}
+.ad-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ad-badge{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:99px;font-size:12.5px;font-weight:700;color:#E3C98E;border:1px solid rgba(227,201,142,.4)}
+.ad-out{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:99px;border:0;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.ad-badge svg,.ad-out svg{width:15px;height:15px}
+.ad-out:focus-visible,.ad-st button:focus-visible{outline:3px solid #E3C98E;outline-offset:2px}
+.ad-hero h1{margin:10px 0 2px;font-family:var(--display);font-weight:700;font-size:25px;line-height:1.35;color:#fff;overflow-wrap:anywhere}
+.ad-k{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;border-radius:16px;background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.08)}
+.ad-k div{position:relative;min-width:0;padding:9px 2px;text-align:center}
+.ad-k div+div::before{content:'';position:absolute;right:0;top:25%;bottom:25%;width:1px;background:rgba(255,255,255,.14)}
+.ad-k b{display:block;font-family:var(--display);font-size:21px;line-height:1.3;color:#F1E0B8;font-variant-numeric:tabular-nums}
+.ad-k small{display:block;font-size:12px;line-height:1.4;color:#D6E4DF}
+.ad-st{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.ad-st button{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:44px;padding:4px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);color:#E3F0EB;font:inherit;cursor:pointer}
+.ad-st i{width:9px;height:9px;border-radius:50%;flex:none;background:#7BD0A8}
+.ad-st .ast-pr i{background:#E3C27A}.ad-st .ast-un i{background:#F29A8C}
+.ad-st b{font-family:var(--display);font-size:19px;line-height:1;color:#F1E0B8;font-variant-numeric:tabular-nums}
+.ad-st small{font-size:12px;white-space:nowrap}
+.ad-st button[aria-pressed=true]{background:#fff;border-color:#fff;color:var(--ink)}.ad-st button[aria-pressed=true] b{color:var(--g-dark)}
+@media (max-width:389px){.ad-st button{display:grid;grid-template-columns:auto auto;justify-content:center;align-items:center;column-gap:5px;row-gap:2px;padding:6px 2px}.ad-st small{grid-column:1/-1;text-align:center}}
+#admin .ad-flt{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#admin .ad-flt button{flex:none;min-height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font:inherit;font-size:13px;font-weight:700;color:var(--g-dark);cursor:pointer}
+/* ── HERO-END ── */
 .admin svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .admin .arw{width:18px;height:18px;flex:none}
 /* 2) شريط الأقسام الثابت */
@@ -6915,7 +7309,7 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 .rq2-a .no[aria-expanded=true]{background:#A8432C;border-color:#A8432C;color:#fff}
 .rq2-a .more{border:1.5px solid var(--line);background:#fff;color:var(--g-dark)}
 .rq2-a .more[aria-expanded=true]{background:#E6EFEC;border-color:#BFD3CE;color:var(--g-dark)}
-.rq2-a button:focus-visible,.adr:focus-visible,.abtn:focus-visible,.al button:focus-visible,.tf button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.rq2-a button:focus-visible,.adr:focus-visible,.abtn:focus-visible,.al button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .rq2-a button:disabled{opacity:.6;cursor:default}
 /* «التفاصيل» */
 .rq2-x{margin-top:10px;padding:12px;border-radius:14px;background:var(--paper);border:1px solid var(--line);display:grid;gap:10px}
@@ -6980,13 +7374,7 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 .al-col .ph-row button{flex:none;min-height:48px;padding:0 16px;border-radius:12px;border:0;background:#A8432C;color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
 .al-col .ph-err{flex:1 1 100%;margin:0}
 .al-col .ph-reset{flex:1 1 100%;min-height:44px;margin:0;text-align:start;color:#8F3A26}
-/* 5) الشجرة: مربعات الحالة = مرشّح */
-.tf{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.tf button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:64px;padding:10px 12px;border-radius:16px;border:1.5px solid var(--line);background:#fff;font:inherit;cursor:pointer;text-align:start;color:var(--ink)}
-.tf b{font-size:20px;line-height:1.1;color:var(--ink);font-variant-numeric:tabular-nums}
-.tf small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);white-space:nowrap}
-.tf small i{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
-.tf button[aria-pressed=true]{border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c);background:#FBFDFC}
+/* 5) الشجرة: البحث والقائمة (مرشّح الحالة من رقائق البطاقة فوق) */
 .ad-q2{display:flex;align-items:center;gap:8px;min-height:48px;margin-top:10px;padding:0 14px;border-radius:14px;background:#fff;border:1.5px solid var(--line)}
 .ad-q2:focus-within{border-color:var(--g-dark);box-shadow:0 0 0 4px rgba(45,99,105,.1)}
 .ad-q2 svg{width:18px;height:18px;color:var(--muted);flex:none}
@@ -7057,6 +7445,160 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 #admin .ad-q input{flex:1;min-width:0;width:100%;min-height:44px;font-size:16px}
 /* نافذة التعديل: «أضف ابن أو بنت تحته» */
 .ed-addk{width:100%;margin-top:12px}
+/* ═══════════ v58: لحظات الأسرة (تصميم المصمم، design/moments-58.css + قسم 7 و8 من admin-58.css) ═══════════ */
+/* 1) الشعار في الرأس: يصير زر، وإذا فيه لحظات جديدة يلف حوله إطار ذهبي مرة وحدة ثم يثبت */
+.br-logo{position:relative}
+button.br-logo{border:0;padding:0;cursor:pointer;font:inherit}
+button.br-logo::before{content:'';position:absolute;inset:-6px;border-radius:50%}      /* مساحة لمس 54px */
+.br-logo.has-mom::after{display:none!important}                                        /* نوقف الإطار المنقط الدوّار وقت اللحظات */
+.br-ring{position:absolute;inset:-6px;width:calc(100% + 12px);height:calc(100% + 12px);transform:rotate(-90deg);pointer-events:none;overflow:visible}
+.br-ring circle{fill:none;stroke:url(#brRingG);stroke-width:2.6;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:0}
+.br-logo.has-mom.draw .br-ring circle{animation:brRing 1.2s cubic-bezier(.4,.1,.2,1) both}
+@keyframes brRing{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.br-logo.seen .br-ring{opacity:0;transition:opacity .4s}                               /* بعد ما يشوفها كلها */
+@media (prefers-reduced-motion:reduce){ .br-logo.has-mom.draw .br-ring circle{animation:none} .br-logo.seen .br-ring{transition:none} }
+/* علامة «جديد» تحت الشعار: عرضها أقل من الشعار، فما تلمس سطر «منصة الأسرة الرقمية» */
+.br-new{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);z-index:2;max-width:100%;padding:1px 6px;border-radius:99px;
+  background:#F3DFA8;color:#1C4448;font-size:11px;font-weight:700;line-height:16px;white-space:nowrap;box-shadow:0 0 0 2px #2D6369;pointer-events:none}
+
+/* 2) التلميح أول مرة: فقاعة تحت الشعار وسهمها يشير له */
+.mm-tip{position:absolute;top:calc(100% + 12px);inset-inline-start:10px;z-index:45;width:min(300px,calc(100vw - 20px));
+  display:flex;align-items:center;gap:10px;padding:10px 10px 10px 10px;padding-inline-start:14px;border-radius:16px;background:#FFFEFA;color:var(--ink);
+  box-shadow:0 0 0 1px rgba(201,168,102,.5),0 14px 32px rgba(20,50,53,.28);animation:tipIn .35s ease-out both}
+.mm-tip::before{content:'';position:absolute;top:-7px;inset-inline-start:var(--ax,22px);width:14px;height:14px;background:#FFFEFA;transform:rotate(45deg);
+  box-shadow:-1px -1px 0 0 rgba(201,168,102,.5);border-radius:3px 0 0 0}
+.mm-tip p{flex:1;margin:0;font-size:14px;font-weight:600;line-height:1.7}
+.mm-tip button{flex:none;min-width:56px;min-height:44px;border:0;border-radius:12px;background:var(--g-dark);color:#fff;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+@keyframes tipIn{from{opacity:0;transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){ .mm-tip{animation:none} }
+
+/* 3) مدخل «لحظات الأسرة» في «المزيد» (نفس شكل .gd-entry) */
+.gd-entry .gd-e-ic.mom{background:linear-gradient(135deg,#C9A866,#8E7038)}
+
+/* 4) العارض بملء الشاشة */
+.mv{position:fixed;inset:0;z-index:90;background:#0E1F21;color:#fff;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.mv-st{position:absolute;inset:0;display:grid;place-items:center}
+.mv-st img{width:100%;height:100%;object-fit:contain}
+/* الرأس: خطوط التقدّم + الهوية + العدّاد + الإغلاق */
+.mv-top{position:absolute;inset-inline:0;top:0;z-index:3;padding:calc(10px + env(safe-area-inset-top)) 12px 28px;
+  background:linear-gradient(180deg,rgba(8,20,22,.72),rgba(8,20,22,0));transition:opacity .2s}
+.mv-bars{display:flex;gap:4px;margin:0;padding:0;list-style:none}
+.mv-bars li{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.32);overflow:hidden}
+.mv-bars li i{display:block;height:100%;background:#fff;transform:scaleX(var(--p,0));transform-origin:right}   /* تتعبّى من اليمين */
+.mv-bars li.done i{--p:1}
+.mv-meta{display:flex;align-items:center;gap:10px;margin-top:10px}
+.mv-logo{flex:none;width:38px;height:38px;border-radius:50%;background:#FFFEFA;display:grid;place-items:center;box-shadow:0 0 0 2px #C9A866}
+.mv-logo img{width:27px;height:27px;object-fit:contain}
+.mv-who{flex:1;min-width:0}
+.mv-who b{display:block;font-size:14.5px;line-height:1.4}
+.mv-who small{display:block;font-size:12.5px;line-height:1.5;color:#D6E4DF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv-n{flex:none;font-size:12.5px;font-weight:600;color:#E3F0EB;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.14);font-variant-numeric:tabular-nums}
+.mv-x{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}
+.mv-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+/* تعليق الصورة */
+.mv-cap{position:absolute;inset-inline:0;bottom:0;z-index:3;padding:48px 20px calc(24px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg,rgba(8,20,22,.82),rgba(8,20,22,0));font-size:16px;line-height:1.9;text-align:start;transition:opacity .2s}
+/* مناطق اللمس (غير مرئية): اليمين 35% للسابقة، والباقي للتالية */
+.mv-prev,.mv-next{position:absolute;top:0;bottom:0;z-index:2;border:0;background:none;padding:0;cursor:pointer}
+.mv-prev{inset-inline-start:0;width:35%} .mv-next{inset-inline-end:0;width:65%}
+/* الضغطة المطوّلة: الرأس والتعليق يختفون، والصورة تبان كاملة */
+.mv.hold .mv-top,.mv.hold .mv-cap{opacity:0}
+/* السحب للأسفل للإغلاق: الجافاسكربت يحرّك --dy */
+.mv-in{position:absolute;inset:0;transform:translateY(var(--dy,0)) scale(calc(1 - var(--dy-n,0) * .08));transition:transform .2s}
+.mv.drag .mv-in{transition:none}
+@media (prefers-reduced-motion:reduce){ .mv-in,.mv-top,.mv-cap{transition:none} }
+
+/* 5) بطاقة اللحظة التلقائية (مولود، مناسبة اليوم، خبر جديد) */
+.mv-auto{width:min(340px,calc(100% - 40px));padding:28px 22px 22px;border-radius:26px;text-align:center;position:relative;overflow:hidden;z-index:3;
+  background:radial-gradient(130% 150% at 100% 0%,#4A8A75,#2D6369 50%,#173A3E);box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 0 0 1px rgba(201,168,102,.35)}
+.mv-auto::after{content:'';position:absolute;inset-inline-start:-60px;top:-70px;width:190px;height:190px;border-radius:50%;border:1px solid rgba(201,168,102,.3);pointer-events:none}
+.mv-ai{width:68px;height:68px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#E3C98E,#A7864B);color:#1C4448;box-shadow:0 0 0 6px rgba(227,201,142,.18)}
+.mv-ai svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mv-ak{display:block;font-size:13px;font-weight:700;color:#E3C98E;letter-spacing:.2px}
+.mv-auto h3{margin:6px 0 4px;font-family:var(--display);font-weight:700;font-size:27px;line-height:1.35;color:#FFFEFA;overflow-wrap:anywhere}
+.mv-auto p{margin:6px 0 0;font-size:15px;line-height:1.9;color:#E3F0EB}
+.mv-cta{position:relative;z-index:4;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;margin-top:18px;padding:0 20px;border:0;border-radius:14px;
+  background:#FFFEFA;color:#1C4448;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;text-decoration:none}
+.mv-cta svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* 7) اللحظات (المشرف) */
+.mm-l{background:#fff;border:1px solid var(--line);border-radius:18px;padding:0 12px;margin-top:10px}
+.mm-r{display:flex;align-items:center;gap:12px;padding:12px 0}
+.mm-r+.mm-r{border-top:1px solid #EEF1EE}
+.mm-th{flex:none;width:56px;height:56px;border-radius:14px;object-fit:cover;background:#E6EFEC;display:grid;place-items:center;color:#fff}
+.mm-th.auto{background:radial-gradient(130% 150% at 100% 0%,#4A8A75,#2D6369 55%,#173A3E)}
+.mm-th svg{width:24px;height:24px}
+.mm-t{flex:1;min-width:0}
+.mm-t b{display:block;font-size:14px;line-height:1.6;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mm-t small{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);margin-top:2px}
+.mm-k{font-weight:700;padding:1px 8px;border-radius:99px;background:var(--gold-soft);color:var(--gold-dark)}
+.mm-k.auto{background:#E8F2ED;color:#2F6B5F}
+.mm-del{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:1px solid #F0D9D2;background:#FDF5F2;color:#A8432C;cursor:pointer}
+.mm-del svg{width:19px;height:19px}
+.mm-sw{background:#fff;border:1px solid var(--line);border-radius:18px;padding:2px 14px;margin-top:10px}
+.mm-sw label{display:flex;align-items:center;gap:12px;min-height:60px;cursor:pointer;position:relative}
+.mm-sw label+label{border-top:1px dashed #EFE6D3}
+.mm-sw label>svg{width:20px;height:20px;color:var(--gold);flex:none}
+.mm-sw span{flex:1} .mm-sw b{display:block;font-size:14px;color:var(--ink)} .mm-sw small{font-size:12.5px;color:var(--muted)}
+.mm-sw input{position:absolute;opacity:0;pointer-events:none}
+.mm-sw i{flex:none;width:48px;height:28px;border-radius:99px;background:#CFC9BB;position:relative;transition:background .2s}
+.mm-sw i::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:transform .2s}
+.mm-sw input:checked+i{background:var(--g-dark)} .mm-sw input:checked+i::after{transform:translateX(-20px)}
+.mm-sw input:focus-visible+i{outline:3px solid var(--gold);outline-offset:2px}
+
+/* 8) نافذة سفلية (أضف لحظة / التفاصيل) */
+.sh{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(20,40,42,.55)}
+.sh-c{width:min(560px,100%);max-height:calc(100dvh - 24px - env(safe-area-inset-top));overflow:auto;background:var(--ivory);border-radius:24px 24px 0 0;
+  padding:8px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+.sh-grip{width:40px;height:4px;border-radius:4px;background:#D9D4C7;margin:4px auto 10px}
+.sh-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sh-h h3{flex:1;margin:0;font-size:17px;color:var(--g-dark)}
+.sh-x{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--ink);cursor:pointer}
+.sh-x svg{width:20px;height:20px}
+.ph-pick{position:relative;border-radius:18px;overflow:hidden;background:#1C2B2A;aspect-ratio:4/5;max-height:46dvh;width:100%}
+.ph-pick img{width:100%;height:100%;object-fit:cover;display:block}
+.ph-chg{position:absolute;bottom:10px;inset-inline-start:10px;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:12px;border:0;background:rgba(255,255,255,.94);color:var(--g-dark);font:inherit;font-size:13.5px;font-weight:700}
+.ph-chg svg{width:17px;height:17px}
+.ph-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:180px;border:2px dashed #D9CCAE;border-radius:18px;background:#FFFDF7;color:var(--gold-dark);font-weight:700;font-size:14.5px}
+.ph-empty svg{width:32px;height:32px}
+.fld{display:block;margin-top:14px}
+.fld>span{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;color:var(--g-dark);margin-bottom:6px}
+.fld>span small{font-weight:400;color:var(--muted)}
+.fld input{width:100%;min-height:48px;border:1.5px solid #E5DBC6;border-radius:14px;padding:0 14px;font:inherit;font-size:16px;background:#fff;outline:0}
+.fld input:focus{border-color:var(--g-dark);box-shadow:0 0 0 4px rgba(45,99,105,.1)}
+.seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:4px;border-radius:14px;background:#EFEBE1}
+.seg3 label{position:relative} .seg3 input{position:absolute;opacity:0}
+.seg3 span{display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:11px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg3 input:checked+span{background:#fff;color:var(--g-dark);font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.seg3 input:focus-visible+span{outline:3px solid var(--gold)}
+.sh .note{display:flex;gap:8px;margin-top:14px;padding:10px 12px;border-radius:12px;background:#FBF4E2;color:#6B5228;font-size:13px;line-height:1.7}
+.sh .note svg{width:18px;height:18px;flex:none;margin-top:3px}
+
+
+/* تكييف مع الموقع (المبرمج) */
+.brand>button.br-logo{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+.brand>a.br-txt{text-decoration:none;color:inherit}
+button.br-logo:focus-visible{outline:3px solid var(--gold);outline-offset:6px}
+.br-logo.seen .br-new{opacity:0;transition:opacity .4s}
+@media (prefers-reduced-motion:reduce){.br-logo.seen .br-new{transition:none}}
+@media (min-width:861px){.br-new{box-shadow:0 0 0 2px #fff}}
+.sh svg,.mm-l svg,.mm-sw svg,.mv-msg svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+body.mv-open,body.sh-open{overflow:hidden}
+.mv-top,.mv-cap,.mv-auto{pointer-events:none}
+.mv-top .mv-x,.mv-auto .mv-cta{pointer-events:auto}
+.mv-x:focus-visible,.mv-cta:focus-visible,.mv-prev:focus-visible,.mv-next:focus-visible{outline:3px solid #E3C98E;outline-offset:-3px}
+.mv-msg{margin:0;padding:0 28px;text-align:center;font-size:15px;line-height:1.9;color:#D6E4DF}
+.mm-th{overflow:hidden}
+.mm-th:not(.auto){color:var(--g-dark)}
+.mm-th img{width:100%;height:100%;object-fit:cover;display:block}
+.mm-sub{margin:-4px 2px 0;font-size:12.5px;color:var(--muted)}
+.mm-none{margin:10px 0 0;padding:16px 14px;border-radius:16px;background:#fff;border:1px dashed var(--line);font-size:13.5px;line-height:1.7;color:var(--muted)}
+.mm-del.armed{width:auto;padding:0 12px;background:#C0533A;color:#fff;font:inherit;font-size:12.5px;font-weight:700}
+.ph-empty{width:100%;font:inherit;cursor:pointer}
+.ph-empty:disabled{cursor:progress;opacity:.85}
+.ma-err{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:#FBEDEA;color:#8F3A26;font-size:13.5px;font-weight:600;line-height:1.6}
+.ma-err[hidden]{display:none}
+.sh .adrow2{margin-top:14px}
+.sh .fld>span#ma-dl{display:block}
 /* v58 مراجعة المصمم للمرحلة الثانية */
 .abtn{flex-wrap:nowrap}
 #admin .dp-row{flex-wrap:wrap}
