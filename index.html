@@ -180,7 +180,7 @@ button.chip:hover{border-color:var(--g);color:var(--g)}
 .crumbs .bar{display:flex;flex-wrap:wrap;gap:2px;align-items:center;background:rgba(255,255,255,.93);border:1px solid var(--line);border-radius:999px;padding:4px 8px;box-shadow:var(--shadow-s);pointer-events:auto;max-width:100%}
 .crumbs button{border:0;background:none;font-size:12.5px;padding:3px 6px;border-radius:999px;color:var(--ink)}
 .crumbs button:hover{background:var(--grey)}
-.crumbs span{color:#B3B9B5;font-size:12.5px}
+.crumbs span{color:#B3B9B5;font-size:12.5px;display:inline-grid;place-items:center}.crumbs span svg.arw{width:12px!important;height:12px!important}
 .tools{position:absolute;left:14px;bottom:14px;display:flex;flex-direction:column;gap:6px;z-index:5}
 .tools button,.ctl button{height:40px;min-width:40px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--g-dark);font-size:17px;box-shadow:var(--shadow-s);padding:0 10px}
 .tools button:hover,.ctl button:hover{border-color:var(--g)}
@@ -1087,7 +1087,7 @@ body.on-tree .hstrip>button+button::before{content:'';position:absolute;inset-in
 .h-tile::after{content:'';position:absolute;inset-inline-start:-30px;bottom:-30px;width:90px;height:90px;border-radius:50%;opacity:.5;transition:transform .35s}
 .c-tree::after{background:radial-gradient(circle,#E6EFEC,transparent 70%)} .c-gold::after{background:radial-gradient(circle,#F6EEDC,transparent 70%)}
 .h-tile:hover::after{transform:scale(1.6)}
-.h-tile::before{content:'‹';position:absolute;left:16px;top:16px;font-size:20px;color:#C5CEC9;transition:transform .2s,color .2s}
+.h-tile::before{content:'';position:absolute;left:16px;top:16px;width:18px;height:18px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E") center/contain no-repeat;color:#C5CEC9;transition:transform .2s,color .2s}
 .h-tile:hover::before{transform:translateX(-3px);color:var(--gold)}
 @keyframes tileIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 /* events top bar: premium segmented control */
@@ -1240,7 +1240,7 @@ body:not([data-view="tree"]):not([data-view="poster"]) .hdr-search{display:none}
 .hq{position:relative;margin-top:22px;padding:20px 20px 16px;border-radius:24px;background:linear-gradient(160deg,#F2F7F4,#E7F0EC);overflow:hidden}
 
 .hq small{font-size:12px;font-weight:700;color:var(--g)} .hq p{margin:6px 0 10px;font-size:15px;line-height:1.9;color:var(--ink);transition:opacity .18s}
-.hq button{border:0;background:#fff;border-radius:99px;padding:7px 14px;font-family:inherit;font-size:12.5px;color:var(--g-dark);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.hq button{display:inline-flex;align-items:center;gap:6px;border:0;background:#fff;border-radius:99px;padding:7px 14px;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--g-dark);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .hf{display:flex;align-items:center;justify-content:center;gap:10px;margin:26px 0 8px;opacity:.75}
 .hf img{width:38px;height:38px;object-fit:contain} .hf b{display:block;font-family:var(--display);color:var(--g-dark);font-size:17px} .hf small{font-size:12.5px;color:var(--muted)}
 @media (min-width:700px){.bento{grid-template-columns:repeat(4,1fr)}.bt-tree{grid-column:span 2;grid-row:span 2}}
@@ -1287,7 +1287,7 @@ body:not([data-view="tree"]):not([data-view="poster"]) .hdr-search{display:none}
 .bx-av i{font-style:normal;flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:15px;line-height:1;padding-bottom:3px;color:#fff;box-shadow:0 0 0 2px #fff;background:linear-gradient(135deg,#3F7C69,#2D6369)}
 .bx-av i:nth-child(even){background:linear-gradient(135deg,#C9A866,#A7864B)}
 .bx-av i.more{background:#F3ECDD;color:var(--gold-dark);font-family:var(--num,inherit);font-size:12px;font-weight:700;padding-bottom:0}
-.bt::after{content:'‹';position:absolute;left:14px;bottom:12px;font-size:18px;color:#CBD3CE;transition:transform .2s,color .2s}
+.bt::after{content:'';position:absolute;left:14px;bottom:14px;width:17px;height:17px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M19 12H5M11 6l-6 6 6 6'/%3E%3C/svg%3E") center/contain no-repeat;color:#CBD3CE;transition:transform .2s,color .2s}
 .bt:hover::after{transform:translateX(-3px);color:var(--gold)} .bt-tree::after{display:none}
 .bx-ev::after,.bx-rep::after,.bx-br::after,.bx-nas::after{display:none}
 /* shortcuts */
@@ -1994,7 +1994,7 @@ html,body{overflow-x:hidden}
         </div>
       </section>
 
-      <button class="mp-sug ab-cta" data-cmd="suggest"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg></span><div><b>عندك تصحيح أو إضافة؟</b><small>الشجرة منقولة من البرواز، وأي ملاحظة توصل الإدارة وتُراجع</small></div><i>‹</i></button>
+      <button class="mp-sug ab-cta" data-cmd="suggest"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg></span><div><b>عندك تصحيح أو إضافة؟</b><small>الشجرة منقولة من البرواز، وأي ملاحظة توصل الإدارة وتُراجع</small></div><i><svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></i></button>
     </div></div>
   </section>
 </main>
@@ -2129,7 +2129,7 @@ html,body{overflow-x:hidden}
   <div class="gd-dots" id="gd-dots"></div>
   <div class="gd-prog"><i id="gd-p"></i></div>
   <div class="gd-vp" id="gd-vp"><div class="gd-tr" id="gd-tr"></div></div>
-  <div class="gd-nav"><button class="gd-prev" id="gd-prev">السابق</button><button class="gd-next" id="gd-next">التالي ‹</button></div></div>
+  <div class="gd-nav"><button class="gd-prev" id="gd-prev">السابق</button><button class="gd-next" id="gd-next">التالي <svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button></div></div>
 </div>
 <div id="symm" class="modal sheetm" role="dialog" aria-modal="true" aria-label="معاني الرموز">
  <div class="sym-c"><div class="sym-h"><div><small>دليل الشجرة</small><b>معاني الرموز والألوان</b></div><button data-close class="sym-x" aria-label="إغلاق">×</button></div>
@@ -2159,7 +2159,7 @@ html,body{overflow-x:hidden}
         <button type="button" class="lgx-eye" id="lg-eye" aria-label="إظهار كلمة المرور"><svg class="e-on" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="e-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A10.5 10.5 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6A17 17 0 0 0 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div>
       <div id="lg-caps" class="lgx-caps" hidden>زر الأحرف الكبيرة (Caps Lock) شغّال</div>
       <div id="lg-err" class="err"></div>
-      <button class="btn lgx-go" type="submit">دخول <span>←</span></button>
+      <button class="btn lgx-go" type="submit">دخول <span><svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span></button>
       <div class="lgx-sec"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>اتصال آمن ومحمي</div>
     </form>
   </div>
@@ -2200,36 +2200,39 @@ html,body{overflow-x:hidden}
   </div>
 </div>
 <div id="gate" class="gate" role="dialog" aria-modal="true" aria-labelledby="gt-h" hidden>
-  <div class="gt-bg" aria-hidden="true"><i class="gt-rose"></i><i class="gt-g1"></i><i class="gt-g2"></i></div>
-  <div class="gt-card">
-    <div class="gt-top"><i class="gt-rose" aria-hidden="true"></i>
+  <div class="gt-bg" aria-hidden="true"><i class="gt-rose"></i><div class="gt-doodle"><svg class="gtp" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><style>.gtp path,.gtp circle,.gtp use{fill:none}.gtp .ln{stroke:#EADFC4;stroke-opacity:.14;stroke-width:1;stroke-dasharray:1 3}.gtp .dt circle{stroke:#EADFC4;stroke-opacity:.16}.gtp .rn{stroke:#EADFC4;stroke-opacity:.1;stroke-dasharray:2 2.6}.gtp .rg{stroke:#E2C483;stroke-opacity:.3}.gtp .in{stroke:#EADFC4;stroke-opacity:.19}.gtp .ig{stroke:#E2C483;stroke-opacity:.42}.gtp .igt{stroke:#E2C483;stroke-opacity:.5}.gtp .int{stroke:#EADFC4;stroke-opacity:.5}</style><defs><symbol id="gp-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0M12 3v2"/></symbol><symbol id="gp-book" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5zM12 6.5v13"/></symbol><symbol id="gp-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4"/></symbol><symbol id="gp-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2.5h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></symbol><symbol id="gp-chat" viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-.5v2.5L17 18h-4"/></symbol><symbol id="gp-crescent" viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 15 7 7 0 0 1-5-15z"/></symbol><symbol id="gp-envelope" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6.5L20.5 7"/></symbol><symbol id="gp-frame" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 3.5 3.5L15 14l5 5"/></symbol><symbol id="gp-gchart" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="5" rx="1.5"/><rect x="2.5" y="16.5" width="6" height="5" rx="1.5"/><rect x="9" y="16.5" width="6" height="5" rx="1.5"/><rect x="15.5" y="16.5" width="6" height="5" rx="1.5"/><path d="M12 7.5V12M5.5 16.5V12h13v4.5M12 12v4.5"/></symbol><symbol id="gp-gift" viewBox="0 0 24 24"><rect x="3.5" y="9" width="17" height="4" rx="1"/><path d="M5 13v7h14v-7M12 9v11M12 9c-1-3-5-5-6-3s3 3 6 3zM12 9c1-3 5-5 6-3s-3 3-6 3z"/></symbol><symbol id="gp-gnodes" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="2.2"/><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="12" r="2.2"/><circle cx="3.5" cy="19.5" r="2"/><circle cx="8.5" cy="19.5" r="2"/><circle cx="18" cy="19.5" r="2"/><path d="M12 6.7V9M6 9.8V9h12v.8M6 14.2v1.3H3.5v2M6 15.5h2.5v2M18 14.2v3.3"/></symbol><symbol id="gp-grad" viewBox="0 0 24 24"><path d="M2.5 9.5L12 5l9.5 4.5L12 14z"/><path d="M6.5 11.5v4c1.5 1.6 3.5 2.5 5.5 2.5s4-.9 5.5-2.5v-4M21.5 9.5v5"/></symbol><symbol id="gp-gtree" viewBox="0 0 24 24"><path d="M12 21v-6M12 15c-3.5 0-6.5-2.6-6.5-6a6.5 6.5 0 0 1 13 0c0 3.4-3 6-6.5 6z"/><path d="M12 15l-3-3M12 13l3-3M9 21h6"/><circle cx="9" cy="9" r="1.3"/><circle cx="15" cy="8" r="1.3"/><circle cx="12" cy="5.8" r="1.3"/></symbol><symbol id="gp-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.5 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></symbol><symbol id="gp-house" viewBox="0 0 24 24"><path d="M3.5 11L12 4l8.5 7M6 9.5V20h12V9.5M10 20v-5h4v5"/></symbol><symbol id="gp-lantern" viewBox="0 0 24 24"><path d="M12 2v2M9 4h6l1 3H8zM8 7c-1.5 2-1.5 8 0 11h8c1.5-3 1.5-9 0-11M7.5 18h9l-1 2.5h-7zM12 7v11M10 10c0 3 0 4 .5 6M14 10c0 3 0 4-.5 6"/></symbol><symbol id="gp-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol><symbol id="gp-news" viewBox="0 0 24 24"><path d="M4 5h13v13a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2z"/><path d="M17 9h3v9a2 2 0 0 1-2 2"/><path d="M7 8.5h7M7 12h7M7 15.5h4"/></symbol><symbol id="gp-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></symbol><symbol id="gp-rings" viewBox="0 0 24 24"><circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/><path d="M7.5 5.5L9 3.5l1.5 2L9 7.5z"/></symbol><symbol id="gp-stroller" viewBox="0 0 24 24"><path d="M4 6h2l2 8h10l2-6H7.2"/><path d="M12 8V3.5a5.5 5.5 0 0 1 5.5 4.5"/><circle cx="9" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></symbol><symbol id="gp-useradd" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 20c.7-3.8 3.2-6 6.5-6s5.8 2.2 6.5 6M19 8v5M16.5 10.5h5"/></symbol><pattern id="gp-pat" width="448" height="445.4" patternUnits="userSpaceOnUse"><path class="ln" d="M227.9 268.7L241.8 287M244.7 317.4L232.1 342.8M213.8 343L195.7 308.8M189.4 298.2L170.4 269.8M152.2 238.8L141.6 218M119.8 215.7L97.1 243.5M90.8 254L68.4 307M72.2 312.7L107.1 312.7M115 327.6L97.8 352.8M92 363.7L74.7 407.8M75.3 -4.4L89.6 28.5M75.3 441L89.6 474M98.2 33.3L145 25.8M152.8 6.6L141.1 -9M152.8 452L141.1 436.4M139.2 406.4L152.8 382.6M169.3 383.2L182.3 411M191.1 417.2L229.8 421M263.1 -7.7L285.9 17.5M263.1 437.7L285.9 462.9M293 16.6L313.5 -23.1M293 462L313.5 422.4M319.1 411.3L340.9 367.4M337.5 362.5L297.9 366.5M287.8 352.1L303.8 318.9M324.1 284.6L333.2 272M336.1 241.1L313.8 193.5M305.1 188.8L271.4 193.6M263.9 181.3L282.2 155.3M304.2 121.9L320.2 96M325.4 84.8L341.1 39.4M347.2 28.9L388.8 -17.8M347.2 474.4L388.8 427.6M395.4 417.3L419.6 361.9M-22.9 361.6L-0.4 401.2M425.1 361.6L447.6 401.2M17.7 401.4L31.6 377.9M30 348L-2.4 304.3M478 348L445.6 304.3M-1.5 295.1L26.4 269.5M446.5 295.1L474.4 269.5M21.8 255.3L-33.2 248.8M469.8 255.3L414.8 248.8M405.3 242.9L388.2 216.9M387.5 186.4L410.5 147.9M427.4 116.2L437.7 94.6M435.9 63.2L420.4 38.7M404.9 40.5L397.6 61.5M379.3 96.6L359.3 124.3M-19.2 23.5L17.1 23.5M428.8 23.5L465.1 23.5M27 28.4L61.8 74.8M59.4 101.4L30.2 128.3M29.7 137.2L60.8 173.8M79.6 171L85.4 157.3M102.1 125.6L114.6 105.8M132.6 106.6L148.2 136.4M157.3 141.4L203.2 137.7M211.8 151.7L192.6 183.9M212.2 120.6L195.8 91.6M195.8 80.9L226.2 27.7M231.2 28.2L248.8 84.4M54.7 190.1L14.4 195.9M406.8 254L392.9 296.7M263.5 211.1L282.3 239.4"/><g class="dt"><circle cx="23.3" cy="23.5" r="2.6"/><circle cx="92" cy="34.2" r="2.6"/><circle cx="229.3" cy="22.3" r="2.6"/><circle cx="290.1" cy="22.1" r="2.6"/><circle cx="343.1" cy="33.5" r="2.6"/><circle cx="192.7" cy="86.3" r="2.6"/><circle cx="250.7" cy="90.3" r="2.6"/><circle cx="323.4" cy="90.7" r="2.6"/><circle cx="25.7" cy="132.5" r="2.6"/><circle cx="151.1" cy="141.9" r="2.6"/><circle cx="311.2" cy="187.9" r="2.6"/><circle cx="93.2" cy="248.3" r="2.6"/><circle cx="408.7" cy="248.1" r="2.6"/><circle cx="66" cy="312.7" r="2.6"/><circle cx="192.8" cy="303.4" r="2.6"/><circle cx="441.9" cy="299.3" r="2.6"/><circle cx="94.3" cy="357.9" r="2.6"/><circle cx="343.6" cy="361.8" r="2.6"/><circle cx="422.1" cy="356.2" r="2.6"/><circle cx="185" cy="416.6" r="2.6"/><circle cx="316.3" cy="416.9" r="2.6"/><circle cx="392.9" cy="423" r="2.6"/></g><circle class="rg" cx="164.8" cy="22.6" r="17"/><circle class="rn" cx="410.8" cy="23.5" r="15"/><circle class="rn" cx="72.6" cy="89.2" r="15"/><circle class="rn" cx="124.2" cy="90.6" r="15"/><circle class="rg" cx="391.1" cy="80.4" r="17"/><circle class="rn" cx="-2.5" cy="78.4" r="15"/><circle class="rn" cx="445.5" cy="78.4" r="15"/><circle class="rn" cx="92.4" cy="140.8" r="15"/><circle class="rn" cx="221.1" cy="136.3" r="15"/><circle class="rg" cx="293.7" cy="138.9" r="17"/><circle class="rn" cx="348.7" cy="138.9" r="15"/><circle class="rn" cx="419.7" cy="132.4" r="15"/><circle class="rg" cx="72.5" cy="187.6" r="15"/><circle class="rg" cx="132.5" cy="200.2" r="17"/><circle class="rn" cx="183.4" cy="199.3" r="15"/><circle class="rn" cx="253.6" cy="196.1" r="15"/><circle class="rn" cx="378.3" cy="201.9" r="15"/><circle class="rg" cx="-5.4" cy="198.8" r="17"/><circle class="rg" cx="442.6" cy="198.8" r="17"/><circle class="rg" cx="39.7" cy="257.3" r="15"/><circle class="rg" cx="160.4" cy="254.8" r="15"/><circle class="rg" cx="217" cy="254.4" r="15"/><circle class="rg" cx="293.3" cy="256.1" r="17"/><circle class="rn" cx="343.7" cy="257.4" r="15"/><circle class="rn" cx="125.1" cy="312.8" r="15"/><circle class="rn" cx="252.7" cy="301.3" r="15"/><circle class="rg" cx="312.4" cy="300.8" r="17"/><circle class="rn" cx="387.4" cy="313.9" r="15"/><circle class="rn" cx="40.7" cy="362.4" r="15"/><circle class="rg" cx="161.7" cy="366.9" r="15"/><circle class="rg" cx="223.2" cy="360.7" r="17"/><circle class="rn" cx="280" cy="368.3" r="15"/><circle class="rn" cx="68.2" cy="424.5" r="15"/><circle class="rn" cx="130.3" cy="422" r="15"/><circle class="rg" cx="249.7" cy="422.9" r="17"/><circle class="rn" cx="8.5" cy="416.9" r="15"/><circle class="rn" cx="456.5" cy="416.9" r="15"/><use class="igt" xlink:href="#gp-gtree" x="154" y="11.8" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-crescent" x="401.9" y="14.6" width="17.8" height="17.8" transform="rotate(10 410.8 23.5)"/><use class="in" xlink:href="#gp-pin" x="63.8" y="80.4" width="17.8" height="17.8"/><use class="in" xlink:href="#gp-link" x="115.3" y="81.7" width="17.8" height="17.8" transform="rotate(-2 124.2 90.6)"/><use class="igt" xlink:href="#gp-gchart" x="380.3" y="69.6" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-camera" x="-11.4" y="69.5" width="17.8" height="17.8" transform="rotate(-4 -2.5 78.4)"/><use class="in" xlink:href="#gp-camera" x="436.6" y="69.5" width="17.8" height="17.8" transform="rotate(10 445.5 78.4)"/><use class="in" xlink:href="#gp-gift" x="83.6" y="131.9" width="17.8" height="17.8"/><use class="in" xlink:href="#gp-rings" x="212.2" y="127.4" width="17.8" height="17.8" transform="rotate(-4 221.1 136.3)"/><use class="igt" xlink:href="#gp-gnodes" x="282.9" y="128.1" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-news" x="339.8" y="130" width="17.8" height="17.8"/><use class="in" xlink:href="#gp-chat" x="410.8" y="123.5" width="17.8" height="17.8" transform="rotate(-8 419.7 132.4)"/><use class="ig" xlink:href="#gp-frame" x="63.6" y="178.7" width="17.8" height="17.8" transform="rotate(2 72.5 187.6)"/><use class="igt" xlink:href="#gp-gtree" x="121.7" y="189.4" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-calendar" x="174.5" y="190.4" width="17.8" height="17.8" transform="rotate(-1 183.4 199.3)"/><use class="in" xlink:href="#gp-envelope" x="244.7" y="187.2" width="17.8" height="17.8" transform="rotate(-4 253.6 196.1)"/><use class="in" xlink:href="#gp-book" x="369.4" y="193" width="17.8" height="17.8" transform="rotate(6 378.3 201.9)"/><use class="igt" xlink:href="#gp-gchart" x="-16.2" y="188" width="21.6" height="21.6"/><use class="igt" xlink:href="#gp-gchart" x="431.8" y="188" width="21.6" height="21.6"/><use class="ig" xlink:href="#gp-grad" x="30.8" y="248.5" width="17.8" height="17.8" transform="rotate(7 39.7 257.3)"/><use class="ig" xlink:href="#gp-house" x="151.6" y="245.9" width="17.8" height="17.8" transform="rotate(-10 160.4 254.8)"/><use class="ig" xlink:href="#gp-stroller" x="208.1" y="245.5" width="17.8" height="17.8" transform="rotate(1 217 254.4)"/><use class="igt" xlink:href="#gp-gnodes" x="282.5" y="245.3" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-useradd" x="334.8" y="248.5" width="17.8" height="17.8" transform="rotate(-5 343.7 257.4)"/><use class="in" xlink:href="#gp-crescent" x="116.3" y="303.9" width="17.8" height="17.8" transform="rotate(9 125.1 312.8)"/><use class="in" xlink:href="#gp-pin" x="243.8" y="292.4" width="17.8" height="17.8" transform="rotate(6 252.7 301.3)"/><use class="igt" xlink:href="#gp-gtree" x="301.6" y="290" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-heart" x="378.5" y="305" width="17.8" height="17.8" transform="rotate(-5 387.4 313.9)"/><use class="in" xlink:href="#gp-camera" x="31.8" y="353.6" width="17.8" height="17.8" transform="rotate(-5 40.7 362.4)"/><use class="ig" xlink:href="#gp-gift" x="152.8" y="358.1" width="17.8" height="17.8" transform="rotate(-7 161.7 366.9)"/><use class="igt" xlink:href="#gp-gchart" x="212.4" y="349.9" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-lantern" x="271.2" y="359.4" width="17.8" height="17.8" transform="rotate(10 280 368.3)"/><use class="in" xlink:href="#gp-news" x="59.3" y="415.6" width="17.8" height="17.8" transform="rotate(-4 68.2 424.5)"/><use class="in" xlink:href="#gp-chat" x="121.5" y="413.1" width="17.8" height="17.8" transform="rotate(2 130.3 422)"/><use class="igt" xlink:href="#gp-gnodes" x="238.9" y="412.1" width="21.6" height="21.6"/><use class="in" xlink:href="#gp-bell" x="-0.3" y="408" width="17.8" height="17.8" transform="rotate(-1 8.5 416.9)"/><use class="in" xlink:href="#gp-bell" x="447.7" y="408" width="17.8" height="17.8" transform="rotate(3 456.5 416.9)"/></pattern></defs><rect width="100%" height="100%" fill="url(#gp-pat)"/></svg></div></div>
+  <div class="gt-wrap">
+    <header class="gt-head">
+      <p class="gt-hi" id="gt-wel"></p>
+      <h2 id="gt-h"><span id="gt-name"></span></h2>
       <p class="gt-eye" id="gt-eye"></p>
-      <h2 id="gt-h"><small id="gt-wel"></small><span id="gt-name"></span></h2>
-      <div class="gt-orn" aria-hidden="true"><i></i></div>
+      <p class="gt-tag">نسبٌ نحفظه، وخبرٌ نتشاركه، ورحمٌ نصلها</p>
+    </header>
+    <div class="gt-card">
       <span class="gt-logo"><img id="gt-logo" alt="" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></span>
-    </div>
     <div class="gt-body">
       <form id="gt-form" autocomplete="off" novalidate>
-        <label for="gt-in">اكتب اسمك الرباعي</label>
+        <label for="gt-in">اسمك الرباعي</label>
         <div class="gt-in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.8-3.8 3.7-6 7.5-6s6.7 2.2 7.5 6"/></svg>
           <input id="gt-in" type="text" inputmode="text" enterkeyhint="go" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="عبدالله بن محمد بن علي بن حمد" aria-describedby="gt-hint gt-err"></div>
         <div class="gt-chips" id="gt-chips" aria-hidden="true"><span>الاسم</span><span>الأب</span><span>الجد</span><span>جد الأب</span></div>
-        <p class="gt-hint" id="gt-hint">اسمك ثم اسم أبيك وجدك وجد أبيك — بدون أي رقم أو حساب.</p>
+        <p class="gt-hint" id="gt-hint">اسمك واسم أبيك وجدك وجد أبيك، بلا رقم ولا حساب</p>
         <div class="gt-err" id="gt-err" role="alert"></div>
-        <button class="gt-go" id="gt-go" type="submit"><span>دخول</span><i>←</i></button>
+        <button class="gt-go" id="gt-go" type="submit"><span>دخول</span><i><svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></i></button>
       </form>
       <div class="gt-pick" id="gt-pick" hidden>
         <h3>فيه أكثر من اسم بنفس الرباعي</h3><p>اختر اسمك من القائمة، وبين القوسين اسم الجد الأعلى:</p>
         <div id="gt-pick-l"></div>
-        <button class="gt-back" type="button" id="gt-pick-x">→ رجوع</button>
+        <button class="gt-back" type="button" id="gt-pick-x"><svg class="arw bk" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> رجوع</button>
       </div>
       <div class="gt-nf" id="gt-nf" hidden>
         <b id="gt-nf-t"></b><p id="gt-nf-p"></p>
         <button class="gt-sug" type="button" id="gt-sug">اقترح إضافة اسمي</button>
-        <button class="gt-back" type="button" id="gt-nf-x">→ كتبت الاسم غلط؟ جرّب مرة ثانية</button>
+        <button class="gt-back" type="button" id="gt-nf-x"><svg class="arw bk" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> كتبت الاسم غلط؟ جرّب مرة ثانية</button>
       </div>
       <div class="gt-ok" id="gt-ok" hidden><span class="gt-tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><h3 id="gt-ok-n"></h3><p>جاري فتح شجرة الأسرة…</p></div>
       <p class="gt-foot" id="gt-foot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>الدخول للأسماء المؤكدة في الشجرة فقط</p>
+    </div>
     </div>
   </div>
 </div>
@@ -2459,7 +2462,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       <button data-rv="min" class="rvp-b" aria-label="تصغير">–</button><button data-rv="x" class="rvp-b" aria-label="إغلاق">×</button></div>
       <div class="rvp-body"><div class="rvp-bar"><i style="width:${pct}%"></i></div>
       <div class="rvp-chips">${chip('all', 'تحتاج مراجعة', pr + un + pend, 'c-all')}${chip('pr', 'غير مؤكد', pr, 'c-pr')}${chip('un', 'غير واضح', un, 'c-un')}${chip('pend', 'إضافات معلّقة', pend, 'c-pd')}</div>
-      ${L.length ? `<div class="rvp-nav"><button data-rv="prev" class="rvp-n">› السابق</button><div class="rvp-cur">${S.rvI >= 0 && L[S.rvI] ? `<b>${esc(L[S.rvI].name)}</b><small>${ar(S.rvI + 1)} من ${ar(L.length)}</small>` : `<small>${ar(L.length)} اسم بالقائمة</small>`}</div><button data-rv="next" class="rvp-n go">${S.rvI < 0 ? 'ابدأ' : 'التالي'} ‹</button></div>
+      ${L.length ? `<div class="rvp-nav"><button data-rv="prev" class="rvp-n">${ARWB} السابق</button><div class="rvp-cur">${S.rvI >= 0 && L[S.rvI] ? `<b>${esc(L[S.rvI].name)}</b><small>${ar(S.rvI + 1)} من ${ar(L.length)}</small>` : `<small>${ar(L.length)} اسم بالقائمة</small>`}</div><button data-rv="next" class="rvp-n go">${S.rvI < 0 ? 'ابدأ' : 'التالي'} ${ARW}</button></div>
         ${(S.rvI >= 0 && L[S.rvI]) || S.sel ? `<div class="rvp-lin"><b class="rvp-st st-${((S.rvI >= 0 && L[S.rvI]) || S.sel).lk}">${({ok:'مؤكد',pr:'غير مؤكد',un:'غير واضح'})[((S.rvI >= 0 && L[S.rvI]) || S.sel).lk] || ''}</b> ${esc(lineage((S.rvI >= 0 && L[S.rvI]) || S.sel))}</div><div class="rvp-set"><span>حدّد حالته:</span><button data-rs="مؤكد" class="rs-ok">${sv('check')}مؤكد</button><button data-rs="محتمل" class="rs-pr">غير مؤكد</button><button data-rs="غير واضح" class="rs-un">غير واضح</button></div>`
           : `<p class="rvp-hint">اضغط أي اسم بالشجرة وحدّد حالته من هنا، أو اضغط «ابدأ» ويمرّك على اللي يحتاج مراجعة.</p>`}`
       : `<div class="rvp-done"><span>${sv('check')}</span><div><b>ما فيه شي يحتاج مراجعة</b><small>${F === 'all' ? 'كل الأسماء موثّقة ومؤكدة' : 'ما فيه أسماء بهالتصنيف'}</small></div></div>${S.sel ? `<div class="rvp-lin"><b class="rvp-st st-${S.sel.lk}">${({ok:'مؤكد',pr:'غير مؤكد',un:'غير واضح'})[S.sel.lk] || ''}</b> ${esc(lineage(S.sel))}</div><div class="rvp-set"><span>غيّر حالته:</span><button data-rs="مؤكد" class="rs-ok">${sv('check')}مؤكد</button><button data-rs="محتمل" class="rs-pr">غير مؤكد</button><button data-rs="غير واضح" class="rs-un">غير واضح</button></div>` : `<p class="rvp-hint">اضغط أي اسم بالشجرة، وتقدر تغيّر حالته من هنا.</p>`}`}</div>`;
@@ -2534,7 +2537,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   function crumbs() {
     const bar = $('#crumbs'); if (!S.sel) { bar.innerHTML = ''; return; }
-    bar.innerHTML = `<div class="bar">${chain(S.sel).reverse().map((n, i, a) => `<button data-go="${n.id}">${esc(dispName(n))}</button>${i < a.length - 1 ? '<span>‹</span>' : ''}`).join('')}</div>`;
+    bar.innerHTML = `<div class="bar">${chain(S.sel).reverse().map((n, i, a) => `<button data-go="${n.id}">${esc(dispName(n))}</button>${i < a.length - 1 ? `<span>${ARW}</span>` : ''}`).join('')}</div>`;
   }
 
   /* ───────── POSTER VIEW (الصورة الأصلية بنقاط تفاعلية) ───────── */
@@ -3123,7 +3126,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   function gateOpen() {
     const g = $('#gate'); if (!g) return;
     const st = S.site || SITE0; $('#gt-logo').src = S.cfg.logo || ($('.brand img') || {}).src || '';
-    $('#gt-eye').textContent = st.lineage || SITE0.lineage; $('#gt-wel').textContent = st.welcome || SITE0.welcome;
+    $('#gt-eye').textContent = st.lineage || SITE0.lineage; $('#gt-wel').textContent = st.welcome && st.welcome !== SITE0.welcome ? st.welcome : 'حيّاكم الله في';   // v58: قبل ما نعرف الزائر نخاطب الجميع
     { const w = String(st.name || SITE0.name).trim().split(/\s+/), last = w.pop(), nm = $('#gt-name'); nm.textContent = w.join(' ') + (w.length ? ' ' : ''); const g = document.createElement('b'); g.textContent = last; nm.appendChild(g); }
     gateChips();
     g.hidden = false; g.classList.remove('girl'); document.body.classList.add('gated');
@@ -3133,7 +3136,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   function gateEnter(n) {
     S.me = n; try { localStorage.setItem(meKey, n.id); localStorage.setItem(GATE_K, String(n.id)); } catch (e) { }
     const g = $('#gate'); g.classList.toggle('girl', n.gender === 'female');
-    $('#gt-form').hidden = true; $('#gt-pick').hidden = true; $('#gt-nf').hidden = true; $('#gt-foot').hidden = true; $('#gt-ok').hidden = false; $('#gt-ok-n').textContent = 'حيّاك الله يا ' + (n.name || '');
+    $('#gt-form').hidden = true; $('#gt-pick').hidden = true; $('#gt-nf').hidden = true; $('#gt-foot').hidden = true; $('#gt-ok').hidden = false; $('#gt-ok-n').textContent = (n.gender === 'female' ? 'حيّاكِ' : 'حيّاك') + ' الله يا ' + (n.name || '');
     document.body.classList.remove('gated');
     setTimeout(() => g.classList.add('out'), 1150);
     setTimeout(() => { g.hidden = true; g.classList.remove('out'); }, 1650);
@@ -3486,7 +3489,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   function grBanner() {
     const g = grActive(); if (!g) return ''; const me = S.me, f = me && me.gender === 'female';
-    return `<button class="gr-bn" data-greet type="button"><span class="gr-ic">${sv('mail')}</span><div><small>${GR[g.k].t} من أسرة الجنيدلي</small><b>${me ? `كل عام وأنت${f ? 'ِ' : ''} بخير يا ${esc(me.name)}` : 'كل عام وأنتم بخير'}</b><em>بطاقتك بمناسبة ${GR[g.k].occ} جاهزة، ${f ? 'اضغطي وشاركيها' : 'اضغط وشاركها'}</em></div><i>‹</i></button>`;
+    return `<button class="gr-bn" data-greet type="button"><span class="gr-ic">${sv('mail')}</span><div><small>${GR[g.k].t} من أسرة الجنيدلي</small><b>${me ? `كل عام وأنت${f ? 'ِ' : ''} بخير يا ${esc(me.name)}` : 'كل عام وأنتم بخير'}</b><em>بطاقتك بمناسبة ${GR[g.k].occ} جاهزة، ${f ? 'اضغطي وشاركيها' : 'اضغط وشاركها'}</em></div><i>${ARW}</i></button>`;
   }
   let grWait = 0;
   async function greetOpen(person) {
@@ -3589,11 +3592,11 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     let box = $('#bl-tip'); if (!box) { box = document.createElement('div'); box.id = 'bl-tip'; box.className = 'bl-tip'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite'); document.body.appendChild(box); }
     const T = blText(x), n = DN.q.length || DN.k ? `<span class="bl-n">${ar((DN.k || 0) + 1)} من ${ar((DN.k || 0) + DN.q.length + 1)}</span>` : '';
     DN.k = (DN.k || 0) + 1; DN.left = 6000;
-    box.innerHTML = `<div class="bl-c s-${esc(x.st)}"><i class="bl-ar" aria-hidden="true"></i><p class="bl-t">${esc(T)}</p>
-      <div class="bl-a"><button type="button" class="bl-go">شوف الرد${ARW}</button>${n}<button type="button" class="bl-x" aria-label="إغلاق">${sv('xmark')}</button></div></div>`;
-    // المكان: تحت الجرس، والسهم على نص الجرس، ولا تطلع برا الشاشة
+    box.innerHTML = `<div class="bl-c s-${esc(x.st)}"><i class="bl-ar" aria-hidden="true"></i>${n}<p class="bl-t">${esc(T)}</p>
+      <div class="bl-a"><button type="button" class="bl-go">شوف الرد${ARW}</button><button type="button" class="bl-x" aria-label="إغلاق">${sv('xmark')}</button></div></div>`;
+    // المكان: تحت الجرس، والسهم على نص الجرس. العرض نص الشاشة بالكثير عشان ما تغطي التحية والنسب (على اليمين) ولا البحث
     const vw = document.documentElement.clientWidth, c = $('.bl-c', box), cx = br.left + br.width / 2;
-    const w = Math.min(vw - 24, Math.max(190, Math.min(vw * .58, 270)));
+    const w = Math.min(vw - 24, Math.max(150, Math.min(vw * .5 - 2, 250)));
     const L = cx < vw / 2 ? Math.max(12, br.left - 4) : Math.min(vw - 12 - w, br.right + 4 - w);
     c.style.width = w + 'px'; box.style.top = Math.round(br.bottom + 11) + 'px'; box.style.left = Math.round(L) + 'px';
     c.style.setProperty('--ax', Math.round(Math.min(w - 22, Math.max(14, cx - L))) + 'px');
@@ -3710,7 +3713,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const card = (n, big) => { const has = n.images && n.images.length; return `<article class="nc ${big && has ? 'nc-big' : ''} ${has ? '' : 'nc-txt'}" data-nid="${n.id}" tabindex="0">
         ${has ? `<div class="nc-media">${nImg(n, 'nc-img')}${n.images.length > 1 ? `<span class="nc-cnt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 18 5-5 4 4 3-3 4 4"/></svg>${ar(n.images.length)}</span>` : ''}${n.pinned ? '<span class="nc-pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3z"/><path d="M12 13v7"/></svg>مثبّت</span>' : ''}</div>` : ''}
         <div class="nc-b">${has ? '' : `<span class="nc-emo">${sv('news')}</span>`}<span class="nc-k k-${esc(n.kind || 'خبر')}">${esc(n.kind || 'خبر')}</span>${!has && n.pinned ? '<span class="nc-pin2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3z"/><path d="M12 13v7"/></svg>مثبّت</span>' : ''}<h3>${esc(n.title)}</h3><p>${esc(n.body || '')}</p>
-          <div class="nc-f"><time>${nDate(n.date)}</time><span>اقرأ الخبر ‹</span></div></div>
+          <div class="nc-f"><time>${nDate(n.date)}</time><span>اقرأ الخبر ${ARW}</span></div></div>
         ${adm ? `<div class="nc-adm"><button data-ned="${n.id}" title="عدّل" aria-label="عدّل الخبر">${sv('pen')}</button><button data-ndel="${n.id}" title="احذف" aria-label="احذف الخبر">${sv('trash')}</button></div>` : ''}
       </article>`; };
     const vis = L.slice(0, NV.shown); let body = '';
@@ -3890,14 +3893,14 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
           ${fem ? `<div><b>${ar(girlCous.length)}</b><small>بنات عم</small></div>` : `<div><b>${ar(cous.length)}</b><small>أبناء عم</small></div><div><b>${ar(me.kids.length)}</b><small>أبناء</small></div>`}</div>
         <div class="mp-acts"><button class="btn gold" id="mp-tree">مكاني في الشجرة</button><button class="btn line light" id="mp-share">شارك ملفي</button></div>
       </section>
-      <button class="mp-cc${fem ? ' girl' : ''}" data-cc type="button"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.5-3.5-5.5-4-5.5-1.5S10 9 12 9zM12 9c1.5-3.5 5.5-4 5.5-1.5S14 9 12 9z"/></svg></span><div><b>بطاقات الأسرة</b><small>بطاقات تهنئة ${fem ? 'لكِ' : 'لك'} ولأقاربك: مولود، تخرج، ختم القرآن، حج…</small></div><i>‹</i></button>
+      <button class="mp-cc${fem ? ' girl' : ''}" data-cc type="button"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.5-3.5-5.5-4-5.5-1.5S10 9 12 9zM12 9c1.5-3.5 5.5-4 5.5-1.5S14 9 12 9z"/></svg></span><div><b>بطاقات الأسرة</b><small>بطاقات تهنئة ${fem ? 'لكِ' : 'لك'} ولأقاربك: مولود، تخرج، ختم القرآن، حج…</small></div><i>${ARW}</i></button>
       ${myEv.length ? `<section class="mp-sec"><h3>مناسبات أقاربك</h3>${myEv.map(e => { const d = daysTo(e.date); return `<button class="mp-ev" data-u="${urg(d)}" style="${ustyle(d)}" data-wed="${e.id}"><span class="he-cd" role="img" aria-label="${cdAria(d)}">${cdRing(d)}${cdIn(d)}</span><span class="he-t"><b>${esc(evTitle(e))}</b><em>${wday(e.date)} ${hStr(e.date)}${e.venue ? ' · ' + esc(e.venue) : ''}</em></span></button>`; }).join('')}</section>` : ''}
       <section class="mp-sec"><h3>سلسلة نسبي</h3><p class="mp-sub">${nCount(anc.length, ['اسم واحد', 'اسمان', 'أسماء', 'اسماً'])} من الجد الأول إلى ${esc(me.name)} — اضغط أي اسم وتنفتح بطاقته.</p>
         <ol class="mp-chain">${anc.map((p, i) => `<li class="${p === me ? 'me' : ''}${p === big ? ' big' : ''}"><button data-go="${p.id}"><span class="mc-n">${ar(i + 1)}</span><b>${esc(dispName(p))}</b>${p === big ? '<em>رأس فرعك</em>' : p === me ? `<em>${fem ? 'أنتِ' : 'أنت'}</em>` : `<small>${ar(p.desc)} من الذرية</small>`}</button></li>`).join('')}</ol></section>
       <section class="mp-sec"><h3>قرابتي</h3>${grp('إخواني', sv('users'), sib)}${grp('أعمامي', sv('tree'), unc)}${fem ? grp('بنات عمي', sv('users'), girlCous) : grp('أبناء عمي', sv('users'), cous) + grp('أبنائي', sv('user'), me.kids)}${!fem && grand ? `<p class="mp-sub">ولك ${ar(grand)} من الأحفاد.</p>` : ''}</section>
       ${birthMe(me)}
-      ${mineAll().length ? `<button class="mp-mine" id="mp-mine" type="button"><span>${sv('inbox')}</span><div><b>طلباتي واقتراحاتي</b><small>${mqCount(mineAll(), false)} · تابع حالتها</small></div>${mineNotifs().some(x => x.unread !== false && !seenN().includes(x.id)) ? '<em class="mp-nw">جديد</em>' : ''}<i>‹</i></button>` : ''}
-      <button class="mp-sug" data-cmd="suggest"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg></span><div><b>فيه اسم ناقص أو خطأ في قرابتك؟</b><small>أرسل اقتراحك للإدارة ويُصحَّح</small></div><i>‹</i></button>`;
+      ${mineAll().length ? `<button class="mp-mine" id="mp-mine" type="button"><span>${sv('inbox')}</span><div><b>طلباتي واقتراحاتي</b><small>${mqCount(mineAll(), false)} · تابع حالتها</small></div>${mineNotifs().some(x => x.unread !== false && !seenN().includes(x.id)) ? '<em class="mp-nw">جديد</em>' : ''}<i>${ARW}</i></button>` : ''}
+      <button class="mp-sug" data-cmd="suggest"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg></span><div><b>فيه اسم ناقص أو خطأ في قرابتك؟</b><small>أرسل اقتراحك للإدارة ويُصحَّح</small></div><i>${ARW}</i></button>`;
     $('#mp-chg').onclick = () => confirmSwitch();
     const mm = $('#mp-mine'); if (mm) mm.onclick = () => openMine();
     $('#mp-tree').onclick = () => go('tree', me);
@@ -4209,12 +4212,12 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   window.JND_GV = '57';
   const gdSt = () => { let a = '', v = ''; try { a = localStorage.getItem('jnd-guide') || ''; v = localStorage.getItem('jnd-gv') || ''; } catch (e) { } return v === window.JND_GV ? 'seen' : a ? 'new' : 'first'; };
   const gdBanner = () => { const st = gdSt(); if (st === 'seen') return ''; const nw = st === 'new';
-    return `<button class="gd-home" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span><b>${nw ? 'جديد في الدليل الإرشادي' : 'أول مرة هنا؟'}</b><small>${nw ? 'ردّ الإدارة على طلباتك يطلع لك من الجرس' : 'الدليل الإرشادي يعرّفك على المنصة بجولة سريعة'}</small></span><i>${nw ? 'اعرف الجديد ‹' : 'ابدأ الجولة ‹'}</i></button>`; };
+    return `<button class="gd-home" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span><b>${nw ? 'جديد في الدليل الإرشادي' : 'أول مرة هنا؟'}</b><small>${nw ? 'ردّ الإدارة على طلباتك يطلع لك من الجرس' : 'الدليل الإرشادي يعرّفك على المنصة بجولة سريعة'}</small></span><i>${nw ? 'اعرف الجديد' : 'ابدأ الجولة'} ${ARW}</i></button>`; };
   /* ───────── home ───────── */
   const greet = () => { const h = new Date().getHours(); return h < 12 ? 'صباح الخير' : 'مساء الخير'; };
   function homeRender() {
     const box = $('#home'), me = S.me, nx = upcoming()[0], all = S.all.filter(n => !n.pending);
-    const gens = Math.max(...all.map(n => n.depth)) + 1, F = facts(), fi = new Date().getDate() % F.length;
+    const gens = Math.max(...all.map(n => n.depth)) + 1, F = facts(), fi = 0;
     const bigs = all.filter(isBig).length, logo = esc(S.cfg.logo || ($('.brand img') || {}).src || '');
     const d = nx ? daysTo(nx.date) : 0, hn = nx ? hp(utc(nx.date)) : null;
     const I = { tree: '<rect x="9" y="3" width="6" height="5" rx="1.5"/><rect x="3" y="16" width="6" height="5" rx="1.5"/><rect x="15" y="16" width="6" height="5" rx="1.5"/><path d="M12 8v4M6 16v-4h12v4"/>',
@@ -4232,7 +4235,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
           ${me ? `<button class="hx-av" data-href="#me"><span>${esc(me.name[0])}</span></button>` : ''}
         </div>
         <div class="hx-stats"><div><b>${ar(all.length)}</b><small>اسماً</small></div><div><b>${ar(gens)}</b><small>أجيال</small></div><div><b>${ar(bigs)}</b><small>فروع كبيرة</small></div><div><b>${ar(upcoming().length)}</b><small>مناسبات</small></div><div><b>${ar((S.news || []).length)}</b><small>أخبار</small></div></div>
-        ${!me ? `<button class="hx-cta" id="h-me">حدّد مكانك في الشجرة<i>‹</i></button>` : ''}
+        ${!me ? `<button class="hx-cta" id="h-me">حدّد مكانك في الشجرة<i>${ARW}</i></button>` : ''}
       </section>
 
       ${grBanner()}
@@ -4248,7 +4251,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
 
       <div class="hs-h"><h2>استكشف الأسرة</h2><span></span></div>
       <section class="bento">
-        <a href="#tree" class="bt bt-tree"><span class="bt-ic">${ic('tree')}</span><div><b>شجرة الأسرة</b><small>${nCount(all.length, ['اسم واحد', 'اسمان', 'أسماء', 'اسماً'])} في ${nCount(gens, ['جيل واحد', 'جيلين', 'أجيال', 'جيلاً'])} — ابحث وتنقّل وشوف قرابتك</small></div><span class="bt-go">افتح الشجرة ‹</span>
+        <a href="#tree" class="bt bt-tree"><span class="bt-ic">${ic('tree')}</span><div><b>شجرة الأسرة</b><small>${nCount(all.length, ['اسم واحد', 'اسمان', 'أسماء', 'اسماً'])} في ${nCount(gens, ['جيل واحد', 'جيلين', 'أجيال', 'جيلاً'])} — ابحث وتنقّل وشوف قرابتك</small></div><span class="bt-go">افتح الشجرة ${ARW}</span>
           <svg class="bt-art" viewBox="0 0 120 120"><circle cx="60" cy="18" r="8"/><circle cx="25" cy="62" r="7"/><circle cx="95" cy="62" r="7"/><circle cx="12" cy="104" r="5"/><circle cx="40" cy="104" r="5"/><circle cx="80" cy="104" r="5"/><circle cx="108" cy="104" r="5"/><path d="M60 26v14M25 55V40h70v15M25 69v14M95 69v14M12 99V83h28v16M80 99V83h28v16"/></svg></a>
         <a href="#weddings" class="bt bx bx-ev"><div class="bx-h"><span class="bt-ic">${ic('ev')}</span><span class="bx-n">${ar(upcoming().length)}<small>قادمة</small></span></div>
           <b>المناسبات</b><div class="bx-days">${upcoming().slice(0, 3).map(e => `<i>${ar(hp(utc(e.date)).d)}<small>${HMS[hp(utc(e.date)).m - 1]}</small></i>`).join('')}</div></a>
@@ -4267,13 +4270,13 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       </section>
 
       ${gdBanner()}
-      <section class="hq"><small>هل تعلم؟</small><p id="h-fp">${F[fi]}</p><button id="h-fb">معلومة ثانية</button></section>
+      <section class="hq" aria-live="polite"><small>هل تعلم؟</small><p id="h-fp">${F[fi]}</p>${F.length > 1 ? `<button id="h-fb" type="button" aria-label="المعلومة التالية">التالية${ARW}</button>` : ''}</section>
 `;
     $$('#home a[href="#sug"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
     $$('#home [data-href]').forEach(b => b.onclick = () => go(b.dataset.href.slice(1)));
     const hm = $('#h-me'); if (hm) hm.onclick = () => go('me');
     const he = $('#h-ev'); if (he) he.onclick = () => { W.sel = nx.id; W.tab = 'up'; go('weddings'); };
-    let k = fi; $('#h-fb').onclick = () => { k = (k + 1) % F.length; const p = $('#h-fp'); p.style.opacity = 0; setTimeout(() => { p.innerHTML = F[k]; p.style.opacity = 1; }, 180); };
+    let k = fi; const hfb = $('#h-fb'); if (hfb) hfb.onclick = () => { k = (k + 1) % F.length; const p = $('#h-fp'); p.style.opacity = 0; setTimeout(() => { p.innerHTML = F[k]; p.style.opacity = 1; }, 180); };
   }
 
   const GM = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
@@ -4353,7 +4356,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const days = monthDays(W.month.y, W.month.m), byDate = {};
     (S.events || []).forEach(e => (byDate[e.date] = byDate[e.date] || []).push(e));
     const lead = days[0].getUTCDay(), t = iso(today()), selDate = W.sel ? (S.events.find(e => String(e.id) === String(W.sel)) || {}).date : null;
-    $('#cal').innerHTML = `<div class="cal-h"><button id="cm-n" aria-label="الشهر السابق">›</button><div><b>${HM[W.month.m - 1]}</b><small>${W.month.y}هـ</small></div><button id="cm-p" aria-label="الشهر التالي">‹</button></div>
+    $('#cal').innerHTML = `<div class="cal-h"><button id="cm-n" aria-label="الشهر السابق">${ARWB}</button><div><b>${HM[W.month.m - 1]}</b><small>${W.month.y}هـ</small></div><button id="cm-p" aria-label="الشهر التالي">${ARW}</button></div>
       <div class="cal-g">${WD.map(w => `<span class="cw">${w}</span>`).join('')}${'<span></span>'.repeat(lead)}
       ${days.map(d => { const k = iso(d), ev = byDate[k]; return `<button class="cd-d${ev ? ' has' : ''}${k === t ? ' today' : ''}${k === selDate ? ' sel' : ''}" ${ev ? `data-day="${k}"` : 'disabled'}>
         <b>${hp(d).d}</b><small>${d.getUTCDate()}/${d.getUTCMonth() + 1}</small>${ev && ev.length > 1 ? `<i>${ev.length}</i>` : ''}</button>`; }).join('')}</div>`;
@@ -4518,23 +4521,24 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   const sv = k => `<svg viewBox="0 0 24 24">${IC[k]}</svg>`;
   // v58: سهم واحد في كل المنصة: «كمّل» يشير لليسار، و«رجوع» نفس الأيقونة معكوسة لليمين
   const ARW = '<svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>', ARWB = ARW.replace('class="arw"', 'class="arw bk"');
-  const row = (attr, c, k, t, d, extra = '') => `<${attr.startsWith('href') ? 'a' : 'button'} ${attr} class="st-row"><span class="st-ic c-${c}">${sv(k)}</span><span class="st-t"><b>${t}</b>${d ? `<small>${d}</small>` : ''}</span>${extra}<i class="st-chev">‹</i></${attr.startsWith('href') ? 'a' : 'button'}>`;
+  const row = (attr, c, k, t, d, extra = '') => `<${attr.startsWith('href') ? 'a' : 'button'} ${attr} class="st-row"><span class="st-ic c-${c}">${sv(k)}</span><span class="st-t"><b>${t}</b>${d ? `<small>${d}</small>` : ''}</span>${extra}<i class="st-chev">${ARW}</i></${attr.startsWith('href') ? 'a' : 'button'}>`;
   function openMore() {
+    if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
     const me = S.me, nN = noteCount(), pA = admPend().n;
     $('#more-list').innerHTML = `
       <a href="#me" data-close class="st-me">
         <span class="st-av">${me ? esc(me.name[0]) : sv('user')}</span>
         <span class="st-t"><b>${me ? esc(me.name) : 'حدّد مكانك في الأسرة'}</b><small>${me ? esc(lineageUp(me, 4)) : 'اختر اسمك، ويصير لك ملف ونسب وقرابة'}</small></span>
-        <span class="st-pill">${me ? 'ملفي' : 'ابدأ'} ‹</span></a>
+        <span class="st-pill">${me ? 'ملفي' : 'ابدأ'} ${ARW}</span></a>
       <div class="stq">
         <button data-cmd="notifs" class="q-red"><span>${sv('bell')}</span><b>الإشعارات</b>${nN ? `<em>${ar(nN)}</em>` : ''}</button>
         <button data-cmd="suggest" class="q-gold"><span>${sv('pen')}</span><b>اقتراح</b></button>
         <button data-cmd="share-app" class="q-green"><span>${sv('share')}</span><b>شارك</b></button>
         <a href="#about" data-close class="q-teal"><span>${sv('book')}</span><b>النسب</b></a>
       </div>
-      <button class="gd-entry" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك من الجرس' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد ‹' : 'ابدأ ‹'}</i></button>
-      <button class="gd-entry" data-cmd="install" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#3F7C69,#2D6369)"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></span><span class="st-t"><b>ثبّت المنصة كتطبيق</b><small>على الشاشة الرئيسية لجوالك</small></span><i>ثبّت ‹</i></button>
-      ${S.site.contact ? `<a class="gd-entry st-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(String(S.site.contact).replace(/\D/g, '').replace(/^0/, '966'))}" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#25D366,#128C7E)"><svg viewBox="0 0 24 24"><path d="M5 19l1.2-3.6A7.5 7.5 0 1 1 9 18.2z"/></svg></span><span class="st-t"><b>تواصل مع الإدارة</b><small>واتساب مباشر مع مشرف المنصة</small></span><i>راسل ‹</i></a>` : ''}
+      <button class="gd-entry" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك من الجرس' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد' : 'ابدأ'} ${ARW}</i></button>
+      <button class="gd-entry" data-cmd="install" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#3F7C69,#2D6369)"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></span><span class="st-t"><b>ثبّت المنصة كتطبيق</b><small>على الشاشة الرئيسية لجوالك</small></span><i>ثبّت ${ARW}</i></button>
+      ${S.site.contact ? `<a class="gd-entry st-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(String(S.site.contact).replace(/\D/g, '').replace(/^0/, '966'))}" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#25D366,#128C7E)"><svg viewBox="0 0 24 24"><path d="M5 19l1.2-3.6A7.5 7.5 0 1 1 9 18.2z"/></svg></span><span class="st-t"><b>تواصل مع الإدارة</b><small>واتساب مباشر مع مشرف المنصة</small></span><i>راسل ${ARW}</i></a>` : ''}
       <h5>العرض</h5>
       <div class="st-grp st-pad">
         <div class="st-set"><span class="st-ic c-teal"><svg viewBox="0 0 24 24"><path d="M4 7V5h11v2M9.5 5v14M7 19h5M14 12v-1h6v1M17 11v8M15.5 19h3"/></svg></span><span class="st-t"><b>حجم الخط</b><small>يتطبّق على كل الصفحات</small></span></div>
@@ -4585,6 +4589,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   function bellBadge() { const b = $('#bell-n'), bl = $('#bell'); if (!b || !bl) return; const L = notifs(), U = L.filter(x => x.unread), n = noteCount(L); b.hidden = !n; b.textContent = n > 99 ? '99+' : ar(n); bl.classList.toggle('ring', !!n); bl.classList.toggle('rp', U.some(x => x.k === 'mine'));
     const r = L.reduce((a, x) => a + (x.task || 0), 0), mn = U.filter(x => x.k === 'mine').length, lab = n ? `الإشعارات — ${ar(n)} ${n === 1 ? 'جديد' : 'جديدة'}${r ? ` (منها ${nCount(r, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظارك)` : ''}${mn ? ` — جديد في طلباتك` : ''}` : 'الإشعارات'; bl.setAttribute('aria-label', lab); bl.title = lab; }
   function openNotifs() {
+    if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
     const L = notifs(), U = L.filter(x => x.unread), R = L.filter(x => !x.unread), N = noteCount(L), NT = L.reduce((a, x) => a + (x.task || 0), 0), UO = U.filter(x => !x.task);
     const item = (x, i) => `<button class="nt-it ${x.unread ? 'new' : ''}" data-ni="${i}"><span class="st-ic c-${x.c}">${sv(x.ic)}</span><span class="nt-t"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span><time>${x.when}</time></button>`;
     $('#notif-body').innerHTML = `<div class="nt-h"><div><h3>الإشعارات</h3><small>${N ? nCount(N, ['إشعار جديد', 'إشعاران جديدان', 'إشعارات جديدة', 'إشعاراً جديداً']) + (NT ? `، منها ${nCount(NT, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظارك` : '') : 'ما فاتك شي'}</small></div>${UO.length ? '<button id="nt-all">خلّها كلها مقروءة</button>' : ''}</div>
@@ -4614,6 +4619,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     return `<article class="mq-it s-${k || 'new'}"><div class="mq-h"><span class="mq-k">${esc(rsKind(x))}</span>${stPill(x, 'mq-st')}</div><b>${esc(rsSub(x))}${x.bd && x.bd.y ? ' · مواليد ' + esc(bFmt(x.bd.y, x.bd.m, x.bd.d)) : ''}</b>
       ${k === 'no' && x.why ? `<p class="mq-why">السبب: ${esc(x.why)}</p>` : ''}<small>${esc(rsWhen(x))}${hasPh(x) || x.phq ? ' · الواتس مفعّل' : ''}</small></article>`; };
   function openMine() {
+    if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
     const L = mineAll().sort((a, b) => mqT(b).localeCompare(mqT(a)));
     try { const s0 = seenN(); localStorage.setItem('jnd-seen', JSON.stringify([...new Set(s0.concat(mineNotifs().map(x => x.id)))].slice(-300))); } catch (e) { }
     const isNew = x => { const st = decOf(x); return !st || st === 'review' || mqDays(x) <= 7; };
@@ -5061,20 +5067,24 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
 
   /* ───────── PANEL ───────── */
+  /* v58 · «هل تعلم؟»: معلومات تتولد من بيانات الشجرة، بدون أسماء أشخاص ولا أرقام ثابتة مكتوبة.
+     الأولى (أكثر اسم يتكرر) تختلف عن مربعات الإحصاء، والترتيب ثابت ويتقدّم بزر «التالية» */
   function facts() {
-    const all = S.all.filter(n => !n.pending), freq = {};
+    const all = S.all.filter(n => !n.pending), freq = {}, F = [];
     all.slice(1).forEach(n => freq[n.name] = (freq[n.name] || 0) + 1);
     const top = Object.entries(freq).sort((a, b) => b[1] - a[1])[0];
-    const fam = [...all].sort((a, b) => b.kids.length - a.kids.length)[0];
-    const big = all.filter(n => n.kind === 'دائرة كبيرة' && n.depth > 2).sort((a, b) => b.desc - a.desc)[0];
-    const maxD = Math.max(...all.map(n => n.depth));
-    return [
-      `اسم «${esc(top[0])}» تكرر ${timesN(top[1])} في الأسرة، أكثر من أي اسم ثاني.`,
-      `أكبر أسرة في الشجرة: ${esc(fam.name)} بن ${esc(fam.parent.name)}، له ${nCount(fam.kids.length, ['ابن واحد', 'ابنان', 'أبناء', 'ابناً'])}.`,
-      `أكبر الفروع فرع ${esc(big.name)} بن ${esc(big.parent.name)}، ومنه ${ar(big.desc)} من الذرية.`,
-      `بين عبدالله آل جنيدلي وأحدث جيل في البرواز ${nCount(maxD + 1, ['جيل واحد', 'جيلان', 'أجيال', 'جيلاً'])}.`,
-      `في البرواز ${nCount(Object.keys(freq).length, ['اسم واحد', 'اسمان', 'أسماء مختلفة', 'اسماً مختلفاً'])}.`,
-    ];
+    if (top && top[1] > 1) F.push(`اسم «${esc(top[0])}» تكرر ${timesN(top[1])} في الأسرة، أكثر من أي اسم ثاني.`);
+    // أكثر شهر ولادة (من تواريخ الميلاد الكاملة المسجّلة)، ويطلع بس إذا فيه شهر واحد أكثر من غيره
+    const mc = {}; all.forEach(n => { const m = n.bfull ? parseInt(toLat(n.bfull).split('-')[1], 10) : 0; if (m >= 1 && m <= 12) mc[m] = (mc[m] || 0) + 1; });
+    const ms = Object.entries(mc).sort((a, b) => b[1] - a[1]);
+    if (ms.length && ms[0][1] >= 2 && !(ms[1] && ms[1][1] === ms[0][1])) F.push(`أكثر شهر تتكرر فيه مواليد الأسرة المسجّلة في المنصة: ${HM[ms[0][0] - 1]}.`);
+    // أقدم تاريخ ميلاد مسجّل (السنة بس، بدون اسم صاحبها)
+    const ys = all.map(n => parseInt(toLat(n.birth), 10)).filter(y => y >= 1200 && y <= 1600);
+    if (ys.length) F.push(`أقدم تاريخ ميلاد مسجّل في المنصة يعود لسنة ${Math.min(...ys)}هـ.`);
+    const big = all.filter(n => n.kind === 'دائرة كبيرة' && n.depth > 2 && n.parent).sort((a, b) => b.desc - a.desc)[0];
+    if (big) F.push(`أكبر الفروع فرع ${esc(big.name)} بن ${esc(big.parent.name)}، ومنه ${ar(big.desc)} من الذرية.`);
+    F.push('بنو العنبر بطنٌ من بني عمرو بن تميم.');
+    return F;
   }
   function panelWelcome() {
     const box = $('#panel-body'), me = S.me;
@@ -5773,9 +5783,10 @@ JNDCloud.start({
   box.innerHTML=SL.map(function(x,k){return '<button data-gd="'+k+'" aria-label="'+(k+1)+'"></button>'}).join('');
   var dots=[].slice.call(box.querySelectorAll('button')),firstNew=SL.reduce(function(a,x,k){return a<0&&x[4]?k:a},-1);
   function restart(){var d=dots[i];if(!d)return;d.classList.add('rs');void d.offsetWidth;d.classList.remove('rs')}
+  var NXA='<svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
   function show(k){i=Math.max(0,Math.min(N-1,k));tr.style.transform='translateX('+(i*100)+'%)';
     dots.forEach(function(d,j){d.classList.toggle('on',j===i);d.classList.toggle('done',j<i)});pg.style.width=((i+1)/N*100)+'%';
-    cn.textContent=ar(i+1)+' / '+ar(N);pv.disabled=!i;nx.textContent=i===N-1?'ابدأ الاستخدام':'التالي ‹';m.classList.toggle('last',i===N-1);restart()}
+    cn.textContent=ar(i+1)+' / '+ar(N);pv.disabled=!i;nx.innerHTML=i===N-1?'ابدأ الاستخدام':'التالي '+NXA;m.classList.toggle('last',i===N-1);restart()}
   function seen(){var a='',v='';try{a=localStorage.getItem('jnd-guide')||'';v=localStorage.getItem('jnd-gv')||''}catch(e){}return v===V?'seen':a?'new':'first'}
   window.openGuide=function(){var st=seen();show(st==='new'&&firstNew>=0?firstNew:0);m.classList.add('open');try{localStorage.setItem('jnd-guide','1');localStorage.setItem('jnd-gv',V)}catch(e){}
     var h=document.querySelector('.gd-home');if(h)h.remove()};
@@ -6217,32 +6228,9 @@ body.hide-news:not(.is-admin) .hx-stats{grid-template-columns:repeat(4,1fr)}
 .gate.out{opacity:0;transform:scale(1.025);pointer-events:none}
 body.gated{overflow:hidden}
 .gt-bg{position:fixed;inset:0;overflow:hidden;background:radial-gradient(120% 100% at 80% -10%,#3F7C69 0%,#2D6369 36%,#163A3E 78%,#102C30 100%)}
-.gt-bg::before,.gt-bg::after{z-index:1}
-.gt-bg::before{content:'';position:absolute;inset:-40px;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='none' stroke='%23E3C98E' stroke-width='1' opacity='.55'%3E%3Cpath d='M44 6l7.2 17.4L68.6 16l-7.4 17.2L78 40.6 60.8 47.8 68.6 65l-17.4-7.2L44 75.2l-7.2-17.4L19.4 65l7.4-17.2L10 40.6l17.2-7.4L19.4 16l17.4 7.4z'/%3E%3Ccircle cx='44' cy='41' r='6'/%3E%3C/g%3E%3C/svg%3E") center/88px 88px;opacity:.32;mask-image:radial-gradient(75% 70% at 50% 42%,#000 20%,transparent 78%);-webkit-mask-image:radial-gradient(75% 70% at 50% 42%,#000 20%,transparent 78%)}
-.gt-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(100% 70% at 50% 120%,rgba(10,30,32,.75),transparent 65%)}
-.gt-g1,.gt-g2{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none}
-.gt-g1{width:420px;height:420px;right:-120px;top:-100px;background:rgba(201,168,102,.24);animation:gtFloat 14s ease-in-out infinite}
-.gt-g2{width:360px;height:360px;left:-120px;bottom:-80px;background:rgba(63,124,105,.5);animation:gtFloat 18s ease-in-out infinite reverse}
-@keyframes gtFloat{50%{transform:translate(30px,24px)}}
-.gt-card{position:relative;width:min(444px,100%);margin:auto;border-radius:32px;background:#FFFEFA;box-shadow:0 0 0 1px rgba(227,201,142,.7),0 0 0 8px rgba(255,255,255,.07),0 40px 80px rgba(4,22,24,.55);animation:gtUp .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes gtUp{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:none}}
 .gt-card.shake{animation:gtShake .42s}
 @keyframes gtShake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
-.gt-top{position:relative;text-align:center;padding:30px 22px 62px;color:#fff;border-radius:32px 32px 0 0;background:radial-gradient(140% 150% at 100% 0%,#3F7C69,#2D6369 52%,#1B4448)}
-.gt-top::before{content:'';position:absolute;inset:0;border-radius:inherit;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'%3E%3Cg fill='none' stroke='%23E3C98E' stroke-width='1' opacity='.55'%3E%3Cpath d='M44 6l7.2 17.4L68.6 16l-7.4 17.2L78 40.6 60.8 47.8 68.6 65l-17.4-7.2L44 75.2l-7.2-17.4L19.4 65l7.4-17.2L10 40.6l17.2-7.4L19.4 16l17.4 7.4z'/%3E%3Ccircle cx='44' cy='41' r='6'/%3E%3C/g%3E%3C/svg%3E") center/76px 76px;opacity:.22;mask-image:linear-gradient(#000,transparent 85%);-webkit-mask-image:linear-gradient(#000,transparent 85%)}
-.gt-top>*{position:relative}
-.gt-eye{display:table;margin:0 auto;padding:5px 15px;border-radius:99px;border:1px solid rgba(227,201,142,.4);background:rgba(255,255,255,.07);font-size:12.5px;color:#EAD7A8;letter-spacing:.2px}
-.gt-top h2{margin:14px 0 0;font-family:var(--display);color:#FFFEFA;line-height:1.2;font-weight:400}
-.gt-top h2 small{display:block;font-family:inherit;font-size:16px;color:#CFE0DA;margin-bottom:3px}
-.gt-top h2 span{display:block;font-size:35px;font-weight:700;text-shadow:0 2px 14px rgba(0,0,0,.25)}
-.gt-top h2 span b{font-weight:700;background:linear-gradient(180deg,#F3DDAA,#C9A866);-webkit-background-clip:text;background-clip:text;color:transparent}
-.gt-orn{display:flex;align-items:center;justify-content:center;gap:10px}
-.gt-orn i{display:block}
-.gt-orn svg{width:11px;height:11px;fill:#E3C98E}
-.gt-top>.gt-logo{position:absolute;left:50%;bottom:-48px;transform:translateX(-50%);display:grid;place-items:center;width:92px;height:92px;border-radius:50%;background:#FFFEFA;box-shadow:0 0 0 3px #C9A866,0 0 0 9px #FFFEFA,0 14px 30px rgba(10,40,42,.35);z-index:2}
-.gt-logo::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:1px dashed rgba(167,134,75,.55);animation:medal 50s linear infinite}
-.gt-logo img{width:68px;height:68px;object-fit:contain}
-.gt-body{padding:70px 24px 20px}
 .gt-body label{display:block;font-weight:800;color:#1C4448;font-size:14.5px;margin-bottom:10px;text-align:center}
 .gt-in{display:flex;align-items:center;border:1.5px solid #E5DBC6;border-radius:18px;background:#FFFEFA;box-shadow:inset 0 2px 6px rgba(120,90,30,.06);transition:border-color .2s,box-shadow .2s,background .2s}
 .gt-in:focus-within{border-color:#2D6369;background:#fff;box-shadow:0 0 0 4px rgba(45,99,105,.13)}
@@ -6277,8 +6265,6 @@ body.gated{overflow:hidden}
 .gt-ok h3{margin:14px 0 4px;font-size:21px;color:#1C4448}.gt-ok p{margin:0;font-size:13.5px;color:#7A857F}
 .gt-foot{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px 0 0;font-size:12px;color:#7A857F}
 .gt-foot svg{width:15px;height:15px;fill:none;stroke:#2F6B5F;stroke-width:1.8;stroke-linecap:round}
-@media (max-width:380px){.gt-top h2 span{font-size:29px}.gt-body{padding-inline:18px}.gt-chips span{font-size:12.5px}}
-@media (max-height:700px){.gt-top{padding:20px 18px 54px}.gt-top h2 span{font-size:28px}.gt-top h2 small{font-size:14px}.gt-orn{margin-top:8px}.gt-top>.gt-logo{bottom:-40px;width:76px;height:76px}.gt-logo img{width:56px;height:56px}.gt-body{padding-top:58px}.gt-hint{display:none}}
 @media (prefers-reduced-motion:reduce){.gt-card,.gt-card.shake,.gt-logo::after,.gt-g1,.gt-g2,.gt-go.ready::after,.gt-tick,.gt-tick svg{animation:none!important}.gt-tick svg{stroke-dashoffset:0}.gate{transition:none}}
 .lg-by{color:var(--muted);font-size:12.5px}
 .ad-btns button:disabled{opacity:.4;cursor:not-allowed}
@@ -6299,10 +6285,6 @@ body.gated{overflow:hidden}
 /* ===== v25: ملفي للبنات: ثلاث خانات ===== */
 .mp-stats.s3{grid-template-columns:repeat(3,1fr)}
 /* ===== v24: صفحة الدخول بدون نجمة ===== */
-.gt-orn{margin-top:10px}
-.gt-orn i{width:150px;height:1px;background:linear-gradient(90deg,transparent,#E3C98E 30%,#E3C98E 70%,transparent)}
-.gt-orn i:last-child{transform:none}
-.gt-orn svg{display:none}
 /* ===== v23: بطاقة هوية الأسرة ===== */
 .cd-seg{display:flex;width:100%;justify-content:center;margin:0 0 12px;background:#EFE8DA}
 .cd-seg button{flex:1;padding:9px 16px;font-size:14px}
@@ -6377,9 +6359,7 @@ body.gated{overflow:hidden}
 /* بوابة الدخول للبنات */
 .gt-rose{position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .7s ease;pointer-events:none;z-index:0}
 .gt-bg .gt-rose{background:radial-gradient(120% 100% at 80% -10%,#B96F86 0%,#8F4259 38%,#4E1C2E 78%,#3A1422 100%)}
-.gt-top>.gt-rose{background:radial-gradient(140% 150% at 100% 0%,#C27A92,#A4566C 52%,#6E2D42)}
 .gate.girl .gt-rose{opacity:1}
-.gate.girl .gt-g1{background:rgba(227,201,142,.26)}.gate.girl .gt-g2{background:rgba(201,118,146,.45)}
 .gate.girl .gt-tick{background:linear-gradient(135deg,#C27A92,#7B3047);box-shadow:0 0 0 6px rgba(164,86,108,.16),0 14px 28px rgba(90,35,54,.3)}
 .gate.girl .gt-ok h3{color:#7B3047}
 .gate.girl .gt-foot svg{stroke:#A4566C}
@@ -6989,16 +6969,15 @@ body.hide-reqs .cc-pub,body.hide-news .cc-pub{display:none!important}
 /* v58 · فقاعة الجرس (البند ٤) */
 .bl-tip{position:fixed;z-index:44;top:0;left:0;pointer-events:none}
 .bl-tip:empty{display:none}
-.bl-c{--ac:#2F6B5F;pointer-events:auto;position:relative;box-sizing:border-box;padding:12px 14px 10px;border-radius:16px;background:#FFFEFA;border:1px solid rgba(201,168,102,.6);border-inline-start:3px solid var(--ac);box-shadow:0 14px 34px rgba(12,40,44,.3),0 2px 6px rgba(12,40,44,.12);animation:blIn .3s cubic-bezier(.2,.8,.2,1) both;transform-origin:var(--ax,30px) -8px}
+.bl-c{--ac:#2F6B5F;pointer-events:auto;position:relative;box-sizing:border-box;padding:11px 12px 9px;border-radius:16px;background:#FFFEFA;border:1px solid rgba(201,168,102,.6);border-inline-start:3px solid var(--ac);box-shadow:0 14px 34px rgba(12,40,44,.3),0 2px 6px rgba(12,40,44,.12);animation:blIn .3s cubic-bezier(.2,.8,.2,1) both;transform-origin:var(--ax,30px) -8px}
 .bl-c.s-no{--ac:#9A4A3C}.bl-c.s-review{--ac:#A7864B}.bl-c.s-sum{--ac:#2D6369}
 .bl-ar{position:absolute;top:-7.5px;left:calc(var(--ax,30px) - 7px);width:13px;height:13px;background:#FFFEFA;border-top:1px solid rgba(201,168,102,.6);border-left:1px solid rgba(201,168,102,.6);border-radius:3px 0 0 0;transform:rotate(45deg)}
-.bl-t{margin:0;font-size:13.5px;line-height:1.7;font-weight:600;color:#1D2A29;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;overflow-wrap:anywhere}
+.bl-t{margin:0;font-size:13px;line-height:1.7;font-weight:600;color:#1D2A29;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:6;overflow:hidden;overflow-wrap:break-word}
 .bl-c.s-no .bl-t{color:#5E2B22}
-.bl-a{display:flex;align-items:center;gap:8px;margin-top:8px}
-.bl-go{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#2D6369,#1C4448);color:#fff;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
-.bl-n{margin-inline-start:auto;font-family:var(--num);font-size:11.5px;font-weight:700;color:#5C6A65}
+.bl-a{display:flex;align-items:center;gap:4px;margin-top:8px}
+.bl-go{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:0;border-radius:12px;background:linear-gradient(135deg,#2D6369,#1C4448);color:#fff;font-family:inherit;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer}
+.bl-n{display:inline-block;margin-bottom:2px;font-family:var(--num);font-size:11px;font-weight:700;line-height:18px;color:var(--ac);background:#F2EEE3;border-radius:99px;padding:0 8px;white-space:nowrap}
 .bl-x{margin-inline-start:auto;width:40px;height:40px;flex:none;display:grid;place-items:center;border:0;border-radius:12px;background:none;color:#7A857F;cursor:pointer}
-.bl-n+.bl-x{margin-inline-start:0}
 .bl-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .bl-go:focus-visible,.bl-x:focus-visible{outline:2px solid #A7864B;outline-offset:2px}
 @media (hover:hover){.bl-x:hover{background:#F2F4F3;color:#33403D}}
@@ -7008,6 +6987,61 @@ body.hide-reqs .cc-pub,body.hide-news .cc-pub{display:none!important}
 @media (prefers-reduced-motion:reduce){.bl-c,.bl-c.out{animation:none}}
 .bell.rp::after{content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#E2C483;border:2px solid #fff;box-sizing:content-box}
 @media (max-width:860px){.bell.rp::after{border-color:#2D6369}}
+
+/* v58 · مقاسات السهم الموحّد في أماكنه */
+svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;stroke:currentColor!important;stroke-width:2.2!important}
+.st-chev{display:grid;place-items:center}.st-chev svg.arw{width:17px!important;height:17px!important}
+.hx-cta i svg.arw{width:19px!important;height:19px!important}
+.gr-bn i svg.arw{width:20px!important;height:20px!important}
+.cal-h button{display:inline-grid;place-items:center}.cal-h button svg.arw{width:17px!important;height:17px!important}
+.lgx-go span{vertical-align:-.1em}
+.gd-entry>i,.gd-home>i,.st-pill,.bt-go,.nc-f span,.rvp-n,.gd-next{white-space:nowrap}
+
+/* v58 · شاشة الدخول (النموذج المعتمد mock/login4): الخلفية «شجرة لحظات الأسرة»، والترحيب والعنوان والنسب على الخلفية، والبطاقة للدخول فقط */
+.gate{display:block;padding:0 20px;overflow-x:hidden}
+.gt-bg{background:radial-gradient(90% 45% at 50% 22%,#33777A 0%,transparent 70%),linear-gradient(180deg,#2A5F62 0%,#1E4B4E 45%,#13353A 100%)}
+.gt-bg .gt-rose{z-index:0}
+.gt-doodle{position:absolute;inset:-48px 0;z-index:1}
+.gt-doodle svg{display:block;width:100%;height:100%}
+@keyframes gtDrift{from{transform:translateY(0)}to{transform:translateY(-40px)}}
+@media (prefers-reduced-motion:no-preference){.gt-doodle{animation:gtDrift 60s linear infinite alternate}}
+.gt-wrap{position:relative;z-index:2;box-sizing:border-box;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 0}
+.gt-head{position:relative;z-index:0;width:100%;max-width:444px;text-align:center}
+.gt-head::before{content:'';position:absolute;z-index:-1;left:50%;top:50%;width:420px;max-width:120vw;height:270px;transform:translate(-50%,-50%);pointer-events:none;background:radial-gradient(closest-side,rgba(24,64,67,.95) 0,rgba(24,64,67,.86) 50%,rgba(24,64,67,0) 100%)}
+.gate.girl .gt-head::before{background:radial-gradient(closest-side,rgba(92,34,54,.9) 0,rgba(92,34,54,.8) 50%,rgba(92,34,54,0) 100%)}
+.gt-hi{margin:0;font-family:var(--display);font-size:22px;line-height:1.3;color:#EADFC4}
+.gt-head h2{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(33px,10.8vw,42px);line-height:1.25;color:#FBF6EA;text-shadow:0 2px 14px rgba(0,0,0,.25)}
+.gt-head h2 span{display:block}
+.gt-head h2 b{font-weight:700;color:#E2C483}
+.gt-eye{margin:10px 0 0;font-size:14px;line-height:1.6;color:#E7D3A2}
+.gt-tag{margin:8px 0 0;font-family:var(--display);font-size:16px;line-height:1.6;color:#D6E5E1}
+.gt-card{position:relative;box-sizing:border-box;width:100%;max-width:444px;margin-top:112px;padding:78px 22px 20px;border-radius:30px;background:#FFFDF8;border:1px solid rgba(201,164,92,.5);box-shadow:0 0 0 8px rgba(255,255,255,.06),0 30px 60px rgba(0,0,0,.38);text-align:center;animation:gtUp .7s cubic-bezier(.2,.8,.2,1) both}
+.gate.girl .gt-card{box-shadow:0 0 0 8px rgba(255,255,255,.06),0 30px 60px rgba(58,20,34,.5)}
+.gt-logo{position:absolute;top:-66px;left:50%;margin-left:-66px;width:132px;height:132px;border-radius:50%;background:#fff;box-shadow:0 12px 28px rgba(0,0,0,.25);display:grid;place-items:center;z-index:2}
+.gt-logo::before{content:'';position:absolute;inset:-9px;border-radius:50%;border:1.5px dashed rgba(226,196,131,.55)}
+.gt-logo::after{content:'';position:absolute;inset:7px;border-radius:50%;border:3px solid #C9A45C}
+.gt-logo img{width:94px;height:94px;border-radius:50%;object-fit:cover}
+.gt-body{padding:0}
+.gt-body label{font-size:17px;font-weight:700;color:#1F2E30;margin-bottom:12px}
+.gt-in{height:60px;box-sizing:border-box;border:1.5px solid #2D6369;border-radius:18px;background:#FFFDF8;box-shadow:0 0 0 4px rgba(45,99,105,.08)}
+.gt-in:focus-within{box-shadow:0 0 0 4px rgba(45,99,105,.16)}
+.gt-in svg{stroke:#C29A55;stroke-width:1.7;margin-inline-start:18px}
+.gt-in input{padding:0 10px!important;height:100%;font-size:16.5px}
+.gt-in input::placeholder{color:#9AA6A6;font-size:15px}
+.gt-chips{gap:8px;margin:12px 0 10px}
+.gt-chips span{min-height:34px;border-radius:12px;border:1px dashed rgba(201,164,92,.6);background:#FCF7EC;color:#A99467;font-size:13px}
+.gt-hint{margin:0;font-size:12.5px;color:#6B7A7B}
+.gt-err:empty{min-height:0;margin:0}
+.gt-err{margin-top:8px}
+.gt-go{margin-top:20px;height:60px;padding:0 17px;border-radius:20px;font-size:19px;font-weight:700;background:linear-gradient(90deg,#2D6369,#1C4448);box-shadow:0 12px 24px rgba(28,68,72,.28)}
+.gt-go i{display:inline-grid;place-items:center}.gt-go svg.arw{width:20px!important;height:20px!important}
+.gt-back{display:flex;align-items:center;justify-content:center;gap:6px}
+.gt-foot{margin-top:14px;font-size:12.5px;color:#6B7A7B}
+.gt-foot[hidden],.gt-ok[hidden],.gt-pick[hidden],.gt-nf[hidden],#gt-form[hidden]{display:none!important}
+.gt-foot svg{stroke:#2D6369}
+@media (max-width:360px){.gt-card{padding:74px 16px 18px}.gt-chips{gap:6px}.gt-chips span{font-size:12.5px}.gt-in input::placeholder{font-size:13.5px}.gt-hi{font-size:20px}.gt-tag{font-size:15px}}
+@media (max-height:720px){.gt-card{margin-top:96px}.gt-wrap{padding:20px 0}}
+@media (prefers-reduced-motion:reduce){.gt-doodle{animation:none!important}}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
