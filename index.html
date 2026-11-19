@@ -3282,7 +3282,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
           <button data-wt="up" class="${W.tab === 'up' ? 'on' : ''}">قادمة <i>${ar(up.length)}</i></button>
           <button data-wt="past" class="${W.tab === 'past' ? 'on' : ''}">سابقة <i>${ar(past.length)}</i></button>
           <button data-wt="cal" class="${W.tab === 'cal' ? 'on' : ''}">التقويم</button>
-          ${isAdmin() ? `<button data-wt="req" class="${W.tab === 'req' ? 'on' : ''}">الطلبات <i class="${pendReqs().length ? 'hot' : ''}">${ar(pendReqs().length)}</i></button>` : ''}
+          ${isAdmin() ? `<button data-wt="req" class="${W.tab === 'req' ? 'on' : ''}">الطلبات <i class="${admPend().r ? 'hot' : ''}">${ar(admPend().r)}</i></button>` : ''}
         </div>
         <label class="w-srch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <input id="w-q" type="search" placeholder="ابحث في المناسبات: اسم، قاعة…" value="${esc(W.q || '')}"></label>
@@ -3354,9 +3354,12 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   // v57: مفتاح «بلّغوني» ظاهر دايم، والخانة تطلع كل ما كان مشغّلاً. الزائر الجديد يبدأ مطفّياً، واختياره يُحفظ من لمسته هو بس
   const waKey = () => !!(window.JNDKey && JNDKey.hasPk());
-  const WA_OK = 'رقمك مشفّر، وما يشوفه إلا المشرف', WA_WAIT = 'رقمك يبقى في جهازك، ويوصل للإدارة مشفّراً أول ما تكتمل الحماية. ما ينحفظ مكشوفاً أبداً',
-    WA_Q = 'ورقمك يوصل للإدارة مشفّراً أول ما تكتمل الحماية، وتتابع طلبك من الجرس';
-  function waNote(pf) { const n = $('#' + pf + '-phw .wa-note'); if (n) n.textContent = !cloudOn() || waKey() ? WA_OK : WA_WAIT; }
+  // v58: جملتا الواتس بصياغة اللغوي (القسم ٧ البند ٢)، ومطابقة للجنس. WA_Q جملة مستقلة تُكتب بعد نقطة
+  const waF = () => !!(S.me && S.me.gender === 'female');
+  const WA_OK = () => waF() ? 'رقمكِ مشفّر، وما يشوفه إلا المشرف' : 'رقمك مشفّر، وما يشوفه إلا المشرف',
+    WA_WAIT = () => waF() ? 'رقمكِ محفوظ في جهازكِ، ويوصل للمشرف مشفّر أول ما تتفعّل الحماية' : 'رقمك محفوظ في جهازك، ويوصل للمشرف مشفّر أول ما تتفعّل الحماية',
+    WA_Q = () => waF() ? 'رقمكِ يوصل للمشرف مشفّر أول ما تتفعّل الحماية، والرد يجيكِ في الجرس' : 'رقمك يوصل للمشرف مشفّر أول ما تتفعّل الحماية، والرد يجيك في الجرس';
+  function waNote(pf) { const n = $('#' + pf + '-phw .wa-note'); if (n) n.textContent = !cloudOn() || waKey() ? WA_OK() : WA_WAIT(); }
   function waInit(pf) {
     const on = $('#' + pf + '-wa'); if (!on) return; let pref = false, ph = '';
     try { pref = localStorage.getItem('jnd-wa') === '1'; ph = localStorage.getItem('jnd-ph') || ''; } catch (e) { }
@@ -3548,13 +3551,14 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         st, kd: rsKind(x), sub: m.sub, why: m.why, line: m.s, rid: x.id, when: rsWhen(x), ord: -300 - (d.getTime() / 1e13), go: () => openMine() }); });
     return out;
   }
-  /* ───────── v56 · إشعار ردّ الإدارة: بطاقة تنزل تحت الرأس، مرة واحدة لكل قرار، وتبقى في الجرس ───────── */
+  /* ───────── إشعار ردّ الإدارة (v58: فقاعة من الجرس بدل البطاقة تحت الرأس)، مرة واحدة لكل قرار، ويبقى في الجرس ───────── */
   const DN = { q: [], cur: null, t: 0, left: 0, t0: 0, w: 0, run: 0 };
   const dnSeen = () => { try { const v = JSON.parse(localStorage.getItem('jnd-dn') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
   const dnMark = ids => { try { localStorage.setItem('jnd-dn', JSON.stringify([...new Set(dnSeen().concat(ids))].slice(-300))); } catch (e) { } };
   const dnRM = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const DN_IC = { ok: 'check', no: 'info', review: 'clock', sum: 'bell' };
   function dnPush(list) {
+    if (blOnce() && !DN.cur && !DN.q.length) return;   // v58: الفقاعة مرة وحدة في الزيارة، والباقي يبقى في الجرس بنقطته الذهبية
     const s = dnSeen(), sn = seenN(), add = [];
     (list || []).forEach(x => { if (!x || !x.st || x.k !== 'mine' || s.includes(x.id) || sn.includes(x.id) || (AD.just && AD.just.has(String(x.rid)))) return;
       if (DN.q.some(y => y.id === x.id || (y.ids && y.ids.includes(x.id))) || (DN.cur && (DN.cur.id === x.id || (DN.cur.ids && DN.cur.ids.includes(x.id)))) || add.some(y => y.id === x.id)) return; add.push(x); });
@@ -3563,47 +3567,58 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     else add.forEach(x => DN.q.push(x));
     dnNext();
   }
+  /* v58 · فقاعة الجرس: تطلع من الجرس وسهمها يشير له، فيها نص الرد وزر «شوف الرد».
+     تختفي بعد ٦ ثواني أو مع أول تمرير، ومرة وحدة في الزيارة. الجرس تبقى عليه نقطة ذهبية لين ينفتح الرد */
+  const BL_K = 'jnd-blt', blOnce = () => { try { return sessionStorage.getItem(BL_K) === '1'; } catch (e) { return !!DN.done; } };
+  function blText(x) {
+    if (x.sum) return `عندك ${nCount(x.n, ['رد جديد', 'ردّان جديدان', 'ردود جديدة', 'رداً جديداً'])} من الإدارة`;
+    const it = mineAll().find(y => String(y.id) === String(x.rid)) || {}, f = rsGen(it, S.me) === 'f', K = f ? 'كِ' : 'ك';
+    const obj = (it.text != null && !it.title ? 'اقتراح' : 'طلب') + K;
+    if (x.st === 'ok') return (f ? 'أبشري' : 'أبشر') + '، وافق المشرف على ' + obj;
+    if (x.st === 'no') return 'ما تمت الموافقة على ' + obj + (x.why ? ': ' + x.why : '') + '. ' + (f ? 'تقدرين تعدّلينه وترسلينه مرة ثانية' : 'تقدر تعدّله وترسله مرة ثانية');
+    return x.t;
+  }
   function dnNext() {
     if (DN.cur || !DN.q.length) return;
+    if (DN.cut) { DN.q = []; return; }
     const busy = $$('.modal.open').length || document.body.classList.contains('gated') || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '') || document.hidden;
     if (busy) { clearTimeout(DN.w); DN.w = setTimeout(dnNext, 1500); return; }
+    const bell = $('#bell'), br = bell && bell.offsetParent !== null ? bell.getBoundingClientRect() : null; if (!br) { DN.q = []; return; }
     const x = DN.cur = DN.q.shift(); dnMark(x.ids || [x.id]);
-    let box = $('#dn'); if (!box) { box = document.createElement('div'); box.id = 'dn'; box.className = 'dn'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite'); document.body.appendChild(box); }
-    const hd = $('.hdr'), hb = hd && hd.offsetParent !== null ? hd.getBoundingClientRect().bottom : 0; box.style.setProperty('--dn-top', Math.max(0, Math.round(hb)) + 'px');
-    const T = x.sum ? `عندك ${nCount(x.n, ['رد جديد', 'ردّان جديدان', 'ردود جديدة', 'رداً جديداً'])} من الإدارة` : x.t,
-      L2 = x.sum ? 'شوفها في طلباتي واقتراحاتي' : x.why ? 'السبب: ' + x.why : (x.line || '');
-    DN.left = Math.min(10000, Math.max(6000, 4000 + (T + L2).length * 40)) + (dnRM() ? 3000 : 0);
-    const n = DN.q.length ? `<span class="dn-n">${ar(1)} من ${ar(DN.q.length + 1)}</span>` : '';
-    box.innerHTML = `<article class="dn-c s-${x.st}" tabindex="0" style="--dur:${DN.left}ms" aria-label="${esc(T)}${L2 ? '. ' + esc(L2) : ''}. اضغط لعرض طلباتي واقتراحاتي">
-      <span class="dn-ic" aria-hidden="true">${sv(DN_IC[x.st] || 'bell')}</span>
-      <div class="dn-tx"><b>${esc(T)}</b>${L2 || n ? `<div class="dn-l2"><p>${esc(L2)}</p>${n}</div>` : ''}</div>
-      <button class="dn-x" type="button" aria-label="إغلاق الإشعار">${sv('xmark')}</button><i class="dn-pr" aria-hidden="true"></i></article>`;
-    const c = $('.dn-c', box); DN.run = 0; dnRun(true);
-    const hold = on => { c.classList.toggle('hold', on); dnRun(!on); };
-    const open = () => { dnClose(true); openMine(); };
-    c.addEventListener('mouseenter', () => hold(true)); c.addEventListener('mouseleave', () => hold(false));
-    c.addEventListener('focusin', () => hold(true)); c.addEventListener('focusout', () => hold(false));
-    $('.dn-x', c).onclick = e => { e.stopPropagation(); dnClose(); };
-    c.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); dnClose(); } if (e.key === 'Enter' && e.target === c) open(); });
-    let p0 = null;
-    c.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; p0 = { x: e.clientX, y: e.clientY, t: Date.now() }; hold(true); });
-    c.addEventListener('pointermove', e => { if (!p0) return; const dx = e.clientX - p0.x, dy = Math.min(0, e.clientY - p0.y);
-      if (Math.abs(dx) > 6 || dy < -6) { c.style.transition = 'none'; c.style.transform = `translate(${dx}px,${dy}px)`; c.style.opacity = String(Math.max(.2, 1 - (Math.abs(dx) - dy * 2) / 220)); } });
-    const up = e => { if (!p0) return; const dx = e.clientX - p0.x, dy = e.clientY - p0.y, quick = Date.now() - p0.t < 500; p0 = null;
-      if (Math.abs(dx) > 70 || dy < -30) return dnClose(true);
-      c.style.transition = 'transform .2s, opacity .2s'; c.style.transform = ''; c.style.opacity = '';
-      if (quick && Math.abs(dx) < 8 && Math.abs(dy) < 8) { open(); return; } hold(false); };
-    c.addEventListener('pointerup', up); c.addEventListener('pointercancel', () => { p0 = null; c.style.transform = ''; c.style.opacity = ''; hold(false); });
+    if (!DN.shown) { DN.shown = 1; try { sessionStorage.setItem(BL_K, '1'); } catch (e) { DN.done = 1; } blArm(); }
+    let box = $('#bl-tip'); if (!box) { box = document.createElement('div'); box.id = 'bl-tip'; box.className = 'bl-tip'; box.setAttribute('role', 'status'); box.setAttribute('aria-live', 'polite'); document.body.appendChild(box); }
+    const T = blText(x), n = DN.q.length || DN.k ? `<span class="bl-n">${ar((DN.k || 0) + 1)} من ${ar((DN.k || 0) + DN.q.length + 1)}</span>` : '';
+    DN.k = (DN.k || 0) + 1; DN.left = 6000;
+    box.innerHTML = `<div class="bl-c s-${esc(x.st)}"><i class="bl-ar" aria-hidden="true"></i><p class="bl-t">${esc(T)}</p>
+      <div class="bl-a"><button type="button" class="bl-go">شوف الرد${ARW}</button>${n}<button type="button" class="bl-x" aria-label="إغلاق">${sv('xmark')}</button></div></div>`;
+    // المكان: تحت الجرس، والسهم على نص الجرس، ولا تطلع برا الشاشة
+    const vw = document.documentElement.clientWidth, c = $('.bl-c', box), cx = br.left + br.width / 2;
+    const w = Math.min(vw - 24, Math.max(190, Math.min(vw * .58, 270)));
+    const L = cx < vw / 2 ? Math.max(12, br.left - 4) : Math.min(vw - 12 - w, br.right + 4 - w);
+    c.style.width = w + 'px'; box.style.top = Math.round(br.bottom + 11) + 'px'; box.style.left = Math.round(L) + 'px';
+    c.style.setProperty('--ax', Math.round(Math.min(w - 22, Math.max(14, cx - L))) + 'px');
+    $('.bl-go', box).onclick = () => { dnClose(true, 1); openMine(); };
+    $('.bl-x', box).onclick = () => dnClose(false, 1);
+    c.addEventListener('mouseenter', () => dnRun(false)); c.addEventListener('mouseleave', () => dnRun(true));
+    c.addEventListener('focusin', () => dnRun(false)); c.addEventListener('focusout', () => dnRun(true));
+    DN.run = 0; dnRun(true);
+  }
+  // أول تمرير يقفل الفقاعة (والباقي ما يطلع في هالزيارة، ويبقى في الجرس)
+  function blArm() {
+    const EV = ['scroll', 'wheel', 'touchmove'];
+    const h = e => { if (e.target && e.target.closest && e.target.closest('#bl-tip')) return; EV.forEach(ev => window.removeEventListener(ev, h, true)); if (DN.cur) dnClose(false, 1); else DN.cut = 1; };
+    EV.forEach(ev => window.addEventListener(ev, h, { capture: true, passive: true }));
   }
   function dnRun(on) { if (!DN.cur || !on === !DN.run) return; clearTimeout(DN.t); DN.run = on ? 1 : 0;
-    if (on) { DN.t0 = Date.now(); DN.t = setTimeout(() => dnClose(), DN.left); } else DN.left = Math.max(1200, DN.left - (Date.now() - DN.t0)); }
-  function dnClose(fast) {
-    clearTimeout(DN.t); DN.run = 0; const box = $('#dn'), c = box && $('.dn-c', box); DN.cur = null;
+    if (on) { DN.t0 = Date.now(); DN.t = setTimeout(() => dnClose(), DN.left); } else DN.left = Math.max(1500, DN.left - (Date.now() - DN.t0)); }
+  function dnClose(fast, all) {
+    clearTimeout(DN.t); DN.run = 0; const box = $('#bl-tip'), c = box && $('.bl-c', box); DN.cur = null;
+    if (all) { DN.cut = 1; DN.q = []; }
     if (!c) return dnNext();
-    if (fast || dnRM()) { box.innerHTML = ''; setTimeout(dnNext, 250); return; }
-    c.classList.add('out'); setTimeout(() => { if (!DN.cur) box.innerHTML = ''; setTimeout(dnNext, 350); }, 260);
+    if (fast || dnRM()) { box.innerHTML = ''; setTimeout(dnNext, 200); return; }
+    c.classList.add('out'); setTimeout(() => { if (!DN.cur) box.innerHTML = ''; setTimeout(dnNext, 250); }, 220);
   }
-  document.addEventListener('visibilitychange', () => { if (!DN.cur) return; const c = $('#dn .dn-c'); if (c) c.classList.toggle('hold', document.hidden); dnRun(!document.hidden); });
+  document.addEventListener('visibilitychange', () => { if (!DN.cur) return; dnRun(!document.hidden); });
   function stamp(x, st, why) { const t = new Date().toISOString(); if (st === 'review') x.rev = t; else { x.decAt = t; if (why) x.why = String(why).slice(0, 140); } }
   // v57: مجموعة حالات واحدة في كل مكان (المشرف، طلباتي، الجرس، الإشعار، الدليل)
   const ST_T = { new: ['بانتظار الإدارة', 'clock'], review: ['قيد المراجعة', 'search'], ok: ['تمت الموافقة', 'check'], no: ['لم تتم الموافقة', 'xmark'] };
@@ -3651,7 +3666,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       S.reqs = (S.reqs || []).concat(r); saveReqs(); phqMark(r);
       const msg = `طلب إضافة مناسبة — أسرة الجنيدلي\n${r.kind}: ${r.title}\nالموعد: ${wday(r.date)} ${hStr(r.date)} (${gStr(r.date)})${r.time ? '\nالساعة: ' + t12(r.time) : ''}${r.venue ? '\nالمكان: ' + r.venue : ''}${r.map ? '\n' + r.map : ''}${r.note ? '\n' + r.note : ''}\nمن: ${r.by}${r.phone ? ' — ' + r.phone : ''}`;
       $('#rq-form').hidden = true; $('#rq-done').hidden = false;
-      $('#rq-done-t').textContent = 'وصل طلبك للإدارة، وأول ما توافق عليه الإدارة ينزل في المناسبات. الله يتمم على خير.' + (r.phq ? ' ' + WA_Q + '.' : '');
+      $('#rq-done-t').textContent = 'وصل طلبك للإدارة، وأول ما توافق عليه الإدارة ينزل في المناسبات. الله يتمم على خير.' + (r.phq ? ' ' + WA_Q() + '.' : '');
       $('#rq-done-a').innerHTML = '<button class="btn" type="button" data-close>تمام</button>';
     });
   }
@@ -3805,7 +3820,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       S.sugs = (S.sugs || []).concat(x); saveSugs(); phqMark(x);
       const f = S.me && S.me.gender === 'female';
       $('#sg-form').hidden = true; $('#sg-done').hidden = false; $('#sg-done-h').textContent = f ? 'شكراً لكِ' : 'شكراً لك';
-      $('#sg-done-t').textContent = (f ? 'وصل اقتراحك للإدارة، جزاكِ الله خيراً على حرصكِ' : 'وصل اقتراحك للإدارة، جزاك الله خيراً على حرصك') + (x.phq ? '، ' + WA_Q + '.' : '.');
+      $('#sg-done-t').textContent = (f ? 'وصل اقتراحك للإدارة، جزاكِ الله خيراً على حرصكِ' : 'وصل اقتراحك للإدارة، جزاك الله خيراً على حرصك') + '.' + (x.phq ? ' ' + WA_Q() + '.' : '');
       $('#sg-done-a').innerHTML = '<button class="btn" type="button" data-close>تمام</button>';
     });
   }
@@ -4194,7 +4209,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   window.JND_GV = '57';
   const gdSt = () => { let a = '', v = ''; try { a = localStorage.getItem('jnd-guide') || ''; v = localStorage.getItem('jnd-gv') || ''; } catch (e) { } return v === window.JND_GV ? 'seen' : a ? 'new' : 'first'; };
   const gdBanner = () => { const st = gdSt(); if (st === 'seen') return ''; const nw = st === 'new';
-    return `<button class="gd-home" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span><b>${nw ? 'جديد في الدليل الإرشادي' : 'أول مرة هنا؟'}</b><small>${nw ? 'ردّ الإدارة على طلباتك يطلع لك أعلى الصفحة' : 'الدليل الإرشادي يعرّفك على المنصة بجولة سريعة'}</small></span><i>${nw ? 'اعرف الجديد ‹' : 'ابدأ الجولة ‹'}</i></button>`; };
+    return `<button class="gd-home" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span><b>${nw ? 'جديد في الدليل الإرشادي' : 'أول مرة هنا؟'}</b><small>${nw ? 'ردّ الإدارة على طلباتك يطلع لك من الجرس' : 'الدليل الإرشادي يعرّفك على المنصة بجولة سريعة'}</small></span><i>${nw ? 'اعرف الجديد ‹' : 'ابدأ الجولة ‹'}</i></button>`; };
   /* ───────── home ───────── */
   const greet = () => { const h = new Date().getHours(); return h < 12 ? 'صباح الخير' : 'مساء الخير'; };
   function homeRender() {
@@ -4501,9 +4516,11 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     plus: '<path d="M12 5v14M5 12h14"/>', search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>', news: '<rect x="3" y="5" width="18" height="15" rx="2.5"/><path d="M7 9h6M7 13h10M7 16h7"/>', out: '<path d="M15 4h4v16h-4M10 17l-5-5 5-5M5 12h11"/>',
     cal: '<rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>', inbox: '<path d="M3 13h5l2 3h4l2-3h5"/><path d="M5 5h14l2 8v6H3v-6z"/>', trash: '<path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l1 12.5h9l1-12.5"/><path d="M10 11v5M14 11v5"/>', plus: '<path d="M12 5v14M5 12h14"/>', locate: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>', shield: '<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>', save: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/>', copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>', alert: '<path d="M12 4 3 20h18z"/><path d="M12 10v4M12 17v.01"/>', star: '<circle cx="12" cy="12" r="3.2"/><path d="M12 3v3.5M12 17.5V21M3 12h3.5M17.5 12H21"/>' };
   const sv = k => `<svg viewBox="0 0 24 24">${IC[k]}</svg>`;
+  // v58: سهم واحد في كل المنصة: «كمّل» يشير لليسار، و«رجوع» نفس الأيقونة معكوسة لليمين
+  const ARW = '<svg class="arw" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>', ARWB = ARW.replace('class="arw"', 'class="arw bk"');
   const row = (attr, c, k, t, d, extra = '') => `<${attr.startsWith('href') ? 'a' : 'button'} ${attr} class="st-row"><span class="st-ic c-${c}">${sv(k)}</span><span class="st-t"><b>${t}</b>${d ? `<small>${d}</small>` : ''}</span>${extra}<i class="st-chev">‹</i></${attr.startsWith('href') ? 'a' : 'button'}>`;
   function openMore() {
-    const me = S.me, nN = notifs().filter(x => x.unread).length, pR = pendReqs().length, pS = pendSugs().length;
+    const me = S.me, nN = noteCount(), pA = admPend().n;
     $('#more-list').innerHTML = `
       <a href="#me" data-close class="st-me">
         <span class="st-av">${me ? esc(me.name[0]) : sv('user')}</span>
@@ -4515,7 +4532,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         <button data-cmd="share-app" class="q-green"><span>${sv('share')}</span><b>شارك</b></button>
         <a href="#about" data-close class="q-teal"><span>${sv('book')}</span><b>النسب</b></a>
       </div>
-      <button class="gd-entry" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك أعلى الصفحة' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد ‹' : 'ابدأ ‹'}</i></button>
+      <button class="gd-entry" data-cmd="guide"><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك من الجرس' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد ‹' : 'ابدأ ‹'}</i></button>
       <button class="gd-entry" data-cmd="install" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#3F7C69,#2D6369)"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></span><span class="st-t"><b>ثبّت المنصة كتطبيق</b><small>على الشاشة الرئيسية لجوالك</small></span><i>ثبّت ‹</i></button>
       ${S.site.contact ? `<a class="gd-entry st-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(String(S.site.contact).replace(/\D/g, '').replace(/^0/, '966'))}" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#25D366,#128C7E)"><svg viewBox="0 0 24 24"><path d="M5 19l1.2-3.6A7.5 7.5 0 1 1 9 18.2z"/></svg></span><span class="st-t"><b>تواصل مع الإدارة</b><small>واتساب مباشر مع مشرف المنصة</small></span><i>راسل ‹</i></a>` : ''}
       <h5>العرض</h5>
@@ -4526,7 +4543,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       ${isAdmin() || canAdmin() ? '<h5>الإدارة</h5>' : ''}
       <div class="st-grp"${isAdmin() || canAdmin() ? '' : ' hidden'}>
         ${isAdmin() ? `
-          ${row('href="#admin" data-close', 'teal', 'gear', 'لوحة المشرف', 'بانتظارك، والأفراد، والمناسبات', pR + pS ? `<em class="st-badge">${ar(pR + pS)}</em>` : '')}
+          ${row('href="#admin" data-close', 'teal', 'gear', 'لوحة المشرف', 'بانتظارك، والأفراد، والمناسبات', pA ? `<em class="st-badge">${ar(pA)}</em>` : '')}
           ${row('data-cmd="add-person"', 'green', 'plus', 'أضف فرداً', 'ابن أو بنت لأي اسم')}
           ${row('data-cmd="add-news"', 'gold', 'news', 'أضف خبراً', 'بصور ونص')}
           ${row('data-cmd="logout"', 'gray', 'out', 'اخرج من الإدارة', '')}`
@@ -4548,25 +4565,35 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       L.push({ id: `e:${e.id}:${near}`, k: 'ev', ic: 'cal', c: d <= 1 ? 'red' : 'green', t: evTitle(e), s: d === 0 ? 'المناسبة اليوم — حيّاكم الله' : d === 1 ? 'المناسبة بكرة' : `${dw.replace(/^بعد /, 'باقي ')} · ${wday(e.date)} ${hStr(e.date)}`, when: dw, ord: d - 100, go: () => { W.sel = e.id; W.tab = 'up'; go('weddings'); } }); });
     mineNotifs().forEach(x => L.push(x));
     const gA = grActive(); if (gA) L.push({ id: 'gr:' + gA.id, k: 'greet', ic: 'mail', c: 'gold', t: `${GR[gA.k].t} من أسرة الجنيدلي`, s: S.me ? `كل عام وأنت${S.me.gender === 'female' ? 'ِ' : ''} بخير يا ${S.me.name}، بطاقتك جاهزة` : 'بطاقتك جاهزة', when: nDate(gA.at), ord: -350, go: () => greetOpen() });
-    if (isAdmin()) { const r = pendReqs().length, g = pendSugs().length;
-      if (r) L.push({ id: 'r:' + r, k: 'adm', ic: 'inbox', c: 'teal', t: `${nCount(r, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} بانتظار موافقتك`, s: 'للإدارة', when: 'الآن', ord: -200, go: () => adOpen('inbox', 'req') });
-      if (g) L.push({ id: 'g:' + g, k: 'adm', ic: 'pen', c: 'teal', t: nCount(g, ['اقتراح جديد', 'اقتراحين جدد', 'اقتراحات جديدة', 'اقتراحاً جديداً']), s: 'للإدارة', when: 'الآن', ord: -199, go: () => adOpen('inbox', 'sug') });
+    if (isAdmin()) { const P = admPend(), r = P.r, g = P.s;
+      // v58: «بانتظارك» مهام، تبقى جديدة لين تنحل وتنعد بعددها (نفس رقم لوحة المشرف)، وما تتأثر بـ«خلّها مقروءة»
+      if (r) L.push({ id: 'adm:r', k: 'adm', task: r, ic: 'inbox', c: 'teal', t: `${nCount(r, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} بانتظار موافقتك`, s: 'بانتظارك', when: 'الآن', ord: -200, go: () => adOpen('inbox', 'req') });
+      if (g) L.push({ id: 'adm:s', k: 'adm', task: g, ic: 'pen', c: 'teal', t: nCount(g, ['اقتراح بانتظارك', 'اقتراحين بانتظارك', 'اقتراحات بانتظارك', 'اقتراحاً بانتظارك']), s: 'بانتظارك', when: 'الآن', ord: -199, go: () => adOpen('inbox', 'sug') });
       if (bkDue()) { const d = bkDays(); L.push({ id: 'b:' + (d === Infinity ? 'x' : Math.floor(d / 7)), k: 'adm', ic: 'inbox', c: 'gold', t: d === Infinity ? 'ما نزّلت نسخة احتياطية للحين' : `مضى ${ar(d)} يوماً على آخر نسخة احتياطية`, s: 'للإدارة · نزّلها من لوحة الإدارة', when: 'الآن', ord: -198, go: () => adOpen('bk') }); }
-      const dp = dupScan().length; if (dp) L.push({ id: 'd:' + dp, k: 'adm', ic: 'search', c: 'gold', t: `أسماء مكررة محتملة (${ar(dp)})`, s: 'للإدارة · افحصها من لوحة الإدارة', when: 'الآن', ord: -197, go: () => adOpen('dup') }); }
-    return L.sort((a, b) => a.ord - b.ord).map(x => Object.assign(x, { unread: !seen.includes(x.id) }));
+      const dp = P.d; if (dp) L.push({ id: 'adm:d', k: 'adm', task: dp, ic: 'search', c: 'gold', t: `أسماء مكررة محتملة (${ar(dp)})`, s: 'بانتظارك · افحصها من لوحة المشرف', when: 'الآن', ord: -197, go: () => adOpen('dup') }); }
+    return L.sort((a, b) => a.ord - b.ord).map(x => Object.assign(x, { unread: x.task ? true : !seen.includes(x.id) }));
   }
-  function bellBadge() { const b = $('#bell-n'), bl = $('#bell'); if (!b || !bl) return; const U = notifs().filter(x => x.unread), n = U.length; b.hidden = !n; b.textContent = n > 9 ? '9+' : ar(n); bl.classList.toggle('ring', !!n);
-    const r = isAdmin() ? pendReqs().length : 0, mn = U.filter(x => x.k === 'mine').length, lab = n ? `الإشعارات — ${ar(n)} ${n === 1 ? 'جديد' : 'جديدة'}${r ? ` (منها ${nCount(r, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} بانتظار موافقتك)` : ''}${mn ? ` — جديد في طلباتك` : ''}` : 'الإشعارات'; bl.setAttribute('aria-label', lab); bl.title = lab; }
+  /* v58 · رقم واحد صادق: نفس العدّ في الجرس والإشعارات و«المزيد» ولوحة المشرف و«بانتظارك»
+     - admPend: اللي بانتظار المشرف (طلبات بانتظار القرار + اقتراحات مفتوحة + أسماء مكررة محتملة) = رقم «بانتظارك»
+     - noteCount: رقم الجرس = الإشعارات الجديدة + كل مهمة بانتظار المشرف بعددها */
+  function admPend(dups) {
+    if (!isAdmin()) return { r: 0, s: 0, d: 0, n: 0 };
+    const r = (S.reqs || []).filter(x => !x.sup && x.status === 'pending').length, sg = (S.sugs || []).filter(sgOpen).length, d = (dups || dupScan()).length;
+    return { r, s: sg, d, n: r + sg + d };
+  }
+  const noteCount = L => (L || notifs()).reduce((a, x) => a + (x.task ? x.task : x.unread ? 1 : 0), 0);
+  function bellBadge() { const b = $('#bell-n'), bl = $('#bell'); if (!b || !bl) return; const L = notifs(), U = L.filter(x => x.unread), n = noteCount(L); b.hidden = !n; b.textContent = n > 99 ? '99+' : ar(n); bl.classList.toggle('ring', !!n); bl.classList.toggle('rp', U.some(x => x.k === 'mine'));
+    const r = L.reduce((a, x) => a + (x.task || 0), 0), mn = U.filter(x => x.k === 'mine').length, lab = n ? `الإشعارات — ${ar(n)} ${n === 1 ? 'جديد' : 'جديدة'}${r ? ` (منها ${nCount(r, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظارك)` : ''}${mn ? ` — جديد في طلباتك` : ''}` : 'الإشعارات'; bl.setAttribute('aria-label', lab); bl.title = lab; }
   function openNotifs() {
-    const L = notifs(), U = L.filter(x => x.unread), R = L.filter(x => !x.unread);
+    const L = notifs(), U = L.filter(x => x.unread), R = L.filter(x => !x.unread), N = noteCount(L), NT = L.reduce((a, x) => a + (x.task || 0), 0), UO = U.filter(x => !x.task);
     const item = (x, i) => `<button class="nt-it ${x.unread ? 'new' : ''}" data-ni="${i}"><span class="st-ic c-${x.c}">${sv(x.ic)}</span><span class="nt-t"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span><time>${x.when}</time></button>`;
-    $('#notif-body').innerHTML = `<div class="nt-h"><div><h3>الإشعارات</h3><small>${U.length ? nCount(U.length, ['إشعار جديد', 'إشعاران جديدان', 'إشعارات جديدة', 'إشعاراً جديداً']) : 'ما فاتك شي'}</small></div>${U.length ? '<button id="nt-all">خلّها كلها مقروءة</button>' : ''}</div>
+    $('#notif-body').innerHTML = `<div class="nt-h"><div><h3>الإشعارات</h3><small>${N ? nCount(N, ['إشعار جديد', 'إشعاران جديدان', 'إشعارات جديدة', 'إشعاراً جديداً']) + (NT ? `، منها ${nCount(NT, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظارك` : '') : 'ما فاتك شي'}</small></div>${UO.length ? '<button id="nt-all">خلّها كلها مقروءة</button>' : ''}</div>
       ${mineAll().length ? `<button class="nt-mine" id="nt-mine"><span>${sv('inbox')}</span><b>طلباتي واقتراحاتي</b><i>${ar(mineAll().length)}</i></button>` : ''}
       ${L.length ? `${U.length ? `<h5>جديدة</h5><div class="st-grp">${U.map(x => item(x, L.indexOf(x))).join('')}</div>` : ''}${R.length ? `<h5>سابقة</h5><div class="st-grp">${R.map(x => item(x, L.indexOf(x))).join('')}</div>` : ''}`
         : `<div class="nt-empty"><span>${sv('bell')}</span><b>ما فيه إشعارات</b><small>أول ما ينزل خبر أو تقرب مناسبة، يوصلك تنبيه هنا.</small></div>`}`;
     const mark = ids => { try { const s0 = seenN(); localStorage.setItem('jnd-seen', JSON.stringify([...new Set(s0.concat(ids))].slice(-300))); } catch (e) { } bellBadge(); };
     $$('#notif-body [data-ni]').forEach(b => b.onclick = () => { const x = L[b.dataset.ni]; mark([x.id]); $('#notifm').classList.remove('open'); x.go(); });
-    const all = $('#nt-all'); if (all) all.onclick = () => { mark(L.map(x => x.id)); openNotifs(); };
+    const all = $('#nt-all'); if (all) all.onclick = () => { mark(L.filter(x => !x.task).map(x => x.id)); openNotifs(); };
     const mb = $('#nt-mine'); if (mb) mb.onclick = () => openMine();
     $('#morem').classList.remove('open'); $('#notifm').classList.add('open');
   }
@@ -4847,7 +4874,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const sL = SG.filter(x => sgOpen(x) || jr(x)), sH = SG.filter(x => !sgOpen(x) && !jr(x));
     // «السابقة»: سجل واحد (طلبات واقتراحات) مرتب بتاريخ القرار، والأقدم من شهر مطوي داخله
     const H = rH.concat(sH).sort((a, b) => mqT(b).localeCompare(mqT(a))), H1 = H.filter(x => mqDays(x) <= 30), H2 = H.filter(x => mqDays(x) > 30);
-    const nR = R.filter(r => r.status === 'pending').length, nS = SG.filter(sgOpen).length, nD = dups.length, tot = nR + nS + nD, nH = H.length;
+    const P = admPend(dups), nR = P.r, nS = P.s, nD = P.d, tot = P.n, nH = H.length;   // v58: نفس مصدر رقم الجرس
     const pv = x => `<article class="ib-pv"><div class="rq-h"><span class="rq-k">${esc(x.kind || 'مناسبة')}</span>${stPill(x)}</div>
         <b>${esc(x.title || rsSub(x) || x.pname || '')}</b>${x.bd && x.bd.y ? `<small>تاريخ الميلاد: ${esc(bFmt(x.bd.y, x.bd.m, x.bd.d))}</small>` : ''}<small>من: ${esc(x.by || '')} · ${esc(rsWhen(x))}</small>${x.status === 'no' && x.why ? `<p class="rq-why-t">السبب: ${esc(x.why)}</p>` : ''}</article>`;
     if ((AD.ib === 'req' && !rL.length) || (AD.ib === 'sug' && !sL.length) || (AD.ib === 'hist' && !nH)) AD.ib = '';
@@ -5141,6 +5168,8 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   function go(view, n) { if (location.hash !== '#' + view) location.hash = view; else show(view); if (n) setTimeout(() => select(n), 30); }
   function show(view) {
     if (view === 'greet') { try { history.replaceState(null, '', '#home'); } catch (e) { } view = 'home'; setTimeout(() => greetOpen(), 500); }
+    // v58: قائمة المشرفين ما تنقرأ قبل الدخول، فالمشرف المضاف على جهاز جديد يدخل من الرابط #admin-login (كلمة المرور مطلوبة دايماً)
+    if (view === 'admin-login') { try { history.replaceState(null, '', '#home'); } catch (e) { } view = 'home'; if (!isAdmin()) setTimeout(() => { $('#lg-pw').value = ''; $('#lg-err').textContent = ''; $('#loginm').classList.add('open'); setTimeout(() => $('#lg-pw').focus(), 60); }, 400); }
     const pm = /^p-(\d+)$/.exec(view || '');
     if (pm) { const n = S.byId[pm[1]]; view = 'tree'; if (n) setTimeout(() => select(n), 60); }
     if (view === 'girls') view = 'report';
@@ -5427,6 +5456,9 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
 (function () {
   var C = window.JND_CLOUD || {}, ON = !!(C.projectId && C.apiKey && C.adminEmail);
   var KEYS = ['jnd-rows', 'jnd-log', 'jnd-events-all', 'jnd-news', 'jnd-news-del', 'jnd-reqs', 'jnd-sugs', 'jnd-site', 'jnd-admins', 'jnd-pk', 'jnd-greet'], PUB = ['jnd-reqs', 'jnd-sugs'];
+  // v58: سجل الإدارة وقائمة المشرفين قراءتها للمشرف فقط (قواعد Firestore). الزائر ما يطلبها أبداً، والمشرف يقرأها بتوكنه
+  var LOCKED = ['jnd-log', 'jnd-admins'];
+  var isLocked = function (k) { return LOCKED.indexOf(String(k).split('~')[0]) >= 0; };
   var CHUNK = 400000, POLL = 120000, IDLE = 300000;   // فحص التحديثات كل دقيقتين، ويتوقف إذا الزائر ساكت ٥ دقايق (توفير لحصة Firebase)
   var LS = null; try { LS = window.localStorage; LS.getItem('x'); } catch (e) { LS = null; }
   if (!LS) ON = false;
@@ -5466,16 +5498,24 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
   var seen = {};                       // آخر updateTime شفناه لكل مفتاح
   function utMap() { try { return JSON.parse(get0('jnd-ut') || '{}'); } catch (e) { return {}; } }
   function utSet(k, v) { var m = utMap(); m[k] = v; set0('jnd-ut', JSON.stringify(m)); }
-  function getRaw(name, signal) { return fetch(BASE + encodeURIComponent(name) + KEYQ, { signal: signal, cache: 'no-store' }); }
+  // v58: إذا فيه دخول مشرف نرسل توكنه مع القراءة (السجل والمشرفين ما ينقرؤون بدونه). الزائر يقرأ بدون توكن
+  function authH() { return tok() ? idToken().then(function (t) { return t ? { Authorization: 'Bearer ' + t } : {}; }) : Promise.resolve({}); }
+  function getRaw(name, signal, h) { return fetch(BASE + encodeURIComponent(name) + KEYQ, { signal: signal, cache: 'no-store', headers: h || {} }); }
   function readDoc(k, signal) {
-    return getRaw(k, signal).then(function (r) {
+    return authH().then(function (h) {
+      if (isLocked(k) && !h.Authorization) return { k: k, skip: 1 };   // بدون دخول: لا نطلبه أصلاً (كان يطلع رفض في الكونسول)
+      return readDocH(k, signal, h);
+    });
+  }
+  function readDocH(k, signal, h) {
+    return getRaw(k, signal, h).then(function (r) {
       if (r.status === 404) return { k: k, miss: 1 };
       if (!r.ok) throw r.status;
       return r.json().then(function (j) {
         var f = j.fields || {}, v = f.v && f.v.stringValue, n = f.n ? +f.n.integerValue : 1, ut = j.updateTime;
         if (v == null) return { k: k, miss: 1 };
         if (n <= 1) return { k: k, v: v, ut: ut };
-        var ps = []; for (var i = 1; i < n; i++) ps.push(getRaw(k + '~' + i, signal).then(function (x) { if (!x.ok) throw x.status; return x.json(); }).then(function (y) { return y.fields.v.stringValue; }));
+        var ps = []; for (var i = 1; i < n; i++) ps.push(getRaw(k + '~' + i, signal, h).then(function (x) { if (!x.ok) throw x.status; return x.json(); }).then(function (y) { return y.fields.v.stringValue; }));
         return Promise.all(ps).then(function (rest) { return { k: k, v: v + rest.join(''), ut: ut }; });
       });
     });
@@ -5497,7 +5537,20 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
   function clrDirty(k) { setDirty(dirty().filter(function (x) { return x !== k; })); }
 
   // الطلبات والاقتراحات: قبل الرفع نقرأ نسخة السحابة وندمج بالمعرّف، والقرار (موافقة/رفض) يغلب «بانتظار»
+  // v58: السجل يندمج مع نسخة السحابة قبل الرفع (جهاز دخل الإدارة تواً ما عنده السجل، فما نكتب فوقه بسجل ناقص)
+  function mergeLog() {
+    return readDoc('jnd-log').then(function (d) {
+      if (!d || d.miss || d.skip) return;
+      var A, B; try { A = JSON.parse(d.v); B = JSON.parse(get0('jnd-log') || '[]'); } catch (e) { return; }
+      if (!Array.isArray(A) || !Array.isArray(B)) return;
+      var key = function (x) { return x && [x.at, x.action, x.text].join('|'); }, have = {}, out = [];
+      B.concat(A).forEach(function (x) { var y = key(x); if (x && !have[y]) { have[y] = 1; out.push(x); } });
+      out.sort(function (a, b) { return String(b.at || '').localeCompare(String(a.at || '')); });
+      var nv = JSON.stringify(out.slice(0, 200)); if (nv !== get0('jnd-log')) { set0('jnd-log', nv); if (window.JunaidliApp.reload) window.JunaidliApp.reload(['jnd-log']); }
+    }).catch(function () { });
+  }
   function mergePub(k) {
+    if (k === 'jnd-log') return mergeLog();
     if (k !== 'jnd-reqs' && k !== 'jnd-sugs') return Promise.resolve();
     return readDoc(k).then(function (d) {
       if (d.miss) return;
@@ -5559,18 +5612,22 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
   /* ---------- التحديث المباشر بدون إعادة تحميل ---------- */
   var polling = false, lastAct = Date.now(), asleep = false;
   // مفاتيح الزائر العادي (بدون السجل والطلبات والاقتراحات) — الفحص يقرأ هذي بس
-  var PKEYS = ['jnd-rows', 'jnd-events-all', 'jnd-news', 'jnd-news-del', 'jnd-site', 'jnd-admins', 'jnd-greet', 'jnd-pk'];   // v57: jnd-pk عشان يوصل مفتاح الحماية للزائر بدون تحديث
+  var PKEYS = ['jnd-rows', 'jnd-events-all', 'jnd-news', 'jnd-news-del', 'jnd-site', 'jnd-greet', 'jnd-pk'];   // v57: jnd-pk عشان يوصل مفتاح الحماية للزائر بدون تحديث. v58: بدون jnd-admins (للمشرف فقط)
   ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'].forEach(function (ev) {
     window.addEventListener(ev, function () { lastAct = Date.now(); if (asleep) { asleep = false; poll(); } }, { passive: true, capture: true });
   });
   function listAll() {
-    return fetch(ROOT + KEYQ + '&pageSize=100&mask.fieldPaths=n', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw r.status; return r.json(); }).then(function (j) {
+    return authH().then(function (h) {
+      // v58: السرد الكامل للمشرف فقط. التوكن ما تجدد: نفحص مفاتيح الزائر بس، ونعلّم وش اللي انفحص عشان الباقي ما ينحسب محذوف
+      if (!h.Authorization) { var AK = PKEYS.concat(PUB); return listPublic(AK, true).then(function (d) { d._asked = AK; return d; }); }
+      return fetch(ROOT + KEYQ + '&pageSize=100&mask.fieldPaths=n', { cache: 'no-store', headers: h }).then(function (r) { if (!r.ok) throw r.status; return r.json(); }).then(function (j) {
       var docs = {}; (j.documents || []).forEach(function (d) { var k = d.name.split('/').pop(); if (k.indexOf('~') < 0) docs[k] = d.updateTime; }); return docs;
+      });
     });
   }
   // الزائر: نقرأ ٦ مستندات بدل ٩ (batchGet)، وإذا فشلت نرجع للطريقة القديمة
-  function listPublic(PK) {
-    PK = PK || PKEYS;
+  function listPublic(PK, noFall) {
+    PK = (PK || PKEYS).filter(function (k) { return !isLocked(k); });
     var P = 'projects/' + C.projectId + '/databases/(default)/documents/jnd/';
     return fetch('https://firestore.googleapis.com/v1/projects/' + C.projectId + '/databases/(default)/documents:batchGet' + KEYQ, { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ documents: PK.map(function (k) { return P + k; }), mask: { fieldPaths: ['n'] } }) })
@@ -5579,13 +5636,14 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
         if (!Array.isArray(arr)) throw 'bad'; var docs = {};
         arr.forEach(function (x) { if (x.found) { var k = x.found.name.split('/').pop(); if (k.indexOf('~') < 0) docs[k] = x.found.updateTime; } });
         return docs;
-      }).catch(function () { return listAll().then(function (d) { return { _full: 1, d: d }; }); }).then(function (x) { return x && x._full ? x.d : x; });
+      }).catch(function (e) { if (noFall || !tok()) throw e; return listAll().then(function (d) { return { _full: 1, d: d }; }); }).then(function (x) { return x && x._full ? x.d : x; });
   }
   function poll() {
     if (polling || document.hidden || !navigator.onLine) return;
     if (Date.now() - lastAct > IDLE) { asleep = true; return; }
-    polling = true; var adm = !!tok(), keys = adm ? KEYS : PKEYS.concat((window.JunaidliApp && window.JunaidliApp.wantKeys && window.JunaidliApp.wantKeys()) || []);
+    polling = true; var adm = !!tok(), keys = adm ? KEYS : PKEYS.concat((window.JunaidliApp && window.JunaidliApp.wantKeys && window.JunaidliApp.wantKeys()) || []).filter(function (k) { return !isLocked(k); });
     (adm ? listAll() : listPublic(keys)).then(function (docs) {
+      if (docs && docs._asked) { var ak = docs._asked; delete docs._asked; keys = keys.filter(function (k) { return ak.indexOf(k) >= 0; }); }
       state.net = true; var dd = dirty();
       var changed = keys.filter(function (k) { return dd.indexOf(k) < 0 && !q[k] && (docs[k] ? docs[k] !== seen[k] : (seen[k] && get0(k) != null)); });
       if (!changed.length) return;
@@ -5593,6 +5651,7 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
         var upd = [];
         res.forEach(function (x) {
           if (dirty().indexOf(x.k) >= 0) return;
+          if (x.skip) return;
           if (x.miss) { if (get0(x.k) != null) { rem0(x.k); upd.push(x.k); } seen[x.k] = null; }
           else { if (get0(x.k) !== x.v) { set0(x.k, x.v); upd.push(x.k); } seen[x.k] = x.ut; utSet(x.k, x.ut); }
         });
@@ -5612,7 +5671,7 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
     var VER = String(cfg.dataVersion || 1), admin = !!tok(), wasAdm = get0('jnd-admin') != null, pend = [], booted = false;
     if (wasAdm && !admin) { rem0('jnd-admin'); setTimeout(function () { msg('سجّل دخول الإدارة من جديد عشان تعديلاتك تنحفظ للجميع'); }, 1500); }
     var ctl = new AbortController(); setTimeout(function () { ctl.abort(); }, 6000);
-    var fetched = Promise.all(KEYS.map(function (k) { return readDoc(k, ctl.signal).catch(function () { return null; }); }));
+    var fetched = Promise.all(KEYS.filter(function (k) { return admin || !isLocked(k); }).map(function (k) { return readDoc(k, ctl.signal).then(function (x) { return x && x.skip ? null : x; }).catch(function () { return null; }); }));
 
     // يطبّق اللي قرأناه من السحابة على التخزين المحلي، ويرجع المفاتيح اللي تغيّرت فعلاً
     function apply(res) {
@@ -5653,8 +5712,12 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
         if (f._ok) { f._ok = 0; return; } e.preventDefault(); e.stopImmediatePropagation();
         var pw = document.getElementById('lg-pw'), er = document.getElementById('lg-err'); er.textContent = 'جاري التحقق…';
         signIn(pw.value).then(function () {
-          er.textContent = ''; var rp = pw.value; if (window.JNDKey) JNDKey.unlock(rp).then(function (r) { setTimeout(function () { if (window.JunaidliApp && window.JunaidliApp.afterUnlock) window.JunaidliApp.afterUnlock(r); }, 600); }); pend.forEach(mark); pend = []; dirty().forEach(function (k) { q[k] = 1; });
-          if (Object.keys(q).length) { clearTimeout(tm); tm = setTimeout(push, 900); } setTimeout(ui, 300);
+          er.textContent = ''; var rp = pw.value; if (window.JNDKey) JNDKey.unlock(rp).then(function (r) { setTimeout(function () { if (window.JunaidliApp && window.JunaidliApp.afterUnlock) window.JunaidliApp.afterUnlock(r); }, 600); });
+          // v58: هالجهاز ما كان يقرأ السجل والمشرفين قبل الدخول، فنجيبهم أول وبعدها نرفع المعلّق
+          Promise.all(LOCKED.map(function (k) { return need(k); })).then(function () {
+            pend.forEach(mark); pend = []; dirty().forEach(function (k) { q[k] = 1; });
+            if (Object.keys(q).length) { clearTimeout(tm); tm = setTimeout(push, 900); } setTimeout(ui, 300); setTimeout(poll, 1500);
+          });
           pw.value = cfg.demoPassword || '1234'; f._ok = 1; f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event('submit', { cancelable: true })); pw.value = '';
         }).catch(function (e) { er.textContent = loginError(e); pw.select(); });
       }, true);
@@ -5675,7 +5738,7 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
   function need(k) {
     if (!ON) return Promise.resolve(false); if (needP[k]) return needP[k];
     needP[k] = readDoc(k).then(function (x) {
-      if (x.miss) return false;
+      if (x.miss || x.skip) return false;
       if (dirty().indexOf(k) < 0 && get0(k) !== x.v) { set0(k, x.v); seen[k] = x.ut; utSet(k, x.ut); if (window.JunaidliApp.reload) window.JunaidliApp.reload([k]); }
       return true;
     }).catch(function () { return false; }).then(function (r) { delete needP[k]; return r; });
@@ -5701,7 +5764,7 @@ JNDCloud.start({
 <script>
 /* الدليل الإرشادي: شرائح مولّدة من قائمة واحدة، والتنقل والتشغيل التلقائي في مكان واحد */
 (function(){
-  var SL=[["<path d=\"M4 11l8-7 8 7v9H4z\"/><path d=\"M10 20v-5h4v5\"/>", "حيّاك الله في منصة أسرة الجنيدلي", "دخلت باسمك الرباعي، فالمنصة صارت لك. شجرة الأسرة ومناسباتها وأخبارها في مكان واحد، وهذي جولة سريعة تعرّفك على كل شي، وترجع لها متى ما بغيت من «المزيد».", ["الشجرة والأسماء", "مناسبات وأخبار", "بطاقات التهنئة"], 0], ["<rect x=\"9\" y=\"3\" width=\"6\" height=\"5\" rx=\"1.5\"/><rect x=\"3\" y=\"16\" width=\"6\" height=\"5\" rx=\"1.5\"/><rect x=\"15\" y=\"16\" width=\"6\" height=\"5\" rx=\"1.5\"/><path d=\"M12 8v4M6 16v-4h12v4\"/>", "الشجرة", "تنقّل فيها بإصبعك، وكبّر وصغّر بالأزرار. اضغط أي اسم وتطلع لك بطاقته: نسبه كامل، وأبوه وإخوانه وأبناؤه. وزر «اسمي» يوديك لمكانك مباشرة.", ["اسحب للتنقل", "زر «اسمي»", "ملاءمة الشاشة"], 0], ["<circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/>", "البحث الذكي", "اكتب الاسم ثم اسم الأب ثم الجد، مثل «فهد عثمان»، وتطلع النتائج بالنسب كامل. اضغط النتيجة وتروح لها في الشجرة.", ["اسم + أب + جد", "النسب كامل", "يبحث وأنت تكتب"], 0], ["<path d=\"M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.7 12 3.5 12 3.5z\"/><path d=\"M9.5 14.5a2.6 2.6 0 0 0 2.5 2.4\"/>", "الألوان والرموز", "في الشجرة لكل اسم لونه: الجد والأب والابن والبنت، والإطار المتقطع لمن ما له عقب. وزر «معاني الرموز» يشرحها كلها. وعدّاد أقرب مناسبة يتدرّج من الأخضر للأحمر كل ما قرب الموعد.", ["بنات بلون خاص", "إطار متقطع = لا عقب", "عدّاد يحمرّ"], 0], ["<rect x=\"3\" y=\"4.5\" width=\"18\" height=\"15\" rx=\"3\"/><circle cx=\"9\" cy=\"10.5\" r=\"2.2\"/><path d=\"M5.8 16c.7-1.7 1.8-2.4 3.2-2.4s2.5.7 3.2 2.4M14.5 9.5h4M14.5 13h3\"/>", "ملفي وهوية الأسرة", "صفحة «ملفي» هي بطاقتك في الأسرة: نسبك كامل وأرقام أقاربك ومناسباتهم. وزر «شارك ملفي» يطلّع لك بطاقة «هوية الأسرة» الفاخرة، عمودية للستوري أو أفقية للمنشورات، تحفظها أو ترسلها. وللبنات تطلع بالوردي.", ["بطاقة عمودية وأفقية", "حفظ أو مشاركة", "«تغيير» لاسم ثاني"], 0], ["<rect x=\"4\" y=\"3.5\" width=\"16\" height=\"17\" rx=\"3\"/><path d=\"M8 9h8M8 13h5\"/><path d=\"M15.5 17.5l.7 1.4 1.5.2-1.1 1 .3 1.5-1.4-.8-1.4.8.3-1.5-1.1-1 1.5-.2z\" stroke-width=\"1.2\"/>", "بطاقات الأسرة", "من «ملفي» اضغط «بطاقات الأسرة» واختر المناسبة: مولود، تخرج، ختم القرآن، حج، سلامات، زواج، أو تهنئة المواسم. والبطاقة تنكتب بلسانك أنت، أو موجّهة لقريبك: تحسب لك المنصة صلتك به (ابن عمي، أخي، عمي…) وتصيغها «أبارك لك يا ابن عمي». وإذا قريبك مو في الشجرة اختر «قريب خارج الشجرة» واكتب اسمه. ولونها يتبع الجنس: وردي للبنت وأخضر للولد. وفي «تهنئة المواسم» اختر «باسمي» وتطلع لك تهنئة رمضان أو العيد باسمك للجميع. احفظها صورة أو شاركها، وتنزل بدون أي رابط، أو اطلب نشرها في أخبار الأسرة.", ["بلسانك أو لقريبك", "أختك وأمك وزوجتك", "اطلب نشرها"], 0], ["<rect x=\"4\" y=\"5\" width=\"16\" height=\"16\" rx=\"3\"/><path d=\"M4 10h16M9 3v4M15 3v4\"/>", "المناسبات", "الأفراح والاجتماعات القادمة مع عدّاد الأيام، والتاريخ الهجري، والدعوات والمواقع. شارك المناسبة في واتساب، أو أضفها لتقويمك، وتقدر تطلب إضافة مناسبتك وتعتمدها الإدارة.", ["شارك واتساب", "أضف للتقويم", "اطلب مناسبة"], 0], ["<path d=\"M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z\"/><path d=\"M10 20a2 2 0 0 0 4 0\"/>", "الأخبار والإشعارات", "تهاني ومواليد وإعلانات الأسرة بالصور، والجرس فوق ينبهك بكل خبر ومناسبة قريبة. وفي رمضان والأعياد تطلع لك على الرئيسية بطاقة تهنئة باسمك من الأسرة، تحفظها أو تشاركها.", ["أخبار بالصور", "تنبيهات", "تهنئة باسمك"], 0], ["<path d=\"M5 6h14M5 12h8M5 18h8\"/><path d=\"M15.5 16.5l2 2 3.5-4\"/>", "طلباتي وقرارات الإدارة", "كل طلب أو اقتراح ترسله تتابع حالته: أول ما ترد الإدارة يطلع لك الرد أعلى الصفحة مرة وحدة، ويبقى في الجرس: قيد المراجعة، أو تمت الموافقة، أو لم تتم الموافقة مع السبب، وتلقاها كلها في «طلباتي واقتراحاتي». وإذا بغيت يبلّغك المشرف على الواتس، اترك رقمك وقت الإرسال، ويُحفظ مشفّراً فما يراه إلا المشرف.", ["الرد أعلى الصفحة", "بانتظار الإدارة · تمت الموافقة", "واتساب اختياري"], 1], ["<path d=\"M5 20V11M12 20V5M19 20v-6\"/>", "الإحصائيات ونسب الأسرة", "الأسرة بالأرقام: الأجيال والفروع وأكثر الأسماء. وصفحة النسب فيها سلسلة النسب إلى عدنان، ورحلة الأسرة ومصادر الشجرة.", ["تقرير PDF", "الفروع بالنسب", "من قفار إلى بريدة"], 0], ["<path d=\"M4 20h4L19 9l-4-4L4 16z\"/><path d=\"M13 7l4 4\"/>", "شاركنا التصحيح", "لاحظت اسماً ناقصاً أو مولوداً جديداً؟ أرسل اقتراحك من «المزيد»، وتراجعه الإدارة وتضيفه. واسمك ما ظهر عند الدخول؟ اضغط «اقترح إضافة اسمي» وبنضيفك.", ["تصحيح اسم", "إضافة مولود", "فكرة للمنصة"], 0], ["<path d=\"M9 18h6M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z\"/>", "نصائح سريعة", "كبّر الخط من «المزيد ← حجم الخط». وأضف المنصة لشاشة جوالك الرئيسية من قائمة المتصفح «إضافة إلى الشاشة الرئيسية» وتصير مثل التطبيق. وإذا بغيت تدخل باسم ثاني اضغط «تغيير» في ملفي.", ["حجم الخط", "على الشاشة الرئيسية", "شارك الرابط"], 0]],V=window.JND_GV||'0',N=SL.length,i=0,m=document.getElementById('guidem'),tr=document.getElementById('gd-tr'),box=document.getElementById('gd-dots'),vp=document.getElementById('gd-vp'),
+  var SL=[["<path d=\"M4 11l8-7 8 7v9H4z\"/><path d=\"M10 20v-5h4v5\"/>", "حيّاك الله في منصة أسرة الجنيدلي", "دخلت باسمك الرباعي، فالمنصة صارت لك. شجرة الأسرة ومناسباتها وأخبارها في مكان واحد، وهذي جولة سريعة تعرّفك على كل شي، وترجع لها متى ما بغيت من «المزيد».", ["الشجرة والأسماء", "مناسبات وأخبار", "بطاقات التهنئة"], 0], ["<rect x=\"9\" y=\"3\" width=\"6\" height=\"5\" rx=\"1.5\"/><rect x=\"3\" y=\"16\" width=\"6\" height=\"5\" rx=\"1.5\"/><rect x=\"15\" y=\"16\" width=\"6\" height=\"5\" rx=\"1.5\"/><path d=\"M12 8v4M6 16v-4h12v4\"/>", "الشجرة", "تنقّل فيها بإصبعك، وكبّر وصغّر بالأزرار. اضغط أي اسم وتطلع لك بطاقته: نسبه كامل، وأبوه وإخوانه وأبناؤه. وزر «اسمي» يوديك لمكانك مباشرة.", ["اسحب للتنقل", "زر «اسمي»", "ملاءمة الشاشة"], 0], ["<circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m20 20-3.5-3.5\"/>", "البحث الذكي", "اكتب الاسم ثم اسم الأب ثم الجد، مثل «فهد عثمان»، وتطلع النتائج بالنسب كامل. اضغط النتيجة وتروح لها في الشجرة.", ["اسم + أب + جد", "النسب كامل", "يبحث وأنت تكتب"], 0], ["<path d=\"M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0C6 9.7 12 3.5 12 3.5z\"/><path d=\"M9.5 14.5a2.6 2.6 0 0 0 2.5 2.4\"/>", "الألوان والرموز", "في الشجرة لكل اسم لونه: الجد والأب والابن والبنت، والإطار المتقطع لمن ما له عقب. وزر «معاني الرموز» يشرحها كلها. وعدّاد أقرب مناسبة يتدرّج من الأخضر للأحمر كل ما قرب الموعد.", ["بنات بلون خاص", "إطار متقطع = لا عقب", "عدّاد يحمرّ"], 0], ["<rect x=\"3\" y=\"4.5\" width=\"18\" height=\"15\" rx=\"3\"/><circle cx=\"9\" cy=\"10.5\" r=\"2.2\"/><path d=\"M5.8 16c.7-1.7 1.8-2.4 3.2-2.4s2.5.7 3.2 2.4M14.5 9.5h4M14.5 13h3\"/>", "ملفي وهوية الأسرة", "صفحة «ملفي» هي بطاقتك في الأسرة: نسبك كامل وأرقام أقاربك ومناسباتهم. وزر «شارك ملفي» يطلّع لك بطاقة «هوية الأسرة» الفاخرة، عمودية للستوري أو أفقية للمنشورات، تحفظها أو ترسلها. وللبنات تطلع بالوردي.", ["بطاقة عمودية وأفقية", "حفظ أو مشاركة", "«تغيير» لاسم ثاني"], 0], ["<rect x=\"4\" y=\"3.5\" width=\"16\" height=\"17\" rx=\"3\"/><path d=\"M8 9h8M8 13h5\"/><path d=\"M15.5 17.5l.7 1.4 1.5.2-1.1 1 .3 1.5-1.4-.8-1.4.8.3-1.5-1.1-1 1.5-.2z\" stroke-width=\"1.2\"/>", "بطاقات الأسرة", "من «ملفي» اضغط «بطاقات الأسرة» واختر المناسبة: مولود، تخرج، ختم القرآن، حج، سلامات، زواج، أو تهنئة المواسم. والبطاقة تنكتب بلسانك أنت، أو موجّهة لقريبك: تحسب لك المنصة صلتك به (ابن عمي، أخي، عمي…) وتصيغها «أبارك لك يا ابن عمي». وإذا قريبك مو في الشجرة اختر «قريب خارج الشجرة» واكتب اسمه. ولونها يتبع الجنس: وردي للبنت وأخضر للولد. وفي «تهنئة المواسم» اختر «باسمي» وتطلع لك تهنئة رمضان أو العيد باسمك للجميع. احفظها صورة أو شاركها، وتنزل بدون أي رابط، أو اطلب نشرها في أخبار الأسرة.", ["بلسانك أو لقريبك", "أختك وأمك وزوجتك", "اطلب نشرها"], 0], ["<rect x=\"4\" y=\"5\" width=\"16\" height=\"16\" rx=\"3\"/><path d=\"M4 10h16M9 3v4M15 3v4\"/>", "المناسبات", "الأفراح والاجتماعات القادمة مع عدّاد الأيام، والتاريخ الهجري، والدعوات والمواقع. شارك المناسبة في واتساب، أو أضفها لتقويمك، وتقدر تطلب إضافة مناسبتك وتعتمدها الإدارة.", ["شارك واتساب", "أضف للتقويم", "اطلب مناسبة"], 0], ["<path d=\"M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z\"/><path d=\"M10 20a2 2 0 0 0 4 0\"/>", "الأخبار والإشعارات", "تهاني ومواليد وإعلانات الأسرة بالصور، والجرس فوق ينبهك بكل خبر ومناسبة قريبة. وفي رمضان والأعياد تطلع لك على الرئيسية بطاقة تهنئة باسمك من الأسرة، تحفظها أو تشاركها.", ["أخبار بالصور", "تنبيهات", "تهنئة باسمك"], 0], ["<path d=\"M5 6h14M5 12h8M5 18h8\"/><path d=\"M15.5 16.5l2 2 3.5-4\"/>", "طلباتي وقرارات الإدارة", "كل طلب أو اقتراح ترسله تتابع حالته: أول ما ترد الإدارة تطلع لك فقاعة صغيرة من الجرس فيها الرد مرة وحدة، ويبقى في الجرس بنقطة ذهبية لين تفتحه: قيد المراجعة، أو تمت الموافقة، أو لم تتم الموافقة مع السبب، وتلقاها كلها في «طلباتي واقتراحاتي». وإذا بغيت يبلّغك المشرف على الواتس، اترك رقمك وقت الإرسال، ويُحفظ مشفّراً فما يراه إلا المشرف.", ["الرد من الجرس", "بانتظار الإدارة · تمت الموافقة", "واتساب اختياري"], 1], ["<path d=\"M5 20V11M12 20V5M19 20v-6\"/>", "الإحصائيات ونسب الأسرة", "الأسرة بالأرقام: الأجيال والفروع وأكثر الأسماء. وصفحة النسب فيها سلسلة النسب إلى عدنان، ورحلة الأسرة ومصادر الشجرة.", ["تقرير PDF", "الفروع بالنسب", "من قفار إلى بريدة"], 0], ["<path d=\"M4 20h4L19 9l-4-4L4 16z\"/><path d=\"M13 7l4 4\"/>", "شاركنا التصحيح", "لاحظت اسماً ناقصاً أو مولوداً جديداً؟ أرسل اقتراحك من «المزيد»، وتراجعه الإدارة وتضيفه. واسمك ما ظهر عند الدخول؟ اضغط «اقترح إضافة اسمي» وبنضيفك.", ["تصحيح اسم", "إضافة مولود", "فكرة للمنصة"], 0], ["<path d=\"M9 18h6M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z\"/>", "نصائح سريعة", "كبّر الخط من «المزيد ← حجم الخط». وأضف المنصة لشاشة جوالك الرئيسية من قائمة المتصفح «إضافة إلى الشاشة الرئيسية» وتصير مثل التطبيق. وإذا بغيت تدخل باسم ثاني اضغط «تغيير» في ملفي.", ["حجم الخط", "على الشاشة الرئيسية", "شارك الرابط"], 0]],V=window.JND_GV||'0',N=SL.length,i=0,m=document.getElementById('guidem'),tr=document.getElementById('gd-tr'),box=document.getElementById('gd-dots'),vp=document.getElementById('gd-vp'),
       nx=document.getElementById('gd-next'),pv=document.getElementById('gd-prev'),pg=document.getElementById('gd-p'),cn=document.getElementById('gd-n'),
       ar=function(n){return String(n)},esc=function(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
   if(!m||!tr)return;
@@ -6918,6 +6981,33 @@ body.hide-reqs .cc-pub,body.hide-news .cc-pub{display:none!important}
 .he-cd b.n3,.mp-ev[data-u] .he-cd b.n3{font-size:calc(16px * var(--us,1))}
 .hs-cd b.n3,.hs-ev[data-u] .hs-cd b.n3{font-size:calc(11px * var(--us,1))}
 .ev2 .evc-n b.n3,.ev2[data-u] .evc-n b.n3{font-size:calc(var(--c) * .26)}
+
+/* ═══════════════ v58 ═══════════════ */
+/* v58 · السهم الموحّد (البند ٥) */
+.arw{display:inline-block;width:1.05em;height:1.05em;flex:none;vertical-align:-.17em;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.arw.bk{transform:scaleX(-1)}
+/* v58 · فقاعة الجرس (البند ٤) */
+.bl-tip{position:fixed;z-index:44;top:0;left:0;pointer-events:none}
+.bl-tip:empty{display:none}
+.bl-c{--ac:#2F6B5F;pointer-events:auto;position:relative;box-sizing:border-box;padding:12px 14px 10px;border-radius:16px;background:#FFFEFA;border:1px solid rgba(201,168,102,.6);border-inline-start:3px solid var(--ac);box-shadow:0 14px 34px rgba(12,40,44,.3),0 2px 6px rgba(12,40,44,.12);animation:blIn .3s cubic-bezier(.2,.8,.2,1) both;transform-origin:var(--ax,30px) -8px}
+.bl-c.s-no{--ac:#9A4A3C}.bl-c.s-review{--ac:#A7864B}.bl-c.s-sum{--ac:#2D6369}
+.bl-ar{position:absolute;top:-7.5px;left:calc(var(--ax,30px) - 7px);width:13px;height:13px;background:#FFFEFA;border-top:1px solid rgba(201,168,102,.6);border-left:1px solid rgba(201,168,102,.6);border-radius:3px 0 0 0;transform:rotate(45deg)}
+.bl-t{margin:0;font-size:13.5px;line-height:1.7;font-weight:600;color:#1D2A29;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;overflow-wrap:anywhere}
+.bl-c.s-no .bl-t{color:#5E2B22}
+.bl-a{display:flex;align-items:center;gap:8px;margin-top:8px}
+.bl-go{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#2D6369,#1C4448);color:#fff;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.bl-n{margin-inline-start:auto;font-family:var(--num);font-size:11.5px;font-weight:700;color:#5C6A65}
+.bl-x{margin-inline-start:auto;width:40px;height:40px;flex:none;display:grid;place-items:center;border:0;border-radius:12px;background:none;color:#7A857F;cursor:pointer}
+.bl-n+.bl-x{margin-inline-start:0}
+.bl-x svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.bl-go:focus-visible,.bl-x:focus-visible{outline:2px solid #A7864B;outline-offset:2px}
+@media (hover:hover){.bl-x:hover{background:#F2F4F3;color:#33403D}}
+.bl-c.out{animation:blOut .22s ease-in both}
+@keyframes blIn{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes blOut{to{opacity:0;transform:translateY(-6px) scale(.97)}}
+@media (prefers-reduced-motion:reduce){.bl-c,.bl-c.out{animation:none}}
+.bell.rp::after{content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#E2C483;border:2px solid #fff;box-sizing:content-box}
+@media (max-width:860px){.bell.rp::after{border-color:#2D6369}}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
