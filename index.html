@@ -4691,7 +4691,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     else { [ic, lab] = RQK[t]; sub = t === 'event' ? (x.kind || '') : t === 'card' ? ((sd(() => ccMeta(sp.occ)) || {}).t || '') : ''; }
     const p = t === 'birth' ? S.byId[x.pid] : null, cur = p && p.birth ? (bFull(p) || p.birth + 'هـ') : '';
     const title = t === 'birth' ? (x.pname || (p ? lineage(p, 3) : '')) : t === 'sug' ? '' : (x.title || '');
-    const det = t === 'event' ? rqLine('clock', esc(sd(() => wday(x.date) + ' ' + hStr(x.date))) + (x.time ? ' · ' + esc(sd(() => t12(x.time))) : '')) + rqLine('pin', x.venue ? esc(x.venue) : '')
+    const det = t === 'event' ? rqLine('clock', esc(sd(() => wday(x.date) + ' ' + hStr(x.date))) + (x.time ? ' · <span class="nw">' + esc(sd(() => t12(x.time))) + '</span>' : '')) + rqLine('pin', x.venue ? esc(x.venue) : '')
       : t === 'birth' ? rqLine('cal', `${esc(bFmt(x.y, x.m, x.d))} · المسجّل الحالي: ${cur ? esc(cur) : 'ما فيه'}`)
       : t === 'card' ? rqLine('info', [sp.degree, sp.occ === 'birth' && sp.father ? (sp.mom ? 'الأم: ' : 'الأب: ') + sp.father : '', sp.date].filter(Boolean).map(v => esc(String(v))).join(' · '))
       : (x.bd && x.bd.y ? rqLine('cal', 'تاريخ الميلاد: ' + esc(bFmt(x.bd.y, x.bd.m, x.bd.d))) : '');
@@ -6833,13 +6833,14 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 @media (max-height:720px){.gt-card{margin-top:96px}.gt-wrap{padding:20px 0}}
 @media (prefers-reduced-motion:reduce){.gt-doodle{animation:none!important}}
 /* ═══════════ v58: لوحة المشرف (تصميم المصمم، design/admin-58.css) ═══════════
-   اللوحة وحدها تلغي التصغير على الجوال، فكل المقاسات تحت حقيقية (44px = 44px).
-   خيار حجم الخط يبقى شغال بنفس النسبة: صغير .72/.78، كبير .9/.78. باقي الموقع على حاله (استبداله في 59) */
+   اللوحة وحدها تلغي التصغير على الجوال، فكل المقاسات تحت حقيقية (44px = 44px، والخط 12px أو أكثر).
+   خيار حجم الخط: «كبير» يكبّر اللوحة بنفس نسبة باقي الموقع (.9/.78). «صغير» ما يصغّرها، لأن مقاساتها هي الحد الأدنى للمس والقراءة.
+   باقي الموقع على حاله (استبدال التصغير في 59) */
 @media (max-width:860px){
-  .view .page.admin{zoom:1}
-  html[data-fz="s"] .view .page.admin{zoom:.92}
+  .view .page.admin,html[data-fz="s"] .view .page.admin{zoom:1}
   html[data-fz="l"] .view .page.admin{zoom:1.15}
 }
+@media (min-width:861px){html[data-fz="s"] .view .page.admin{zoom:1}}
 .page.admin{padding:12px 16px calc(var(--bnav,68px) + 24px + env(safe-area-inset-bottom));max-width:720px;margin-inline:auto}
 @media (max-width:860px){.app.nostage .page.admin,.view .page.admin{padding-bottom:calc(var(--bnav,68px) + 28px + env(safe-area-inset-bottom))!important}}
 /* 1) رأس اللوحة المختصر */
@@ -6885,6 +6886,7 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 .rq2-d{margin:6px 0 0;display:grid;gap:4px}
 .rq2-d div{display:grid;grid-template-columns:20px 1fr;gap:6px;align-items:start;font-size:13.5px;line-height:1.7;color:var(--ink);overflow-wrap:anywhere}
 .rq2-d svg{width:16px;height:16px;margin-top:4px;color:var(--gold)}
+.rq2-d .nw{white-space:nowrap}
 .rq2-q{margin:8px 0 0;padding:10px 12px;border-radius:12px;background:var(--paper);font-size:13.5px;line-height:1.8;color:var(--ink);overflow-wrap:anywhere;white-space:pre-line}
 .rq2-by{display:flex;align-items:center;gap:6px;margin:10px 0 0;font-size:13px;color:var(--muted);line-height:1.6}
 .rq2-by span{min-width:0;overflow-wrap:anywhere}
@@ -7048,7 +7050,8 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 @media (max-width:860px){body[data-view="admin"] #v-admin{overflow:visible}body[data-view="admin"] .stage{overflow:clip}}
 #admin .rq2-wa>span small,#admin .rq2-wa>span small a{font-size:12.5px}
 #admin .rl-tag,#admin .gr-k small,#admin .as-f small,#admin .as-sw small{font-size:12px}
-#admin .ad-q input{min-height:44px;font-size:16px}
+#admin .ad-q{display:flex;align-items:center;gap:8px;min-width:0;height:auto;min-height:48px}
+#admin .ad-q input{flex:1;min-width:0;width:100%;min-height:44px;font-size:16px}
 /* نافذة التعديل: «أضف ابن أو بنت تحته» */
 .ed-addk{width:100%;margin-top:12px}
 </style>
