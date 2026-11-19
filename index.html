@@ -4295,7 +4295,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     pin: '<path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>', chat: '<path d="M4 19.5l1.3-3.8A8 8 0 1 1 8.4 19z"/><path d="M9 10.5h6M9 13.5h4"/>',
     cake: '<path d="M4 20h16M5 20v-7h14v7"/><path d="M5 15.5c1.2 1 2.3 1 3.5 0s2.3-1 3.5 0 2.3 1 3.5 0 2.3-1 3.5 0"/><path d="M12 13V9.5M12 6.8c.9-.8.9-1.8 0-2.8-.9 1-.9 2 0 2.8z"/>',
     mom: '<circle cx="12" cy="12" r="9" stroke-dasharray="3.2 2.2"/><circle cx="12" cy="12" r="5"/>',
-    baby: '<path d="M3.5 10.5h17a7 7 0 0 1-7 6.5h-3a7 7 0 0 1-7-6.5z"/><path d="M12.5 10.5V4a7 7 0 0 1 7 6.5"/><circle cx="8" cy="20" r="1.6"/><circle cx="16" cy="20" r="1.6"/>', img: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>', tools: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6z"/>',
+    moon: '<path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10z"/>', baby: '<path d="M3.5 10.5h17a7 7 0 0 1-7 6.5h-3a7 7 0 0 1-7-6.5z"/><path d="M12.5 10.5V4a7 7 0 0 1 7 6.5"/><circle cx="8" cy="20" r="1.6"/><circle cx="16" cy="20" r="1.6"/>', img: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="m4 17 5-4.5 4 3.5 3-2.5 4 3.5"/>', tools: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.4 2.4-2.6-.6-.6-2.6z"/>',
     down: '<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 20h14"/>', up: '<path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 20h14"/>', sheet: '<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M4 9h16M4 15h16M10 9v12"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/>', clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/>',
     users: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.8-3.4 3.2-5.2 6-5.2s5.2 1.8 6 5.2"/><circle cx="17" cy="9" r="2.6"/><path d="M15.8 14.6c2.3.2 4.1 1.8 4.7 4.4"/>',
@@ -4785,6 +4785,9 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const d = hd.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) { const sc = adScroller(); sc.scrollTop += d; }
   }
   // بعد تبديل القسم: إذا كان الشريط ملزوق فوق، نرجع لأول القسم الجديد
+  // ننزل لين يلزق شريط الأقسام فوق (بعد البطاقة)
+  function adToBar() { const sc = adScroller(), h = $('#admin .ad-hero'); if (!h) return; const base = sc === document.scrollingElement || sc === document.documentElement || sc === document.body ? 0 : sc.getBoundingClientRect().top;
+    sc.scrollTop = Math.max(0, h.getBoundingClientRect().bottom - base + sc.scrollTop); }
   function adTop() {
     const sc = adScroller(), h = $('#admin .ad-hero'); if (!h) return;
     const base = sc === document.scrollingElement || sc === document.documentElement || sc === document.body ? 0 : sc.getBoundingClientRect().top;
@@ -4825,6 +4828,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if ((b = at('[data-rq2-more]'))) { const k = b.dataset.rq2More; if (AD.more.has(k)) AD.more.delete(k); else AD.more.add(k); adInbox(dupScan());
       const nb = $(`#adp-inbox [data-rq2-more="${CSS.escape(k)}"]`); if (nb) nb.focus({ preventScroll: true }); return; }
     if ((b = at('[data-adx]'))) { const k = b.dataset.adx; AD[k] = !AD[k]; adFill(k === 'nwAll' ? 'nw' : 'ev'); return; }
+    if ((b = at('[data-adw]'))) { if (AD.tab !== 'inbox') adTab('inbox'); adToBar(); return; }
     if ((b = at('[data-adh]'))) { const k = b.dataset.adh; AD.st = AD.tab === 'tree' && AD.st === k ? 'all' : k; AD.limit = 25; AD.open = null; if (AD.tab !== 'tree') adTab('tree'); else adDraw(); return; }
     if ((b = at('[data-adst]'))) { const k = b.dataset.adst; AD.st = AD.st === k ? 'all' : k; AD.limit = 25; AD.open = null; adDraw(); return; }
     const id = (k, a) => (b = at('[' + k + ']')) && b.dataset[a];
@@ -4939,11 +4943,19 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const all = S.all.filter(n => !n.pending), dups = dupScan(), P = admPend(dups), tab = AD.tab, me = S.me || gateNode();
     if (AD.sec && AD_TAB[AD.sec] !== tab) AD.sec = '';
     const gens = all.length ? Math.max(...all.map(n => n.depth)) + 1 : 0, cnt = { ok: all.filter(n => n.lk === 'ok').length, pr: all.filter(n => n.lk === 'pr').length, un: all.filter(n => n.lk === 'un').length };
-    box.innerHTML = `<header class="ad-hero">
-        <div class="ad-top"><span class="ad-badge">${sv('gear')}لوحة المشرف</span><button class="ad-out" type="button" data-cmd="logout">${sv('out')}اخرج</button></div>
-        <h1>${me ? `${me.gender === 'female' ? 'حيّاكِ' : 'حيّاك'} الله يا ${esc(me.name)}` : 'حيّاك الله'}</h1>
-        <div class="ad-k"><div><b>${ar(all.length)}</b><small>فرد</small></div><div><b>${ar(gens)}</b><small>أجيال</small></div><div><b>${ar(upcoming().length)}</b><small>مناسبة قادمة</small></div><div><b>${ar(newsSorted().length)}</b><small>خبر</small></div></div>
-        <div class="ad-st" role="group" aria-label="حالة الأسماء، تفتح في «الشجرة»">${[['ok', 'مؤكد'], ['pr', 'غير مؤكد'], ['un', 'غير واضح']].map(([k, t]) => `<button type="button" class="ast-${k}" data-adh="${k}" aria-pressed="${tab === 'tree' && AD.st === k}"><i></i><b>${ar(cnt[k])}</b><small>${t}</small></button>`).join('')}</div>
+    const hd = sd(() => new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura-nu-latn', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date()).replace('،', '').replace(/\s*هـ$/, '') + 'هـ');
+    const wl = [P.r ? nCount(P.r, ['طلب واحد', 'طلبان', 'طلبات', 'طلباً']) : '', P.s ? nCount(P.s, ['اقتراح واحد', 'اقتراحان', 'اقتراحات', 'اقتراحاً']) : '', P.d ? nCount(P.d, ['اسم مكرر محتمل', 'اسمان مكرران محتملان', 'أسماء مكررة محتملة', 'اسماً مكرراً محتملاً']) : ''].filter(Boolean);
+    const wsub = wl.join(' و');
+    box.innerHTML = `<header class="ad-hero" aria-labelledby="ad-hi"><div class="adh2-in">
+        <div class="adh2-top"><span class="ad-badge">${sv('shield')}لوحة المشرف</span><button class="ad-out" type="button" data-cmd="logout">${sv('out')}اخرج</button></div>
+        <h1 id="ad-hi">${me ? `${me.gender === 'female' ? 'حيّاكِ' : 'حيّاك'} الله يا ${esc(me.name)}` : 'حيّاك الله'}</h1>
+        ${hd ? `<p class="ad-date">${sv('moon')}<time>${esc(hd)}</time></p>` : ''}
+        <dl class="ad-k2" aria-label="أرقام المنصة"><div><dt>فرد</dt><dd>${ar(all.length)}</dd></div><div><dt>أجيال</dt><dd>${ar(gens)}</dd></div><div><dt>مناسبة قادمة</dt><dd>${ar(upcoming().length)}</dd></div><div><dt>خبر</dt><dd>${ar(newsSorted().length)}</dd></div></dl>
+        <div class="ad-st2" role="group" aria-labelledby="ad-st2-t"><div class="ad-st2-h"><span id="ad-st2-t">حالة الأسماء</span><span>اضغط أي حالة تفتح <b>الشجرة</b></span></div>
+          <div class="ad-bar" aria-hidden="true">${['ok', 'pr', 'un'].map(k => cnt[k] ? `<i class="${k}" style="flex:${cnt[k]}"></i>` : '').join('')}</div>
+          <div class="ad-st2-b">${[['ok', 'مؤكد'], ['pr', 'غير مؤكد'], ['un', 'غير واضح']].map(([k, t]) => `<button type="button" class="ast-${k}" data-adh="${k}" aria-pressed="${tab === 'tree' && AD.st === k}"><b>${ar(cnt[k])}</b><small><i></i>${t}</small></button>`).join('')}</div></div>
+      </div>${P.n ? `<button type="button" class="ad-wait" data-adw><span class="w-ic">${sv('inbox')}</span><span>عندك ${nCount(P.n, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظار قرارك<small>${esc(wsub)}</small></span>${CHV.replace('class="arw"', 'class="w-go"')}</button>`
+        : `<div class="ad-wait calm"><span class="w-ic">${sv('check')}</span><span>ما فيه شي بانتظارك اليوم<small>كل الطلبات والاقتراحات تمت</small></span></div>`}
       </header>
       <nav class="adt" role="tablist" aria-label="أقسام لوحة المشرف">${AD_TABS.map(([k, ic, t]) => { const on = tab === k, n = k === 'inbox' ? P.n : 0;
         return `<button type="button" role="tab" id="adt-${k}" aria-controls="adp-${k}" data-adt="${k}" aria-selected="${on}" tabindex="${on ? 0 : -1}"${n ? ` aria-label="${t}، ${nCount(n, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])}"` : ''}>${sv(ic)}<span>${t}</span>${n ? `<i class="adt-n" aria-hidden="true">${n > 99 ? '99+' : ar(n)}</i>` : ''}</button>`; }).join('')}</nav>
@@ -5411,7 +5423,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     try { localStorage.setItem(MOM_TIP, '1'); } catch (e) { }
     hdr.insertAdjacentHTML('beforeend', `<div class="mm-tip" id="mm-tip" role="status"><p>${momGF() ? 'اضغطي على الشعار وشوفي لحظات الأسرة' : 'اضغط على الشعار وشف لحظات الأسرة'}</p><button type="button">تم</button></div>`);
     const tip = $('#mm-tip'), lr = logo.getBoundingClientRect(), hr = hdr.getBoundingClientRect();
-    tip.style.top = Math.round(lr.bottom - hr.top + 14) + 'px';
+    tip.style.top = Math.round(lr.bottom - hr.top + 18) + 'px';   // تحت علامة «جديد» (bottom:-6px)
     const r = tip.getBoundingClientRect(); tip.style.setProperty('--ax', Math.round(Math.max(10, Math.min(r.width - 24, r.right - (lr.left + lr.width / 2) - 7))) + 'px');
     $('button', tip).onclick = () => momTipClose();
     const EV = ['scroll', 'wheel', 'touchmove'], h = () => { EV.forEach(ev => window.removeEventListener(ev, h, true)); momTipClose(); };
@@ -5441,7 +5453,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   /* ── العارض بملء الشاشة ── */
   function momAutoHtml(m) {
     const f = momGF(); let ic, k, t, p = '', cta;
-    if (m.k === 'b') { const g = m.n.gender === 'female'; ic = 'baby'; k = g ? 'مولودة جديدة' : 'مولود جديد'; t = lineage(m.n, 2);
+    if (m.k === 'b') { const g = m.n.gender === 'female'; ic = 'baby'; k = g ? 'مولودة جديدة' : 'مولود جديد'; t = `${m.n.name} ${g ? 'بنت' : 'بن'} ${m.n.parent.name}`;
       p = g ? 'ألف مبروك، جعلها الله قرة عين لوالديها' : 'ألف مبروك، جعله الله قرة عين لوالديه'; cta = (f ? 'شوفي' : 'شوف') + (g ? ' مكانها' : ' مكانه') + ' في الشجرة'; }
     else if (m.k === 'e') { const e = m.e; ic = 'cal'; k = 'مناسبة اليوم'; t = `اليوم ${evTitle(e)}، ${f ? 'لا تفوّتكِ' : 'لا تفوّتك'}`;
       p = [e.time ? sd(() => t12(e.time)) : '', e.venue || ''].filter(Boolean).join(' · '); cta = 'تفاصيل المناسبة'; }
@@ -5453,7 +5465,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     MOM.L = momList(); if (!MOM.L.length) { toast('ما فيه لحظات الحين'); return; }
     momTipClose(); if (DN.cur) dnClose(true, 1); $$('.modal.open').forEach(m => m.classList.remove('open'));
     const s = momSeen(); let i = MOM.L.findIndex(x => !s.includes(x.id)); if (i < 0) i = 0;
-    const v = document.createElement('div'); v.className = 'mv'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-label', 'لحظات الأسرة');
+    const v = document.createElement('div'); v.className = 'mv'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-label', 'لحظات الأسرة'); v.tabIndex = -1;
     v.innerHTML = `<div class="mv-in"><div class="mv-st"></div>
       <button class="mv-prev" type="button" aria-label="اللحظة السابقة"></button><button class="mv-next" type="button" aria-label="اللحظة التالية"></button>
       <div class="mv-top"><ol class="mv-bars" aria-hidden="true">${MOM.L.map(() => '<li><i></i></li>').join('')}</ol>
@@ -5461,8 +5473,9 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       <p class="mv-cap" hidden></p><p class="sr mv-live" aria-live="polite"></p></div>`;
     document.body.appendChild(v); document.body.classList.add('mv-open');
     const V = MOM.v = { el: v, i, ret: document.activeElement, raf: 0, acc: 0, t0: 0, dur: 0, run: false, hold: false, drag: false, eat: false, n: 0 };
-    const nav = d => { if (V.eat) { V.eat = false; return; } d > 0 ? momNext() : momPrev(); };
-    $('.mv-next', v).onclick = () => nav(1); $('.mv-prev', v).onclick = () => nav(-1);
+    // اللمس على المناطق: التركيز يرجع للعارض نفسه (ما يطلع إطار التركيز على نص الشاشة)، ولوحة المفاتيح تبقى على الزر
+    const nav = (d, e) => { if (e && e.detail) { try { v.focus({ preventScroll: true }); } catch (x) { } } if (V.eat) { V.eat = false; return; } d > 0 ? momNext() : momPrev(); };
+    $('.mv-next', v).onclick = e => nav(1, e); $('.mv-prev', v).onclick = e => nav(-1, e);
     $('.mv-x', v).onclick = () => momClose();
     // الضغطة المطوّلة توقف، والسحب للأسفل يقفل
     let x0 = 0, y0 = 0, pid = null, ht = 0;
@@ -5541,7 +5554,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   /* ── المشرف ── */
   const momLeft = x => { const d = Math.round((momDay0(x.exp - 1) - momDay0(Date.now())) / MOM_DAY);
     return d <= 0 ? 'تختفي اليوم' : d === 1 ? 'تختفي غداً' : d === 2 ? 'تختفي بعد يومين' : `تختفي بعد ${ar(d)} ${d <= 10 ? 'أيام' : 'يوماً'}`; };
-  const momTitle = m => m.k === 'p' ? (m.cap || 'صورة بدون تعليق') : m.k === 'b' ? `${m.n.gender === 'female' ? 'مولودة جديدة' : 'مولود جديد'}: ${lineage(m.n, 2)}` : m.k === 'e' ? `اليوم ${evTitle(m.e)}` : `خبر جديد: ${m.n.title || ''}`;
+  const momTitle = m => m.k === 'p' ? (m.cap || 'صورة بدون تعليق') : m.k === 'b' ? `${m.n.gender === 'female' ? 'مولودة جديدة' : 'مولود جديد'}: ${m.n.name} ${m.n.gender === 'female' ? 'بنت' : 'بن'} ${m.n.parent.name}` : m.k === 'e' ? `اليوم ${evTitle(m.e)}` : `خبر جديد: ${m.n.title || ''}`;
   const MOM_AUTO = [['b', 'baby', 'مولود جديد'], ['e', 'cal', 'مناسبة اليوم'], ['n', 'news', 'خبر جديد']];
   function adMomHtml() {
     const L = momList().slice().reverse(), I = MOM.idx || momClean({});
@@ -7221,30 +7234,83 @@ svg.arw{width:1.05em!important;height:1.05em!important;fill:none!important;strok
 @media (min-width:861px){html[data-fz="s"] .view .page.admin{zoom:1}}
 .page.admin{padding:12px 16px calc(var(--bnav,68px) + 24px + env(safe-area-inset-bottom));max-width:720px;margin-inline:auto}
 @media (max-width:860px){.app.nostage .page.admin,.view .page.admin{padding-bottom:calc(var(--bnav,68px) + 28px + env(safe-area-inset-bottom))!important}}
-/* ── HERO-START: بطاقة اللوحة (فكرة 57 بطلب المالك، بمقاسات حقيقية بدون تصغير). كتلة معزولة تنبدل بتصميم المصمم ── */
-.ad-hero{position:relative;overflow:hidden;margin:0 0 12px;padding:16px 16px 14px;border-radius:24px;color:#fff;background:radial-gradient(130% 150% at 100% 0%,#4A8A75,#2D6369 50%,#173A3E);box-shadow:0 14px 30px rgba(23,58,62,.24)}
-.ad-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 22px,rgba(255,255,255,.028) 22px 23px);pointer-events:none}
-.ad-hero::after{content:'';position:absolute;inset-inline-start:-50px;top:-60px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(201,168,102,.35);box-shadow:0 0 0 20px rgba(201,168,102,.05);pointer-events:none}
-.ad-hero>*{position:relative;z-index:1}
-.ad-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.ad-badge{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:99px;font-size:12.5px;font-weight:700;color:#E3C98E;border:1px solid rgba(227,201,142,.4)}
-.ad-out{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:99px;border:0;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
-.ad-badge svg,.ad-out svg{width:15px;height:15px}
-.ad-out:focus-visible,.ad-st button:focus-visible{outline:3px solid #E3C98E;outline-offset:2px}
-.ad-hero h1{margin:10px 0 2px;font-family:var(--display);font-weight:700;font-size:25px;line-height:1.35;color:#fff;overflow-wrap:anywhere}
-.ad-k{display:grid;grid-template-columns:repeat(4,1fr);margin-top:12px;border-radius:16px;background:rgba(0,0,0,.15);border:1px solid rgba(255,255,255,.08)}
-.ad-k div{position:relative;min-width:0;padding:9px 2px;text-align:center}
-.ad-k div+div::before{content:'';position:absolute;right:0;top:25%;bottom:25%;width:1px;background:rgba(255,255,255,.14)}
-.ad-k b{display:block;font-family:var(--display);font-size:21px;line-height:1.3;color:#F1E0B8;font-variant-numeric:tabular-nums}
-.ad-k small{display:block;font-size:12px;line-height:1.4;color:#D6E4DF}
-.ad-st{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
-.ad-st button{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:44px;padding:4px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);color:#E3F0EB;font:inherit;cursor:pointer}
-.ad-st i{width:9px;height:9px;border-radius:50%;flex:none;background:#7BD0A8}
-.ad-st .ast-pr i{background:#E3C27A}.ad-st .ast-un i{background:#F29A8C}
-.ad-st b{font-family:var(--display);font-size:19px;line-height:1;color:#F1E0B8;font-variant-numeric:tabular-nums}
-.ad-st small{font-size:12px;white-space:nowrap}
-.ad-st button[aria-pressed=true]{background:#fff;border-color:#fff;color:var(--ink)}.ad-st button[aria-pressed=true] b{color:var(--g-dark)}
-@media (max-width:389px){.ad-st button{display:grid;grid-template-columns:auto auto;justify-content:center;align-items:center;column-gap:5px;row-gap:2px;padding:6px 2px}.ad-st small{grid-column:1/-1;text-align:center}}
+/* ── HERO-START: بطاقة اللوحة (فكرة 57 بطلب المالك، تصميم المصمم design/hero-58.css). كتلة معزولة ── */
+/* ═══════════ بطاقة الترحيب 58 (.ad-hero) — فكرة 57 مطوّرة، بلا تصغير ═══════════
+   تُلصق بعد admin-58.css. تجلس فوق شريط الأقسام .adt مباشرة.                         */
+.ad-hero{position:relative;isolation:isolate;overflow:hidden;margin:4px 0 12px;border-radius:24px;color:#fff;
+  background:radial-gradient(130% 140% at 100% 0%,#4A8A75 0%,#2D6369 48%,#1C4448 100%);
+  box-shadow:0 14px 30px rgba(28,68,72,.26),inset 0 1px 0 rgba(255,255,255,.10)}
+/* قوس تراثي خطّي ذهبي في الزاوية (زخرفة CSS/SVG خطّية، ليست رموزاً) */
+.ad-hero::before{content:'';position:absolute;z-index:-1;inset-inline-end:-34px;top:-26px;width:190px;height:230px;opacity:.45;pointer-events:none;
+  background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 190 230' fill='none' stroke='%23C9A866' stroke-width='1.2'%3E%3Cpath d='M20 230V95a75 75 0 0 1 150 0v135' stroke-opacity='.55'/%3E%3Cpath d='M42 230V100a53 53 0 0 1 106 0v130' stroke-opacity='.3'/%3E%3Cpath d='M64 230V106a31 31 0 0 1 62 0v124' stroke-opacity='.16'/%3E%3C/svg%3E")}
+[dir=ltr] .ad-hero::before{transform:scaleX(-1)}
+.ad-hero::after{content:'';position:absolute;z-index:-1;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.05),transparent 40%)}
+.adh2-in{padding:14px 16px 14px}
+
+/* 1) الصف العلوي: الشارة + الخروج */
+.adh2-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ad-badge{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:0 12px;border-radius:99px;
+  border:1px solid rgba(227,201,142,.45);background:rgba(227,201,142,.08);color:#EBD5A2;font-size:12.5px;font-weight:700}
+.ad-out{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;margin-inline-end:-6px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.10);color:#fff;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.ad-out:hover{background:rgba(255,255,255,.16)}
+.ad-badge svg,.ad-out svg{width:16px;height:16px}
+.ad-out:focus-visible,.ad-k2 a:focus-visible,.ad-st2 button:focus-visible,.ad-wait:focus-visible{outline:3px solid #E3C98E;outline-offset:2px}
+
+/* 2) الترحيب + التاريخ الهجري */
+.ad-hero h1{margin:8px 0 0;font-family:var(--display);font-weight:700;font-size:28px;line-height:1.35;color:#FFFEFA;overflow-wrap:anywhere;text-wrap:balance}
+.ad-date{display:flex;align-items:center;gap:6px;margin:2px 0 0;font-size:12.5px;color:#CFE0DA}
+.ad-date svg{width:15px;height:15px;flex:none;color:#E3C98E}
+
+/* 3) أرقام المنصة: شريط داكن واحد بفواصل رفيعة */
+.ad-k2{display:grid;grid-template-columns:1fr 1fr 1.35fr 1fr;margin:14px 0 0;padding:0;border-radius:16px;
+  background:rgba(10,30,32,.22);border:1px solid rgba(255,255,255,.09)}
+.ad-k2>div{position:relative;display:flex;flex-direction:column-reverse;align-items:center;justify-content:center;padding:10px 2px 9px;text-align:center}
+.ad-k2>div+div::before{content:'';position:absolute;inset-inline-start:0;top:24%;bottom:24%;width:1px;background:rgba(255,255,255,.14)}
+.ad-k2 dt{font-size:12px;line-height:1.4;color:#D6E4DF;white-space:nowrap}
+.ad-k2 dd{margin:0;font-family:var(--num,var(--font));font-weight:700;font-size:22px;line-height:1.2;color:#F1E0B8;font-variant-numeric:lining-nums tabular-nums}
+
+/* 4) حالة التأكيد: شريط نسبة + ثلاثة أزرار تفتح «الشجرة» مفلترة */
+.ad-st2{margin-top:12px}
+.ad-st2-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 6px;font-size:12px;color:#CFE0DA}
+.ad-st2-h b{font-weight:700;color:#fff}
+.ad-bar{display:flex;gap:2px;height:6px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.12)}
+.ad-bar i{display:block;height:100%;min-width:3px}
+.ad-bar .ok,.ad-st2 .ast-ok i{background:#7BD0A8} .ad-bar .pr,.ad-st2 .ast-pr i{background:#E3C27A} .ad-bar .un,.ad-st2 .ast-un i{background:#F29A8C}
+.ad-st2-b{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.ad-st2 button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:4px 6px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);color:#E3F0EB;font:inherit;cursor:pointer;transition:background .2s,transform .15s}
+.ad-st2 button:hover{background:rgba(255,255,255,.14)} .ad-st2 button:active{transform:scale(.97)}
+.ad-st2 button i{width:8px;height:8px;border-radius:50%;flex:none}
+.ad-st2 button b{font-family:var(--num,var(--font));font-size:16px;font-weight:700;color:#F1E0B8;font-variant-numeric:lining-nums tabular-nums}
+.ad-st2 button small{display:inline-flex;align-items:center;gap:5px;font-size:12px;white-space:nowrap}
+.ad-st2 button[aria-pressed=true]{background:#FFFEFA;border-color:#FFFEFA;color:var(--ink)} .ad-st2 button[aria-pressed=true] b{color:var(--g-dark)}
+
+/* 5) شريط «حالة اليوم» أسفل البطاقة: يفتح قسم «بانتظارك» */
+.ad-wait{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:8px 16px;border:0;border-top:1px solid rgba(227,201,142,.28);
+  background:linear-gradient(90deg,rgba(201,168,102,.10),rgba(201,168,102,.22));color:#FFFEFA;font:inherit;font-size:13.5px;font-weight:700;text-align:start;cursor:pointer}
+.ad-wait:hover{background:rgba(201,168,102,.28)}
+.ad-wait .w-ic{flex:none;width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#C9A866;color:#1C4448}
+.ad-wait .w-ic svg{width:17px;height:17px}
+.ad-wait span{flex:1;min-width:0} .ad-wait small{display:block;font-size:12px;font-weight:500;color:#E7D8B4}
+.ad-wait .w-go{width:18px;height:18px;flex:none;color:#E3C98E}
+[dir=ltr] .ad-wait .w-go{transform:scaleX(-1)}
+.ad-wait.calm{cursor:default;background:rgba(255,255,255,.05);border-top-color:rgba(255,255,255,.10)}
+.ad-wait.calm .w-ic{background:rgba(123,208,168,.18);color:#7BD0A8}
+
+/* الشريط السفلي .adt يبقى كما هو؛ نقرّبه من البطاقة */
+.ad-hero+.adt{margin-top:-2px}
+
+/* شاشات ضيقة جداً */
+@media (max-width:350px){
+  .adh2-in{padding:12px 14px 12px} .ad-hero h1{font-size:25px}
+  .ad-k2 dd{font-size:20px} .ad-st2-b{gap:5px}
+  .ad-st2 button{flex-direction:column;gap:0;padding:4px 2px;min-height:48px}
+}
+@media (min-width:700px){ .adh2-in{padding:20px 22px 16px} .ad-hero h1{font-size:32px} .ad-k2 dd{font-size:26px} }
+@media (prefers-reduced-motion:reduce){ .ad-st2 button{transition:none} }
+.ad-hero svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 #admin .ad-flt{display:flex;align-items:center;justify-content:space-between;gap:8px}
 #admin .ad-flt button{flex:none;min-height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font:inherit;font-size:13px;font-weight:700;color:var(--g-dark);cursor:pointer}
 /* ── HERO-END ── */
@@ -7583,6 +7649,7 @@ button.br-logo:focus-visible{outline:3px solid var(--gold);outline-offset:6px}
 @media (min-width:861px){.br-new{box-shadow:0 0 0 2px #fff}}
 .sh svg,.mm-l svg,.mm-sw svg,.mv-msg svg{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 body.mv-open,body.sh-open{overflow:hidden}
+.mv:focus{outline:none}
 .mv-top,.mv-cap,.mv-auto{pointer-events:none}
 .mv-top .mv-x,.mv-auto .mv-cta{pointer-events:auto}
 .mv-x:focus-visible,.mv-cta:focus-visible,.mv-prev:focus-visible,.mv-next:focus-visible{outline:3px solid #E3C98E;outline-offset:-3px}
@@ -7609,8 +7676,8 @@ body.mv-open,body.sh-open{overflow:hidden}
 @media (min-width:861px){.view .page.admin{max-width:720px}}
 /* رسائل الحفظ في اللوحة تطلع تحت (فوق الشريط السفلي) عشان ما تغطي شريط الأقسام الثابت */
 /* (فوق رسالة toast اللي تحت، عشان ما يتراكبون) */
-body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 66px + env(safe-area-inset-bottom))}
-@media (min-width:861px){body[data-view="admin"] .jnd-msg{bottom:76px}}
+body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px + env(safe-area-inset-bottom))}
+@media (min-width:861px){body[data-view="admin"] .jnd-msg{bottom:110px}}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
