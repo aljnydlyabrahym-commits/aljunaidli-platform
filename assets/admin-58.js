@@ -425,7 +425,7 @@ window.JNDAdmin = function (J) {
       document.head.appendChild(s); })); },
     async need() { if (!window.JNDXL) toast('جاري تجهيز قارئ الإكسل…'); try { return await XL.load(); } catch (e) { toast('ما تحمّل قارئ الإكسل، تأكد من النت وجرّب مرة ثانية'); return null; } },
     async tree() { const J = await XL.need(); if (!J) return;
-      try { J.save(J.exportTree(S.rows), J.names.tree(new Date())); toast(`نزل ملف الشجرة (${nCount(S.rows.length, J.NP)})`); } catch (e) { toast('ما نزل الملف، جرّب مرة ثانية'); } },
+      try { J.save(J.exportTree(S.rows), J.names.tree(new Date())); toast(`نزّل ملف الشجرة (${nCount(S.rows.length, J.NP)})`); } catch (e) { toast('ما نزل الملف، جرّب مرة ثانية'); } },
     async imp() { const J = await XL.need(); if (!J) return; impOpen(J); },
   };
   /* ── نافذة الاستيراد: الملف ← المراجعة ← الإضافة ── */
@@ -435,7 +435,7 @@ window.JNDAdmin = function (J) {
   function impOpen(J) {
     impClose();
     const d = document.createElement('div'); d.className = 'imp'; d.id = 'imp'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'imp-t');
-    document.body.appendChild(d); document.body.classList.add('sh-open');
+    document.body.appendChild(d); document.body.classList.add('sh-open', 'imp-open'); impToastOff();
     IMP = { J, el: d, step: 1, rows: null, dec: {}, f: '', all: false, R: null, busy: '', err: '', ret: document.activeElement, rec: null, done: null, undo: false };
     d.addEventListener('click', impClick); d.addEventListener('change', impChange);
     IMP.key = e => { if (!IMP) return; if (e.key === 'Escape' && !IMP.busy) { e.preventDefault(); impClose(); }
@@ -445,9 +445,11 @@ window.JNDAdmin = function (J) {
     impDraw(); setTimeout(() => { const x = $('.imp-x', d); try { x && x.focus({ preventScroll: true }); } catch (e) { } }, 30);
   }
   function impClose() {
-    if (!IMP) return; const { el, key, ret } = IMP; IMP = null; document.removeEventListener('keydown', key, true); el.remove(); document.body.classList.remove('sh-open');
+    if (!IMP) return; const { el, key, ret } = IMP; IMP = null; document.removeEventListener('keydown', key, true); el.remove(); document.body.classList.remove('sh-open', 'imp-open');
     try { ret && ret.focus && ret.focus({ preventScroll: true }); } catch (e) { }
   }
+  // رسالة قديمة (مثل «نزّل ملف الشجرة») ما تبقى فوق النافذة: تنشال إذا انفتحت النافذة أو تغيّرت الخطوة
+  const impToastOff = () => { const t = $('#toast'); if (t) { t.classList.remove('on'); clearTimeout(toast.t); } };
   const impVal = () => { IMP.R = IMP.J.validate(IMP.rows, S.rows, { decisions: IMP.dec }); return IMP.R; };
   function impRow(it, done) {
     const c = impCls[it.level], lid = 'ir-' + it.line;
@@ -482,7 +484,7 @@ window.JNDAdmin = function (J) {
         ${grp('warn', 'تحتاج قرارك')}${grp('err', 'فيها خطأ، ما تنضاف')}${grp('ok', 'جاهزة')}${grp('skip', 'ما تنضاف')}
         ${n.err ? `<p class="as-note">الأسطر الحمراء ما تنضاف. صلّحها في الملف وارفعه مرة ثانية، أو كمّل بالباقي.</p>` : ''}
         <p class="imp-note">${sv('info')}<span>بنحفظ نسخة احتياطية قبل الإضافة، وتقدر تتراجع بعدها.</span></p>`;
-      const lab = IMP.busy ? esc(IMP.busy) : R.need > 0 ? `اختر قرارك في الأسطر الصفراء أول (باقي ${ar(R.need)})` : !R.add ? 'ما فيه أسطر جاهزة للإضافة' : `أضف ${esc(nCount(R.add, J.NP))}`;
+      const lab = IMP.busy ? esc(IMP.busy) : R.need > 0 ? `قرّر في الصفراء أول (باقي ${ar(R.need)})` : !R.add ? 'ما فيه أسطر جاهزة للإضافة' : `أضف ${esc(nCount(R.add, J.NP))}`;
       foot = `<div class="imp-f"><button type="button" class="abtn pri imp-go"${R.need > 0 || !R.add || IMP.busy ? ' disabled' : ''}>${lab}</button><button type="button" class="abtn line imp-bk">${ARWB}غيّر الملف</button></div>`;
     } else {
       const D = IMP.done, miss = D.miss;
@@ -491,6 +493,7 @@ window.JNDAdmin = function (J) {
         ${IMP.undo ? `<div class="imp-undo" role="alert"><p>بتنمسح الأسماء اللي انضافت في هالاستيراد (${ar(D.n)}). متأكد؟</p><div class="adrow2"><button type="button" class="abtn imp-redf imp-uy">نعم، تراجع</button><button type="button" class="abtn line imp-un">لا</button></div></div>` : ''}`;
       foot = `<div class="imp-f"><button type="button" class="abtn pri imp-see">${sv('tree')}شوف الأسماء في الشجرة</button><button type="button" class="abtn imp-redl imp-u"${IMP.undo ? ' aria-expanded="true"' : ''}>تراجع</button></div>`;
     }
+    if (IMP.drawn !== s) { if (IMP.drawn) impToastOff(); IMP.drawn = s; }
     d.innerHTML = head + stp + `<div class="imp-b">${body}</div>` + foot;
     if (s === 2 && keep) $('.imp-b', d).scrollTop = keep;
   }
@@ -962,6 +965,7 @@ window.JNDAdmin = function (J) {
 .imp-undo p{margin:0 0 10px;font-weight:600}
 .abtn.imp-redf{background:#A8432C;color:#fff}
 .abtn.imp-redl{background:#fff;color:#8F3A26;border:1.5px solid #E2B4A8}
+body.imp-open .toast{bottom:calc(84px + env(safe-area-inset-bottom))!important}
 @media (min-width:861px){.imp{inset:0 calc(50% - 360px)}.imp-h,.imp-f{border-inline:1px solid var(--line)}}
 `;
   // أنماط اللوحة نفسها: كانت في index.html، وانتقلت هنا عشان الزائر ما يحمّلها. ترجع لنفس مكانها بالضبط (وسوم style[data-adm] فاضية في index.html) فترتيب الأنماط ما يتغيّر
