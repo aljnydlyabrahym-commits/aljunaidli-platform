@@ -4318,9 +4318,15 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     return !nS ? nCount(nR, R1) : !nR ? nCount(nS, S1) : nCount(nR, R2) + ' و' + nCount(nS, S2);
   }
   const MQ_CH = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
-  const mqIt = x => { const k = decOf(x);
-    return `<article class="mq-it s-${k || 'new'}"><div class="mq-h"><span class="mq-k">${esc(rsKind(x))}</span>${stPill(x, 'mq-st')}</div><b>${esc(rsSub(x))}${x.bd && x.bd.y ? ' · مواليد ' + esc(bFmt(x.bd.y, x.bd.m, x.bd.d)) : ''}</b>
-      ${k === 'no' && x.why ? `<p class="mq-why">السبب: ${esc(x.why)}</p>` : ''}<small>${esc(rsWhen(x))}${hasPh(x) || x.phq ? ' · الواتس مفعّل' : ''}</small></article>`; };
+  // v59: بطاقة الطلب: نوعه بأيقونة، وحالته، وشريط مراحله (أُرسل ← قيد المراجعة ← القرار)، والسبب في صندوق هادئ
+  const mqIsSug = x => rsKind(x) === 'اقتراحك';
+  const mqIc = x => x.type === 'birth' ? 'cake' : x.type === 'card' ? 'mail' : mqIsSug(x) ? 'chat' : 'cal';
+  const mqTrack = k => { const done = k === 'ok' || k === 'no', rv = k === 'review' || done;
+    const st = (on, cur, cls, t) => `<li class="${on ? 'on' : ''}${cur ? ' cur' : ''}${cls ? ' ' + cls : ''}"><i></i><span>${t}</span></li>`;
+    return `<ol class="mq-trk" aria-label="مراحل الطلب">${st(1, k === 'new', '', 'أُرسل')}${st(rv, k === 'review', '', 'قيد المراجعة')}${st(done, done, k === 'no' ? 'no' : k === 'ok' ? 'ok' : '', k === 'ok' ? 'تمت الموافقة' : k === 'no' ? 'لم تتم الموافقة' : 'القرار')}</ol>`; };
+  const mqIt = x => { const k = stKey(x);
+    return `<article class="mq-it s-${k}" data-mk="${mqIsSug(x) ? 's' : 'r'}"><div class="mq-h"><span class="mq-k">${sv(mqIc(x))}${esc(mqIsSug(x) ? 'اقتراح' : rsKind(x))}</span>${stPill(x, 'mq-st')}</div><b>${esc(rsSub(x))}${x.bd && x.bd.y ? ' · مواليد ' + esc(bFmt(x.bd.y, x.bd.m, x.bd.d)) : ''}</b>
+      ${k === 'no' && x.why ? `<p class="mq-why"><b>سبب الإدارة:</b> ${esc(x.why)}</p>` : ''}${mqTrack(k)}<small class="mq-meta"><span>${sv('clock')}${esc(rsWhen(x))}</span>${hasPh(x) || x.phq ? `<span>${sv('chat')}الواتس مفعّل</span>` : ''}</small></article>`; };
   function openMine() {
     if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
     const L = mineAll().sort((a, b) => mqT(b).localeCompare(mqT(a)));
@@ -4329,13 +4335,15 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const N = L.filter(isNew), P = L.filter(x => !isNew(x)), P1 = P.filter(x => mqDays(x) <= 30), P2 = P.filter(x => mqDays(x) > 30), po = !N.length;
     const f = S.me && S.me.gender === 'female', anyDec = L.some(x => ['ok', 'no'].includes(decOf(x)));
     $('#notif-body').innerHTML = `<div class="nt-h"><div><h3>طلباتي واقتراحاتي</h3>${L.length ? `<small>أرسلت للإدارة ${mqCount(L, true)}</small>` : ''}</div><button id="nt-back" type="button">الإشعارات</button></div>
-      ${L.length ? `<div class="mq-l"><h4 class="mq-sh">الجديدة<em>${ar(N.length)}</em></h4>${N.length ? N.map(mqIt).join('') : '<p class="mq-none">ما فيه شي بانتظار الرد</p>'}
+      ${L.length ? `${(nS => nS && nS < L.length ? `<div class="mq-fl" role="tablist"><button type="button" role="tab" class="on" data-mf="" aria-selected="true">الكل<em>${ar(L.length)}</em></button><button type="button" role="tab" data-mf="r" aria-selected="false">طلبات<em>${ar(L.length - nS)}</em></button><button type="button" role="tab" data-mf="s" aria-selected="false">اقتراحات<em>${ar(nS)}</em></button></div>` : '')(L.filter(mqIsSug).length)}<div class="mq-l"><h4 class="mq-sh">الجديدة<em>${ar(N.length)}</em></h4>${N.length ? N.map(mqIt).join('') : '<p class="mq-none">ما فيه شي بانتظار الرد</p>'}
         ${P.length ? `<button type="button" class="mq-more" aria-expanded="${po}" aria-controls="mq-old"><span>السابقة</span><em>${ar(P.length)}</em>${MQ_CH}</button>
         <div class="mq-old" id="mq-old"${po ? '' : ' hidden'}>${P1.map(mqIt).join('')}${P2.length ? `<button type="button" class="mq-arch">عرض الأقدم من شهر (${ar(P2.length)})</button>` : ''}</div>`
           : anyDec ? '' : '<p class="mq-none">أول ما ترد الإدارة، يطلع الرد هنا</p>'}</div>`
         : `<div class="nt-empty"><span>${sv('inbox')}</span><b>ما أرسلت شي للحين</b><small>${f ? 'أي طلب أو اقتراح ترسلينه تلقين حالته هنا' : 'أي طلب أو اقتراح ترسله تلقى حالته هنا'}</small></div>`}`;
     const mb = $('#notif-body .mq-more'); if (mb) mb.onclick = () => { const o = mb.getAttribute('aria-expanded') !== 'true'; mb.setAttribute('aria-expanded', o); $('#mq-old').hidden = !o; };
     const ma = $('#notif-body .mq-arch'); if (ma) ma.onclick = () => { ma.outerHTML = P2.map(mqIt).join(''); };
+    $$('#notif-body [data-mf]').forEach(b => b.onclick = () => { const f = b.dataset.mf; $$('#notif-body [data-mf]').forEach(o => { o.classList.toggle('on', o === b); o.setAttribute('aria-selected', o === b); });
+      $$('#notif-body .mq-it').forEach(it => { it.hidden = !!f && it.dataset.mk !== f; }); });
     $('#nt-back').onclick = () => openNotifs(); bellBadge();
     $('#morem').classList.remove('open'); $('#notifm').classList.add('open');
   }
@@ -4436,7 +4444,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     return admP || (admP = new Promise((res, rej) => {
       if (window.JNDAdmin) return res();
       const sc = document.createElement('script'); sc.src = ADM_URL; sc.onload = () => res(); sc.onerror = () => { sc.remove(); rej(new Error('adm-load')); }; document.head.appendChild(sc);
-    }).then(() => { if (!ADM) ADM = window.JNDAdmin({ $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd }); return ADM; }).catch(e => { admP = null; throw e; }));
+    }).then(() => { if (!ADM) ADM = window.JNDAdmin({ $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, momOpen, momVcLoad, momWho,RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd }); return ADM; }).catch(e => { admP = null; throw e; }));
   }
   const admFail = () => toast('ما انحمّلت أدوات الإدارة، تأكد من النت وجرّب مرة ثانية');
   const admCall = (k, a) => { if (ADM) return ADM[k](...a); admLoad().then(M => M[k](...a)).catch(admFail); };
@@ -4699,7 +4707,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     show(location.hash.slice(1) || 'home');
     setTimeout(() => { const g = grActive(); if (g && !seenN().includes('gr:' + g.id) && !$$('.modal.open').length) toast('وصلتك تهنئة من أسرة الجنيدلي، بطاقتك على الرئيسية'); }, 3000);
     setTimeout(() => dnPush(mineNotifs()), 1800);
-    { const lg = $('#br-logo'); if (lg) lg.onclick = () => { momTipClose(); if (lg.classList.contains('has-mom') && !lg.classList.contains('seen')) momOpen(); else go('home'); }; }
+    { const lg = $('#br-logo'); if (lg) lg.onclick = () => { momTipClose(); if ((MOM.L = momList()).length) momOpen(); else go('home'); }; }   // v59: الشعار مدخل دائم ما دام فيه لحظات
     setTimeout(momLoad, 1200);   // v58: فهرس اللحظات بقراءة وحدة بعد ما تفتح الصفحة (الصور ما تنحمّل إلا مع العارض)
     setInterval(() => { if (!document.hidden && MOM.at && Date.now() - MOM.at > 6e5) momLoad(); }, 6e4);
     setTimeout(phqFlush, 2500);   // v57: أرقام تنتظر التشفير من زيارة سابقة   // v56: قرارات الإدارة اللي ما انعرضت تطلع أعلى الصفحة
@@ -6810,6 +6818,29 @@ body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px +
 .nt-day b{font-size:17px;line-height:1;font-weight:700}.nt-day small{font-size:10px;color:var(--muted,#6B7A7B);margin-top:1px}
 .nt-day.now{background:#F9E3DE;color:#B0432F;font-weight:800;font-size:13px;font-family:var(--font,inherit)}
 .nt-day.soon{background:#FBEBD6;color:#B26A1D;font-weight:800;font-size:13px;font-family:var(--font,inherit)}
+
+/* ═══════════ v59 · طلباتي واقتراحاتي (النموذج board-4) ═══════════ */
+.mq-fl{display:flex;gap:8px;margin:2px 14px 12px;overflow-x:auto;scrollbar-width:none}
+.mq-fl button{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:99px;border:1px solid #E2D8C2;background:#fff;font:600 13px var(--font,inherit);color:var(--g-dark,#1C4448);cursor:pointer;white-space:nowrap}
+.mq-fl button em{font-style:normal;font-size:11.5px;min-width:20px;height:20px;padding:0 6px;border-radius:99px;display:grid;place-items:center;background:#F1EBDD;color:var(--g-dark,#1C4448)}
+.mq-fl button.on{background:var(--g-dark,#1C4448);border-color:var(--g-dark,#1C4448);color:#fff}.mq-fl button.on em{background:rgba(255,255,255,.18);color:#fff}
+.mq-it[hidden]{display:none!important}
+.mq-k{display:inline-flex;align-items:center;gap:5px}.mq-k svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.mq-why{margin:8px 0 2px!important;padding:9px 12px!important;border-radius:12px!important;background:#FBF4EC!important;color:#5E4A3A!important;border:0!important;border-inline-start:3px solid #C9806B!important;font-size:12.5px!important;line-height:1.7}
+.mq-why b{color:#A4503B;font-weight:700}
+.mq-trk{list-style:none;display:flex;align-items:center;margin:10px 0 6px;padding:0}
+.mq-trk li{display:flex;align-items:center;gap:5px;font-size:11px;color:#A8B2B2;white-space:nowrap}
+.mq-trk li+li::before{content:"";width:22px;height:2px;margin:0 6px;border-radius:2px;background:#E3E8E6}
+.mq-trk li.on+li.on::before{background:var(--g,#2D6369)}
+.mq-trk li i{width:9px;height:9px;border-radius:50%;background:#E3E8E6;flex-shrink:0}
+.mq-trk li.on{color:var(--g-dark,#1C4448)}.mq-trk li.on i{background:var(--g,#2D6369)}
+.mq-trk li.cur{font-weight:700}.mq-trk li.cur i{box-shadow:0 0 0 3px rgba(45,99,105,.18)}
+.mq-trk li.ok.on{color:#2E7D5B}.mq-trk li.ok.on i{background:#2E7D5B}
+.mq-trk li.no.on{color:#A4503B}.mq-trk li.no.on i{background:#A4503B;box-shadow:0 0 0 3px rgba(164,80,59,.15)}
+.s-review .mq-trk li.cur i{background:#C9A45C;box-shadow:0 0 0 3px rgba(201,164,92,.25)}.s-review .mq-trk li.cur{color:#8E7038}
+.mq-meta{display:flex;flex-wrap:wrap;gap:4px 12px}.mq-meta span{display:inline-flex;align-items:center;gap:4px}
+.mq-meta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:340px){.mq-trk li+li::before{width:12px;margin:0 4px}.mq-trk li{font-size:10.5px}}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
