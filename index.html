@@ -3243,7 +3243,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     mineAll().forEach(x => { const st = decOf(x); if (!st) return; const d = new Date(x.decAt || x.rev || x.at || 0);
       if (Date.now() - d > 45 * 864e5) return; const m = rsMsg(x, st, S.me);
       out.push({ id: `rs:${x.id}:${st}`, k: 'mine', ic: st === 'ok' ? 'check' : st === 'no' ? 'info' : 'clock', c: st === 'ok' ? 'green' : st === 'no' ? 'red' : 'gold', t: m.t, s: [m.why ? 'السبب: ' + m.why : m.s, m.sub].filter(Boolean).join(' · '),
-        st, kd: rsKind(x), sub: m.sub, why: m.why, line: m.s, rid: x.id, when: rsWhen(x), ord: -300 - (d.getTime() / 1e13), go: () => openMine() }); });
+        st, kd: rsKind(x), sub: m.sub, why: m.why, line: m.s, rid: x.id, when: rsWhen(x), ag: Math.max(0, Math.floor((Date.now() - d) / 864e5)), ord: -300 - (d.getTime() / 1e13), go: () => openMine() }); });
     return out;
   }
   /* ───────── إشعار ردّ الإدارة (v58: فقاعة من الجرس بدل البطاقة تحت الرأس)، مرة واحدة لكل قرار، ويبقى في الجرس ───────── */
@@ -3884,15 +3884,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       </section>
 
       ${grBanner()}
-      ${nx ? `<button class="tk2" id="h-ev" data-u="${urg(d)}" style="${ustyle(d)}">
-        <div class="tk2-cal"><i class="rings"><b></b><b></b></i><small>${wday(nx.date)}</small><strong>${ar(hn.d)}</strong><span>${HM[hn.m - 1]}</span><em>${gStr(nx.date).replace('م', '')}</em></div>
-        <div class="tk2-b">
-          <span class="tk2-tag"><i></i>أقرب مناسبة</span>${uchip(d) ? `<span class="tk2-u">${uchip(d)}</span>` : ''}
-          <h3>${esc(evTitle(nx))}</h3>
-          <div class="tk2-meta">${nx.venue ? `<span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/></svg>${esc(nx.venue)}</span>` : ''}${nx.time ? `<span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${t12(nx.time)}</span>` : ''}</div>
-        </div>
-        <div class="tk2-cd" role="img" aria-label="${cdAria(d)}"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19"/><circle cx="22" cy="22" r="19" class="p" style="stroke-dashoffset:${(119.4 * (1 - cdFrac(d))).toFixed(1)}"/></svg>${cdIn(d)}</div>
-      </button>` : ''}
+      ${nx ? nx2HTML(nx, d) : ''}
 
       <div class="hs-h"><h2>استكشف الأسرة</h2><span></span></div>
       <section class="bento">
@@ -3920,7 +3912,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     $$('#home a[href="#sug"]').forEach(a => a.addEventListener('click', e => e.preventDefault()));
     $$('#home [data-href]').forEach(b => b.onclick = () => go(b.dataset.href.slice(1)));
     const hm = $('#h-me'); if (hm) hm.onclick = () => go('me');
-    const he = $('#h-ev'); if (he) he.onclick = () => { W.sel = nx.id; W.tab = 'up'; go('weddings'); };
+    nx2Bind(nx);
     let k = fi; const hfb = $('#h-fb'); if (hfb) hfb.onclick = () => { k = (k + 1) % F.length; const p = $('#h-fp'); p.style.opacity = 0; setTimeout(() => { p.innerHTML = F[k]; p.style.opacity = 1; }, 180); };
   }
 
@@ -3929,6 +3921,56 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   // مستوى الاقتراب: يتحكم بلون العدّاد وحجمه وخطه حسب الأيام الباقية
   // تدرّج لوني متصل: أخضر مزرق (بعيد) ← أخضر ← أصفر ← برتقالي ← أحمر (اليوم)
   const UST = [[0, 0, 80, 42], [1, 4, 78, 44], [2, 9, 80, 45], [3, 14, 82, 46], [5, 30, 84, 46], [7, 52, 78, 42], [10, 140, 40, 38], [14, 170, 38, 38]];
+  /* v59 · بطاقة «أقرب مناسبة» في الرئيسية: عدّاد حي وشريط يتغيّر لونه بالاقتراب، والضغط يفتح الأزرار */
+  const nxPill = d => d <= 0 ? 'مناسبة اليوم' : d === 1 ? 'مناسبة غداً' : 'أقرب مناسبة';
+  const nxIsWed = e => !!(evPid(e) || e.kind === 'زواج');
+  const nxAt = e => { const [y, m, dd] = String(e.date).split('-').map(Number), [hh, mm] = e.time ? e.time.split(':').map(Number) : [0, 0]; return new Date(y, m - 1, dd, hh, mm).getTime(); };
+  const nxIco = { pin: '<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>', go: '<path d="M15 6l-6 6 6 6"/>',
+    sh: '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4"/>',
+    cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M12 13v4M10 15h4"/>', info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+    ring: '<circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/>', cl: '<rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>' };
+  const nxSv = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${nxIco[k]}</svg>`;
+  function nx2HTML(e, d) {
+    const wed = nxIsWed(e), kind = wed ? 'زواج' : (e.kind || 'مناسبة'), u = [['d', 'يوم'], ['h', 'ساعة'], ['m', 'دقيقة'], ['s', 'ثانية']];
+    const line = [`<b>${wday(e.date)}</b> ${esc(hStr(e.date).replace(/ \d+هـ$/, ''))}`, e.time ? t12(e.time) : '', e.venue ? esc(e.venue) : ''].filter(Boolean).join(' · ');
+    return `<div class="nx2" id="h-ev" role="button" tabindex="0" aria-expanded="false" data-st="far">
+      <span class="nx2-sh" aria-hidden="true"></span><span class="nx2-cf" aria-hidden="true">${Array.from({ length: 9 }, (_, i) => `<i style="left:${8 + i * 10}%;animation-duration:${6 + (i % 4)}s;animation-delay:-${i * .9}s"></i>`).join('')}</span>
+      <div class="nx2-c">
+        <div class="nx2-t"><span class="nx2-p">${nxPill(d)}</span><span class="nx2-k">${nxSv(wed ? 'ring' : 'cl')}${esc(kind)}</span><span class="nx2-go">${nxSv('go')}</span></div>
+        <h3>${esc(evTitle(e))}</h3>
+        <div class="nx2-s">${line}</div>
+        <div class="nx2-cd" role="timer" aria-label="${cdAria(d)}"><span>${wed ? 'باقي على الفرح' : 'باقي على المناسبة'}</span>${u.map(([k, l]) => `<div class="nx2-u${k === 's' ? ' s' : ''}"><b data-k="${k}">--</b><small>${l}</small></div>`).join('')}</div>
+        <div class="nx2-bar" aria-hidden="true"><i></i></div>
+        <div class="nx2-now"><i></i>${wed ? 'الفرح قائم الحين، حيّاكم الله' : 'المناسبة قائمة الحين، حيّاكم الله'}</div>
+        <div class="nx2-more"><div><div class="nx2-acts">
+          <a href="${wa(e)}" target="_blank" rel="noopener" class="nx2-a wa">${nxSv('sh')}شارك</a>
+          <a href="${gcal(e)}" target="_blank" rel="noopener" class="nx2-a">${nxSv('cal')}التقويم</a>
+          ${e.map ? `<a href="${esc(e.map)}" target="_blank" rel="noopener" class="nx2-a">${nxSv('pin')}الموقع</a>` : ''}
+          <button type="button" class="nx2-a" data-nx-more>${nxSv('info')}التفاصيل</button>
+        </div></div></div>
+      </div></div>`;
+  }
+  function nx2Bind(e) {
+    clearInterval(nx2Bind.t); const el = $('#h-ev'); if (!el || !e) return;
+    const at = nxAt(e), wed = nxIsWed(e), span = 30 * 864e5, hasT = !!e.time;
+    const set = (k, v) => { const b = el.querySelector(`[data-k="${k}"]`), t = String(v).padStart(2, '0'); if (b && b.textContent !== t) { b.textContent = t; b.classList.remove('tk'); void b.offsetWidth; b.classList.add('tk'); } };
+    const draw = () => {
+      if (!document.body.contains(el)) return clearInterval(nx2Bind.t);
+      let ms = at - Date.now();
+      if (ms <= 0) { el.dataset.st = 'live'; el.classList.add('live'); el.querySelector('.nx2-p').textContent = 'مناسبة اليوم'; return clearInterval(nx2Bind.t); }
+      el.dataset.st = ms > 7 * 864e5 ? 'far' : ms > 864e5 ? 'week' : ms > 36e5 ? 'day' : 'hour';
+      el.querySelector('.nx2-p').textContent = nxPill(daysTo(e.date));
+      el.querySelector('.nx2-bar i').style.width = (Math.min(1, Math.max(.04, 1 - ms / span)) * 100).toFixed(2) + '%';
+      const D = Math.floor(ms / 864e5); ms -= D * 864e5; const H = Math.floor(ms / 36e5); ms -= H * 36e5; const M = Math.floor(ms / 6e4), Sx = Math.floor((ms - M * 6e4) / 1e3);
+      set('d', D); set('h', H); set('m', M); set('s', Sx);
+    };
+    if (!hasT && daysTo(e.date) <= 0) { el.dataset.st = 'live'; el.classList.add('live'); }
+    else { draw(); nx2Bind.t = setInterval(draw, 1000); }
+    const tog = () => { const o = el.classList.toggle('open'); el.setAttribute('aria-expanded', o); };
+    el.onclick = ev => { if (ev.target.closest('a')) return; if (ev.target.closest('[data-nx-more]')) { W.sel = e.id; W.tab = 'up'; go('weddings'); return; } tog(); };
+    el.onkeydown = ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target === el) { ev.preventDefault(); tog(); } };
+    void wed;
+  }
   function ustyle(d) {
     d = Math.max(0, Math.min(14, d)); let a = UST[0], b = UST[UST.length - 1];
     for (let i = 0; i < UST.length - 1; i++) if (d >= UST[i][0] && d <= UST[i + 1][0]) { a = UST[i]; b = UST[i + 1]; break; }
@@ -4217,13 +4259,13 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   const seenN = () => { try { return JSON.parse(localStorage.getItem('jnd-seen') || '[]'); } catch (e) { return []; } };
   function notifs() {
     const seen = seenN(), L = [];
-    (S.news || []).forEach(n => { const d = String(n.date || '').slice(0, 10); if (d && -daysTo(d) <= 30) L.push({ id: 'n:' + n.id, k: 'news', ic: 'news', c: 'gold', t: n.title, s: (n.kind || 'خبر') + (['تهنئة', 'تعزية'].includes(n.kind) ? ' جديدة' : ' جديد'), when: nDate(n.date), ord: -daysTo(d), go: () => { go('news'); setTimeout(() => openNews(n.id), 300); } }); });
+    (S.news || []).forEach(n => { const d = String(n.date || '').slice(0, 10); if (d && -daysTo(d) <= 30) L.push({ id: 'n:' + n.id, k: 'news', ic: 'news', c: 'gold', t: n.title, s: (n.kind || 'خبر') + (['تهنئة', 'تعزية'].includes(n.kind) ? ' جديدة' : ' جديد'), when: nDate(n.date), ag: -daysTo(d), ord: -daysTo(d), go: () => { go('news'); setTimeout(() => openNews(n.id), 300); } }); });
     upcoming().forEach(e => { const d = daysTo(e.date); if (d > 14) return;
       // v58: المعرّف مفصول عن النص المعروض، ويبقى «بكرة» كما في 57 عشان التنبيه اللي أخفاه المستخدم ما يرجع له
       const nearId = d === 0 ? 'اليوم' : d === 1 ? 'بكرة' : d <= 3 ? 'قريب' : 'قادم', near = d === 0 ? 'اليوم' : d === 1 ? 'غداً' : d <= 3 ? 'قريب' : 'قادم', dw = daysWord(d);
-      L.push({ id: `e:${e.id}:${nearId}`, near, k: 'ev', ic: 'cal', c: d <= 1 ? 'red' : 'green', t: evTitle(e), s: d === 0 ? 'المناسبة اليوم — حيّاكم الله' : d === 1 ? 'المناسبة غداً' : `${dw.replace(/^بعد /, 'باقي ')} · ${wday(e.date)} ${hStr(e.date)}`, when: dw, ord: d - 100, go: () => { W.sel = e.id; W.tab = 'up'; go('weddings'); } }); });
+      L.push({ id: `e:${e.id}:${nearId}`, near, dd: d, ag: d <= 0 ? 0 : 1, k: 'ev', ic: 'cal', c: d <= 1 ? 'red' : 'green', t: evTitle(e), s: d === 0 ? 'المناسبة اليوم — حيّاكم الله' : d === 1 ? 'المناسبة غداً' : `${dw.replace(/^بعد /, 'باقي ')} · ${wday(e.date)} ${hStr(e.date)}`, when: dw, ord: d - 100, go: () => { W.sel = e.id; W.tab = 'up'; go('weddings'); } }); });
     mineNotifs().forEach(x => L.push(x));
-    const gA = grActive(); if (gA) L.push({ id: 'gr:' + gA.id, k: 'greet', ic: 'mail', c: 'gold', t: `${GR[gA.k].t} من أسرة الجنيدلي`, s: S.me ? `كل عام وأنت${S.me.gender === 'female' ? 'ِ' : ''} بخير يا ${S.me.name}، بطاقتك جاهزة` : 'بطاقتك جاهزة', when: nDate(gA.at), ord: -350, go: () => greetOpen() });
+    const gA = grActive(); if (gA) L.push({ id: 'gr:' + gA.id, k: 'greet', ic: 'mail', c: 'gold', t: `${GR[gA.k].t} من أسرة الجنيدلي`, s: S.me ? `كل عام وأنت${S.me.gender === 'female' ? 'ِ' : ''} بخير يا ${S.me.name}، بطاقتك جاهزة` : 'بطاقتك جاهزة', when: nDate(gA.at), ag: Math.max(0, Math.floor((Date.now() - new Date(gA.at)) / 864e5)) || 0, ord: -350, go: () => greetOpen() });
     if (isAdmin()) { const P = admPend(), r = P.r, g = P.s;
       // v58: «بانتظارك» مهام، تبقى جديدة لين تنحل وتنعد بعددها (نفس رقم لوحة المشرف)، وما تتأثر بـ«خلّها مقروءة»
       if (r) L.push({ id: 'adm:r', k: 'adm', task: r, ic: 'inbox', c: 'teal', t: `${nCount(r, ['طلب واحد', 'طلبين', 'طلبات', 'طلباً'])} بانتظار موافقتك`, s: 'بانتظارك', when: 'الآن', ord: -200, go: () => adOpen('inbox', 'req') });
@@ -4246,11 +4288,17 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   function openNotifs() {
     if (DN.cur) dnClose(true, 1);   // v58: الفقاعة تختفي أول ما تنفتح نافذة
     const L = notifs(), U = L.filter(x => x.unread), R = L.filter(x => !x.unread), N = noteCount(L), NT = L.reduce((a, x) => a + (x.task || 0), 0), UO = U.filter(x => !x.task);
-    const item = (x, i) => `<button class="nt-it ${x.unread ? 'new' : ''}" data-ni="${i}"><span class="st-ic c-${x.c}">${sv(x.ic)}</span><span class="nt-t"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span><time>${x.when}</time></button>`;
-    $('#notif-body').innerHTML = `<div class="nt-h"><div><h3>الإشعارات</h3><small>${N ? nCount(N, ['إشعار جديد', 'إشعاران جديدان', 'إشعارات جديدة', 'إشعاراً جديداً']) + (NT ? `، منها ${nCount(NT, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظارك` : '') : 'ما فاتك شي'}</small></div>${UO.length ? '<button id="nt-all">خلّها كلها مقروءة</button>' : ''}</div>
-      ${mineAll().length ? `<button class="nt-mine" id="nt-mine"><span>${sv('inbox')}</span><b>طلباتي واقتراحاتي</b><i>${ar(mineAll().length)}</i></button>` : ''}
-      ${L.length ? `${U.length ? `<h5>جديدة</h5><div class="st-grp">${U.map(x => item(x, L.indexOf(x))).join('')}</div>` : ''}${R.length ? `<h5>سابقة</h5><div class="st-grp">${R.map(x => item(x, L.indexOf(x))).join('')}</div>` : ''}`
-        : `<div class="nt-empty"><span>${sv('bell')}</span><b>ما فيه إشعارات</b><small>أول ما ينزل خبر أو تقرب مناسبة، يوصلك تنبيه هنا.</small></div>`}`;
+    const evBox = x => x.dd <= 0 ? '<span class="nt-day now">اليوم</span>' : x.dd === 1 ? '<span class="nt-day soon">غداً</span>' : `<span class="nt-day"><b>${ar(x.dd)}</b><small>${x.dd <= 10 ? 'أيام' : 'يوماً'}</small></span>`;
+    const item = (x, i) => `<button class="nt-it${x.unread ? ' new' : ''}" data-ni="${i}">${x.k === 'ev' ? evBox(x) : `<span class="st-ic c-${x.c}">${sv(x.ic)}</span>`}<span class="nt-t"><b>${esc(x.t)}</b><small>${esc(x.s)}</small></span>${x.k === 'ev' ? '' : `<time>${x.when}</time>`}</button>`;
+    const task = (x, i) => `<button class="nt-task" data-ni="${i}"><span class="nt-tk-ic">${sv(x.ic)}</span><span class="nt-t"><b>${esc(x.t)}</b><small>${esc(x.s === 'بانتظارك' ? 'بانتظار قرارك · الآن' : x.s)}</small></span><span class="nt-go">راجِع${MQ_CH}</span></button>`;
+    const T = L.filter(x => x.k === 'adm'), O = L.filter(x => x.k !== 'adm');
+    const G = [['اليوم', O.filter(x => (x.ag || 0) <= 0)], ['هذا الأسبوع', O.filter(x => (x.ag || 0) > 0 && (x.k === 'ev' || x.ag <= 7))], ['أقدم', O.filter(x => x.k !== 'ev' && x.ag > 7)]].filter(g => g[1].length);
+    const mineN = mineAll().filter(x => !decOf(x)).length;
+    $('#notif-body').innerHTML = `<div class="nt-h"><div><h3>الإشعارات</h3><small>${N ? nCount(N, ['إشعار جديد', 'إشعاران جديدان', 'إشعارات جديدة', 'إشعاراً جديداً']) + (NT ? `، منها ${nCount(NT, ['أمر واحد', 'أمران', 'أمور', 'أمراً'])} بانتظارك` : '') : 'ما فاتك شي'}</small></div>${UO.length ? `<button id="nt-all" class="nt-allb">${sv('check')}خلّها كلها مقروءة</button>` : ''}</div>
+      ${mineAll().length ? `<button class="nt-mine" id="nt-mine"><span>${sv('inbox')}</span><b>طلباتي واقتراحاتي${mineN ? `<small>${ar(mineN)} بانتظار الإدارة</small>` : ''}</b><i>${ar(mineAll().length)}</i>${MQ_CH}</button>` : ''}
+      ${T.length ? `<div class="nt-tasks"><h6>${sv('alert')}بانتظار قرارك</h6>${T.map(x => task(x, L.indexOf(x))).join('')}</div>` : ''}
+      ${O.length ? G.map(([h, A]) => `<h5 class="nt-gh"><span>${h}</span></h5><div class="st-grp nt-grp">${A.map(x => item(x, L.indexOf(x))).join('')}</div>`).join('')
+        : T.length ? '' : `<div class="nt-empty"><span>${sv('bell')}</span><b>ما فيه إشعارات</b><small>أول ما ينزل خبر أو تقرب مناسبة، يوصلك تنبيه هنا.</small></div>`}`;
     const mark = ids => { try { const s0 = seenN(); localStorage.setItem('jnd-seen', JSON.stringify([...new Set(s0.concat(ids))].slice(-300))); } catch (e) { } bellBadge(); };
     $$('#notif-body [data-ni]').forEach(b => b.onclick = () => { const x = L[b.dataset.ni]; mark([x.id]); $('#notifm').classList.remove('open'); x.go(); });
     const all = $('#nt-all'); if (all) all.onclick = () => { mark(L.filter(x => !x.task).map(x => x.id)); openNotifs(); };
@@ -6682,6 +6730,86 @@ body.mv-open,body.sh-open{overflow:hidden}
 /* (فوق رسالة toast اللي تحت، عشان ما يتراكبون) */
 body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px + env(safe-area-inset-bottom))}
 @media (min-width:861px){body[data-view="admin"] .jnd-msg{bottom:110px}}
+
+/* ═══════════ v59 · بطاقة «أقرب مناسبة» (النموذج المعتمد .claude/plans/v59-next-event.html) ═══════════ */
+.nx2{position:relative;display:block;width:100%;margin-top:14px;padding:13px 14px 12px;border-radius:22px;text-align:right;color:#fff;overflow:hidden;cursor:pointer;isolation:isolate;
+ background:radial-gradient(120% 100% at 100% 0%,#4A7F83 0%,transparent 60%),radial-gradient(80% 80% at 0% 100%,rgba(201,164,92,.30) 0%,transparent 60%),linear-gradient(160deg,#245457 0%,#2D6369 55%,#2F6E63 100%);
+ box-shadow:0 12px 26px rgba(28,68,72,.24);transition:transform .18s ease,box-shadow .18s ease;animation:nx2rise .6s cubic-bezier(.2,.8,.2,1) both;-webkit-tap-highlight-color:transparent}
+.nx2:active{transform:scale(.985)} .nx2:focus-visible{outline:3px solid var(--gold,#C9A45C);outline-offset:3px}
+@keyframes nx2rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.nx2::after{content:"";position:absolute;inset-inline-start:-50px;top:-60px;width:150px;height:150px;border-radius:50%;border:1px solid rgba(226,196,131,.25);box-shadow:0 0 0 16px rgba(226,196,131,.04);pointer-events:none}
+.nx2-sh{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.10) 48%,transparent 60%);transform:translateX(120%);animation:nx2sh 5.5s ease-in-out 1.2s infinite}
+@keyframes nx2sh{0%{transform:translateX(120%)}35%,100%{transform:translateX(-120%)}}
+.nx2-cf{position:absolute;inset:0;pointer-events:none;z-index:0}
+.nx2-cf i{position:absolute;top:0;width:5px;height:5px;border-radius:1px;background:#E2C483;opacity:0;animation:nx2cf linear infinite}
+.nx2-cf i:nth-child(3n){background:#fff}
+@keyframes nx2cf{0%{transform:translateY(-12px) rotate(0);opacity:0}15%{opacity:.5}100%{transform:translateY(150px) rotate(240deg);opacity:0}}
+.nx2-c{position:relative;z-index:1}
+.nx2-t{display:flex;align-items:center;gap:8px}
+.nx2-p{background:linear-gradient(90deg,#D9B56E,#B8924C);color:#1C3A3D;font-weight:700;font-size:11.5px;padding:3px 10px;border-radius:99px}
+.nx2-k{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:#E9D7A8}
+.nx2-k svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8}
+.nx2-go{margin-inline-start:auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);transition:transform .25s}
+.nx2.open .nx2-go{transform:rotate(-90deg)}
+.nx2-go svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nx2 h3{font-family:var(--display);font-size:21px;line-height:1.35;margin:6px 0 2px;color:#fff;font-weight:700}
+.nx2-s{font-size:12px;color:#CFE0DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nx2-s b{color:#fff;font-weight:600}
+.nx2-cd{display:flex;align-items:center;gap:6px;margin-top:10px}
+.nx2-cd>span{font-size:11.5px;color:#E9D7A8;font-weight:600;white-space:nowrap}
+.nx2-u{flex:1;display:flex;align-items:baseline;justify-content:center;gap:3px;height:36px;padding-top:6px;border-radius:11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);overflow:hidden;min-width:0}
+.nx2-u b{display:inline-block;font-family:var(--num,inherit);font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;color:#fff}
+.nx2-u b.tk{animation:nx2tk .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes nx2tk{0%{transform:translateY(-70%);opacity:0}100%{transform:none;opacity:1}}
+.nx2-u small{font-size:10.5px;color:#CFE0DC}
+.nx2-u.s b{color:#F1DDA9}
+.nx2-bar{height:4px;border-radius:4px;background:rgba(255,255,255,.12);margin-top:9px;overflow:hidden}
+.nx2-bar i{display:block;height:100%;width:0;border-radius:4px;transition:width 1s linear,background .8s ease,box-shadow .8s ease}
+.nx2[data-st=far] .nx2-bar i{background:linear-gradient(90deg,#7FC8A9,#4FA884)}
+.nx2[data-st=week] .nx2-bar i{background:linear-gradient(90deg,#F1DDA9,#E2B95E)}
+.nx2[data-st=day] .nx2-bar i{background:linear-gradient(90deg,#F7B267,#EE8B3A);box-shadow:0 0 8px rgba(238,139,58,.55)}
+.nx2[data-st=hour] .nx2-bar i{background:linear-gradient(90deg,#F26D5B,#D8392B);box-shadow:0 0 10px rgba(216,57,43,.65);animation:nx2b 1s ease-in-out infinite}
+@keyframes nx2b{50%{opacity:.7}}
+.nx2-now{display:none;align-items:center;gap:9px;margin-top:10px;padding:8px 10px;border-radius:12px;background:rgba(226,196,131,.14);border:1px solid rgba(226,196,131,.4);font-size:13px;font-weight:600}
+.nx2-now i{width:9px;height:9px;flex-shrink:0;border-radius:50%;background:#F1DDA9;animation:nx2p 1.6s ease-out infinite}
+@keyframes nx2p{0%{box-shadow:0 0 0 0 rgba(241,221,169,.55)}100%{box-shadow:0 0 0 10px rgba(241,221,169,0)}}
+.nx2.live .nx2-cd,.nx2.live .nx2-bar{display:none}.nx2.live .nx2-now{display:flex}
+.nx2-more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s cubic-bezier(.2,.8,.2,1)}
+.nx2.open .nx2-more{grid-template-rows:1fr}.nx2-more>div{overflow:hidden}
+.nx2-acts{display:flex;gap:7px;padding-top:10px}
+.nx2-a{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:0 4px;border-radius:13px;font:600 12.5px var(--font,inherit);border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;text-decoration:none;cursor:pointer;white-space:nowrap}
+.nx2-a.wa{background:#1E8A4C;border-color:#1E8A4C}
+.nx2-a svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:360px){.nx2-cd>span{display:none}.nx2 h3{font-size:19px}.nx2-a{font-size:11.5px}}
+@media (prefers-reduced-motion:reduce){.nx2,.nx2-sh,.nx2-cf,.nx2-u b.tk,.nx2-now i,.nx2[data-st=hour] .nx2-bar i{animation:none!important}.nx2-sh,.nx2-cf{display:none}}
+
+/* ═══════════ v59 · ورقة الإشعارات (النموذج board-3) ═══════════ */
+.nt-allb{display:inline-flex;align-items:center;gap:5px}.nt-allb svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}
+.nt-mine{border-radius:16px!important;background:linear-gradient(180deg,#FFFBF0,#FBF3E0)!important}
+.nt-mine b{display:flex;flex-direction:column;gap:1px}.nt-mine b small{font-size:11.5px;font-weight:600;color:#8E7038}
+.nt-mine>svg{width:16px;height:16px;fill:none;stroke:#8E7038;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.nt-tasks{margin:0 14px 10px;padding:6px 6px 4px;border-radius:18px;background:linear-gradient(160deg,#245457,#1C4448);box-shadow:0 10px 22px rgba(28,68,72,.25);border-inline-start:4px solid #C9A45C}
+.nt-tasks h6{display:flex;align-items:center;gap:6px;margin:6px 8px 4px;font-size:12px;color:#E9D7A8;font-weight:700}
+.nt-tasks h6 svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+.nt-task{display:flex;align-items:center;gap:10px;width:100%;padding:9px 8px;border:0;background:none;cursor:pointer;text-align:right;font-family:inherit;color:#fff;border-radius:12px}
+.nt-task+.nt-task{box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.nt-task:active{background:rgba(255,255,255,.06)}
+.nt-task .nt-t b{color:#fff;font-size:13.5px;line-height:1.4}.nt-task .nt-t small{color:#CFE0DC;font-size:11.5px}
+.nt-tk-ic{width:36px;height:36px;flex-shrink:0;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.1)}
+.nt-tk-ic svg{width:18px;height:18px;fill:none;stroke:#F1DDA9;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nt-go{display:inline-flex;align-items:center;gap:3px;min-height:36px;padding:0 10px;border-radius:11px;background:linear-gradient(90deg,#D9B56E,#B8924C);color:#1C3A3D;font-weight:700;font-size:12.5px;flex-shrink:0;white-space:nowrap}
+.nt-go svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.nt-task{min-height:48px}
+.nt-allb{white-space:nowrap}
+.nt-gh{display:flex;align-items:center;gap:10px;margin:14px 16px 8px!important;font-size:12.5px!important;color:#8E7038!important}
+.nt-gh::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#E6D3A2,transparent)}
+.nt-grp{border-radius:18px!important;border:1px solid #ECE3CF}
+.nt-it{position:relative;align-items:center!important}
+.nt-it .st-ic{margin-top:0!important}
+.nt-dot{position:absolute;inset-inline-end:8px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:#C9A45C}
+.nt-day{width:44px;height:44px;flex-shrink:0;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#EAF2EF;color:var(--g-dark,#1C4448);font-family:var(--num,inherit)}
+.nt-day b{font-size:17px;line-height:1;font-weight:700}.nt-day small{font-size:10px;color:var(--muted,#6B7A7B);margin-top:1px}
+.nt-day.now{background:#F9E3DE;color:#B0432F;font-weight:800;font-size:13px;font-family:var(--font,inherit)}
+.nt-day.soon{background:#FBEBD6;color:#B26A1D;font-weight:800;font-size:13px;font-family:var(--font,inherit)}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
