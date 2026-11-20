@@ -5036,8 +5036,22 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   function momPause(on) { const V = MOM.v; if (!V || !V.dur) return; const now = performance.now();
     if (on && V.run) { V.acc = Math.min(1, V.acc + (now - V.t0) / V.dur); V.run = false; } else if (!on && !V.run && !V.hold && !V.drag && !document.hidden) { V.t0 = now; V.run = true; } }
-  function momNext() { const V = MOM.v; if (!V) return; if (V.i < MOM.L.length - 1) momShow(V.i + 1); else momClose(); }
-  function momPrev() { const V = MOM.v; if (!V) return; momShow(Math.max(0, V.i - 1)); }
+  function momNext() { const V = MOM.v; if (!V || V.end) return; if (V.i < MOM.L.length - 1) momShow(V.i + 1); else momEnd(); }
+  function momPrev() { const V = MOM.v; if (!V) return; momShow(V.end ? MOM.L.length - 1 : Math.max(0, V.i - 1)); }
+  // v59: نهاية العارض: «شفت كل لحظات الأسرة» + «أعد من البداية» و«إغلاق»
+  function momEnd() {
+    const V = MOM.v; if (!V) return; const v = V.el, f = momGF(); V.end = true; V.n++; cancelAnimationFrame(V.raf); V.run = false; V.dur = 0;
+    v.classList.add('end'); $$('.mv-bars li', v).forEach(li => { li.className = 'done'; li.firstChild.style.setProperty('--p', 1); });
+    $('.mv-n', v).textContent = ''; $('.mv-src', v).textContent = ''; $('.mv-cap', v).hidden = true; $('.mv-seen', v).hidden = true;
+    $$('[data-mvd]', v).forEach(b => b.removeAttribute('aria-current'));
+    const st = $('.mv-st', v);
+    st.innerHTML = `<article class="mv-auto mv-end"><span class="mv-ai">${sv('check')}</span><h3>${f ? 'شفتي' : 'شفت'} كل لحظات الأسرة</h3><p>اللحظات الجديدة تطلع في الشعار أول ما تنزل</p>
+      <div class="mv-end-a"><button type="button" class="mv-cta" data-mve="re">${sv('replay')}${f ? 'أعيدي' : 'أعد'} من البداية</button><button type="button" class="mv-end-x" data-mve="x">إغلاق</button></div></article>`;
+    $('[data-mve="re"]', st).onclick = e => { e.stopPropagation(); momShow(0); };
+    $('[data-mve="x"]', st).onclick = e => { e.stopPropagation(); momClose(); };
+    $('.mv-live', v).textContent = 'انتهت لحظات الأسرة';
+    setTimeout(() => { try { MOM.v === V && V.end && $('[data-mve="re"]', st).focus({ preventScroll: true }); } catch (e) { } }, 30);
+  }
   function momClose() {
     const V = MOM.v; if (!V) return; MOM.v = null; cancelAnimationFrame(V.raf);
     window.removeEventListener('keydown', V.key, true); window.removeEventListener('hashchange', V.hc); document.removeEventListener('visibilitychange', V.vis);
