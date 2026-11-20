@@ -4118,7 +4118,8 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if (S.sel) panelPerson(S.sel); else panelWelcome();
     if (S.view && S.view !== 'tree' && S.view !== 'poster') rerenderView();
     if (S.view === 'admin' && !isAdmin()) go('tree');
-    if (isAdmin()) { admLoad().catch(() => { }); setTimeout(() => sd(momSweep), 2500); }
+    // أدوات المشرف تتحمّل بعد ما تكتمل الصفحة (ما تأخر فتحها)، وإذا فتح اللوحة قبلها تتحمّل فوراً من adminRender
+    if (isAdmin()) { const pre = () => setTimeout(() => admLoad().catch(() => { }), 300); if (document.readyState === 'complete') pre(); else window.addEventListener('load', pre, { once: true }); setTimeout(() => sd(momSweep), 2500); }
   }
   function bindAdmin() {
     document.addEventListener('click', e => {
