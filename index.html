@@ -4890,7 +4890,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       b.setAttribute('aria-label', 'لحظات الأسرة، فيه جديد');
     } else {
       b.classList.remove('mm-new', 'draw'); b.classList.add('mm-all'); $$('.br-new', b).forEach(e => e.remove());
-      const seg = 100 / N, gap = N > 1 ? Math.min(4, seg * .35) : 8;
+      const seg = 100 / N, gap = N > 1 ? Math.min(7, seg * .4) : 10;
       c.style.strokeDasharray = (seg - gap).toFixed(2) + ' ' + gap.toFixed(2); c.style.strokeDashoffset = (-gap / 2).toFixed(2);
       b.setAttribute('aria-label', `لحظات الأسرة، ${nCount(N, ['لحظة واحدة', 'لحظتان', 'لحظات', 'لحظة'])}، تمت مشاهدتها كلها`);
     }
@@ -5422,8 +5422,23 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
     return momAuth().then(function (h) { return fetch(MROOT + KEYQ + '&pageSize=100&mask.fieldPaths=_', { cache: 'no-store', headers: h }); }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
       .then(function (j) { return ((j && j.documents) || []).map(function (d) { return { id: String(d.name || '').split('/').pop(), ct: Date.parse(d.createTime) || 0 }; }); });
   }
+  /* v59: مشاهدات اللحظات mom/v-{id} = {v: {p<معرّف الشخص>: وقت الخادم}, k: آخر معرّف}. الزائر يضيف معرّفه فقط بدون ما يقرأ (القواعد تتحقق) */
+  var DOCS = 'https://firestore.googleapis.com/v1/projects/' + C.projectId + '/databases/(default)/documents', DNAME = 'projects/' + C.projectId + '/databases/(default)/documents/mom/v-';
+  function momView(id, k) {
+    var w = { update: { name: DNAME + id, fields: { k: { stringValue: k } } }, updateMask: { fieldPaths: ['k'] }, updateTransforms: [{ fieldPath: 'v.' + k, setToServerValue: 'REQUEST_TIME' }] };
+    return fetch(DOCS + ':commit' + KEYQ, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [w] }) }).then(function (r) { return r.status; });
+  }
+  // قراءة وحدة (batchGet) لكل اللحظات: للمشرف دائماً، وللكل إذا المشرف شغّل العرض
+  function momViews(ids) {
+    return idToken().then(function (t) { var h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(DOCS + ':batchGet' + KEYQ, { method: 'POST', cache: 'no-store', headers: h, body: JSON.stringify({ documents: ids.map(function (id) { return DNAME + id; }) }) }); })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (arr) { var o = {}; (Array.isArray(arr) ? arr : []).forEach(function (y) { if (!y || !y.found) return;
+        var id = String(y.found.name || '').split('/mom/v-')[1], f = ((y.found.fields || {}).v || {}).mapValue, m = {}; if (!id) return;
+        Object.keys((f && f.fields) || {}).forEach(function (k) { if (/^p[0-9]{1,12}$/.test(k)) m[k] = Date.parse(f.fields[k].timestampValue || '') || 0; }); o[id] = m; }); return o; });
+  }
   window.JNDCloud = { start: function (cfg) { try { start(cfg); } catch (e) { console.error(e); window.JunaidliApp.init(cfg); } }, on: ON, poll: poll, need: need, verify: function (pw) { return signIn(pw); },
-    momGet: momGet, momPut: momPut, momDel: momDel, momList: momList, hasTok: function () { return !!tok(); } };
+    momGet: momGet, momPut: momPut, momDel: momDel, momList: momList, momView: momView, momViews: momViews, hasTok: function () { return !!tok(); } };
 })();
 if (!window.JNDCloud) window.JNDCloud = { start: function (c) { window.JunaidliApp.init(c); }, on: false };
 </script>
@@ -6754,6 +6769,43 @@ button.br-logo::before{content:'';position:absolute;inset:-6px;border-radius:50%
 .mv.drag .mv-in{transition:none}
 @media (prefers-reduced-motion:reduce){ .mv-in,.mv-top,.mv-cap{transition:none} }
 
+/* v59: إعادة اللحظات. جديد = إطار أخضر يرتسم مرة + «جديد». شافها كلها = إطار ذهبي مقطّع بعدد اللحظات (يتميّز عن حد الشعار) */
+.br-logo.mm-new .br-ring circle{stroke:#5FD08F}
+.br-logo:not(.mm-new) .br-ring circle{animation:none!important}
+.br-logo.mm-all .br-ring circle{stroke:url(#brRingG);stroke-linecap:butt;stroke-width:3}
+.br-logo.mm-new .br-new{background:#5FD08F;color:#0F3B25}
+/* أسفل العارض: التعليق + المشاهدات + نقاط الانتقال */
+.mv-bot{position:absolute;inset-inline:0;bottom:0;z-index:3;padding:44px 0 env(safe-area-inset-bottom);background:linear-gradient(0deg,rgba(8,20,22,.82),rgba(8,20,22,0));pointer-events:none;transition:opacity .2s}
+.mv-bot .mv-cap{position:static;padding:0 20px 6px;background:none}
+.mv.hold .mv-bot,.mv.end .mv-bot .mv-cap{opacity:0}
+.mv-seen{padding:0 14px 4px}
+.mv-seen[hidden]{display:none}
+.mv-sb,.mv-sq{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:99px;font:inherit;font-size:13.5px;font-weight:600;color:#fff}
+.mv-sb{pointer-events:auto;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.14);cursor:pointer}
+.mv-sq{min-height:32px;padding:0 4px;color:#D6E4DF}
+.mv-sb svg,.mv-sq svg,.mv-end svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.mv-dots{display:flex;justify-content:center;padding:0 10px 4px}
+.mv-dots button{pointer-events:auto;flex:0 1 44px;min-width:0;height:44px;border:0;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.mv-dots i{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.45);transition:width .2s,background .2s}
+.mv-dots button[aria-current] i{width:20px;background:#E3C98E}
+.mv-dots button:focus-visible,.mv-sb:focus-visible,.mv-end button:focus-visible{outline:3px solid #E3C98E;outline-offset:-3px;border-radius:12px}
+.mv-end-a{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.mv-end .mv-cta{margin-top:0;width:100%}
+.mv-end button{pointer-events:auto}
+.mv-end-x{min-height:48px;border:1px solid rgba(255,255,255,.4);border-radius:14px;background:none;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+/* ورقة الأسماء (للمشرف) فوق العارض */
+.sh.mw-sh{z-index:95}
+.mw-sub{margin:-2px 0 8px;font-size:13px;color:var(--muted);line-height:1.7}
+.mw-l{list-style:none;margin:0;padding:0;max-height:55vh;overflow:auto}
+.mw-l li{display:flex;align-items:center;gap:10px;min-height:52px;border-bottom:1px solid #EEF1EE}
+.mw-l li:last-child{border-bottom:0}
+.mw-av{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#E6EFEC;color:var(--g-dark)}
+.mw-av svg{width:18px;height:18px}
+.mw-l b{flex:1;min-width:0;font-size:14px;line-height:1.5;color:var(--ink);overflow-wrap:anywhere}
+.mw-l time{flex:none;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.mw-lock{display:flex;align-items:center;gap:6px;margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+.mw-lock svg{width:16px;height:16px}
+@media (prefers-reduced-motion:reduce){.mv-bot,.mv-dots i{transition:none}}
 /* 5) بطاقة اللحظة التلقائية (مولود، مناسبة اليوم، خبر جديد) */
 .mv-auto{width:min(340px,calc(100% - 40px));padding:28px 22px 22px;border-radius:26px;text-align:center;position:relative;overflow:hidden;z-index:3;
   background:radial-gradient(130% 150% at 100% 0%,#4A8A75,#2D6369 50%,#173A3E);box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 0 0 1px rgba(201,168,102,.35)}
