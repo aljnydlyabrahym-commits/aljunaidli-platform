@@ -3571,7 +3571,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         <div class="mp-acts"><button class="btn gold" id="mp-tree">مكاني في الشجرة</button><button class="btn line light" id="mp-share">شارك ملفي</button></div>
       </section>
       <button class="mp-cc${fem ? ' girl' : ''}" data-cc type="button"><span><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11M12 9c-1.5-3.5-5.5-4-5.5-1.5S10 9 12 9zM12 9c1.5-3.5 5.5-4 5.5-1.5S14 9 12 9z"/></svg></span><div><b>بطاقات الأسرة</b><small>بطاقات تهنئة ${fem ? 'لكِ' : 'لك'} ولأقاربك: مولود، تخرج، ختم القرآن، حج…</small></div><i>${ARW}</i></button>
-      ${myEv.length ? `<section class="mp-sec"><h3>مناسبات أقاربك</h3>${myEv.map(e => { const d = daysTo(e.date); return `<button class="mp-ev" data-u="${urg(d)}" style="${ustyle(d)}" data-wed="${e.id}"><span class="he-cd" role="img" aria-label="${cdAria(d)}">${cdRing(d)}${cdIn(d)}</span><span class="he-t"><b>${esc(evTitle(e))}</b><em>${wday(e.date)} ${hStr(e.date)}${e.venue ? ' · ' + esc(e.venue) : ''}</em></span></button>`; }).join('')}</section>` : ''}
+      ${myEv.length ? `<section class="mp-sec"><h3>مناسبات أقاربك</h3>${nx2HTML(myEv[0], daysTo(myEv[0].date), 'mp-nx')}${myEv.slice(1).map(e => { const d = daysTo(e.date); return `<button class="mp-ev" data-u="${urg(d)}" style="${ustyle(d)}" data-wed="${e.id}"><span class="he-cd" role="img" aria-label="${cdAria(d)}">${cdRing(d)}${cdIn(d)}</span><span class="he-t"><b>${esc(evTitle(e))}</b><em>${wday(e.date)} ${hStr(e.date)}${e.venue ? ' · ' + esc(e.venue) : ''}</em></span></button>`; }).join('')}</section>` : ''}
       <section class="mp-sec"><h3>سلسلة نسبي</h3><p class="mp-sub">${nCount(anc.length, ['اسم واحد', 'اسمان', 'أسماء', 'اسماً'])} من الجد الأول إلى ${esc(me.name)} — اضغط أي اسم وتنفتح بطاقته.</p>
         <ol class="mp-chain">${anc.map((p, i) => `<li class="${p === me ? 'me' : ''}${p === big ? ' big' : ''}"><button data-go="${p.id}"><span class="mc-n">${ar(i + 1)}</span><b>${esc(dispName(p))}</b>${p === big ? '<em>رأس فرعك</em>' : p === me ? `<em>${fem ? 'أنتِ' : 'أنت'}</em>` : `<small>${ar(p.desc)} من الذرية</small>`}</button></li>`).join('')}</ol></section>
       <section class="mp-sec"><h3>قرابتي</h3>${grp('إخواني', sv('users'), sib)}${grp('أعمامي', sv('tree'), unc)}${fem ? grp('بنات عمي', sv('users'), girlCous) : grp('أبناء عمي', sv('users'), cous) + grp('أبنائي', sv('user'), me.kids)}${!fem && grand ? `<p class="mp-sub">ولك ${ar(grand)} من الأحفاد.</p>` : ''}</section>
@@ -3593,6 +3593,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       row.innerHTML = `<div class="rq-done" role="status"><div class="rq-ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>${me.gender === 'female' ? 'شكراً لكِ' : 'شكراً لك'}</h3><p>وصل تاريخ ميلاد${self ? (me.gender === 'female' ? 'كِ' : 'ك') : ' ' + esc(n.name)} للإدارة: <b>${esc(bFmt(r.y, r.m, r.d))}</b>.<br>وأول ما يُعتمد يظهر ${self ? (me.gender === 'female' ? 'في ملفكِ' : 'في ملفك') : 'في الشجرة'}، ${me.gender === 'female' ? 'جزاكِ' : 'جزاك'} الله خيراً.</p><div class="row"><button class="btn" type="button" data-bdone>تم</button></div></div>`;
       row.classList.add('bd-fin'); const ok = $('[data-bdone]', row); ok.focus({ preventScroll: true }); ok.onclick = () => meRender(); });
     $$('#mepg [data-wed]').forEach(b => b.onclick = () => { W.sel = b.dataset.wed; W.tab = 'up'; go('weddings'); });
+    if (myEv.length) nx2Bind(myEv[0], 'mp-nx');
   }
 
   /* ───────── بطاقات الأسرة (مناسبات) ───────── */
@@ -3930,10 +3931,10 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M12 13v4M10 15h4"/>', info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
     ring: '<circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/>', cl: '<rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>' };
   const nxSv = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${nxIco[k]}</svg>`;
-  function nx2HTML(e, d) {
+  function nx2HTML(e, d, id) {
     const wed = nxIsWed(e), kind = wed ? 'زواج' : (e.kind || 'مناسبة'), u = [['d', 'يوم'], ['h', 'ساعة'], ['m', 'دقيقة'], ['s', 'ثانية']];
     const line = [`<b>${wday(e.date)}</b> ${esc(hStr(e.date).replace(/ \d+هـ$/, ''))}`, e.time ? t12(e.time) : '', e.venue ? esc(e.venue) : ''].filter(Boolean).join(' · ');
-    return `<div class="nx2" id="h-ev" role="button" tabindex="0" aria-expanded="false" data-st="far">
+    return `<div class="nx2" id="${id || 'h-ev'}" role="button" tabindex="0" aria-expanded="false" data-st="far">
       <span class="nx2-sh" aria-hidden="true"></span><span class="nx2-cf" aria-hidden="true">${Array.from({ length: 9 }, (_, i) => `<i style="left:${8 + i * 10}%;animation-duration:${6 + (i % 4)}s;animation-delay:-${i * .9}s"></i>`).join('')}</span>
       <div class="nx2-c">
         <div class="nx2-t"><span class="nx2-p">${nxPill(d)}</span><span class="nx2-k">${nxSv(wed ? 'ring' : 'cl')}${esc(kind)}</span><span class="nx2-go">${nxSv('go')}</span></div>
@@ -3950,14 +3951,14 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         </div></div></div>
       </div></div>`;
   }
-  function nx2Bind(e) {
-    clearInterval(nx2Bind.t); const el = $('#h-ev'); if (!el || !e) return;
+  function nx2Bind(e, id) {
+    id = id || 'h-ev'; const T = nx2Bind.T = nx2Bind.T || {}; clearInterval(T[id]); const el = $('#' + id); if (!el || !e) return;
     const at = nxAt(e), wed = nxIsWed(e), span = 30 * 864e5, hasT = !!e.time;
     const set = (k, v) => { const b = el.querySelector(`[data-k="${k}"]`), t = String(v).padStart(2, '0'); if (b && b.textContent !== t) { b.textContent = t; b.classList.remove('tk'); void b.offsetWidth; b.classList.add('tk'); } };
     const draw = () => {
-      if (!document.body.contains(el)) return clearInterval(nx2Bind.t);
+      if (!document.body.contains(el)) return clearInterval(T[id]);
       let ms = at - Date.now();
-      if (ms <= 0) { el.dataset.st = 'live'; el.classList.add('live'); el.querySelector('.nx2-p').textContent = 'مناسبة اليوم'; return clearInterval(nx2Bind.t); }
+      if (ms <= 0) { el.dataset.st = 'live'; el.classList.add('live'); el.querySelector('.nx2-p').textContent = 'مناسبة اليوم'; return clearInterval(T[id]); }
       el.dataset.st = ms > 7 * 864e5 ? 'far' : ms > 864e5 ? 'week' : ms > 36e5 ? 'day' : 'hour';
       el.querySelector('.nx2-p').textContent = nxPill(daysTo(e.date));
       el.querySelector('.nx2-bar i').style.width = (Math.min(1, Math.max(.04, 1 - ms / span)) * 100).toFixed(2) + '%';
@@ -3965,7 +3966,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       set('d', D); set('h', H); set('m', M); set('s', Sx);
     };
     if (!hasT && daysTo(e.date) <= 0) { el.dataset.st = 'live'; el.classList.add('live'); }
-    else { draw(); nx2Bind.t = setInterval(draw, 1000); }
+    else { draw(); T[id] = setInterval(draw, 1000); }
     const tog = () => { const o = el.classList.toggle('open'); el.setAttribute('aria-expanded', o); };
     el.onclick = ev => { if (ev.target.closest('a')) return; if (ev.target.closest('[data-nx-more]')) { W.sel = e.id; W.tab = 'up'; go('weddings'); return; } tog(); };
     el.onkeydown = ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target === el) { ev.preventDefault(); tog(); } };
@@ -4769,7 +4770,65 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
      - التلقائية (مولود جديد، مناسبة اليوم، خبر جديد) تنحسب من بيانات الأسرة اللي عندنا أصلاً، بدون قراءة زيادة
      - الحفظ المحلي في IndexedDB (الفهرس والصور)، واللي شافه العضو في localStorage
      - كل نص يمر على esc()، وبيانات الفهرس تنظّف قبل الاستخدام (momClean) */
-  const MOM = { idx: null, L: [], v: null, at: 0, busy: 0, swept: 0 };
+  const MOM = { idx: null, L: [], v: null, at: 0, busy: 0, swept: 0, vc: {}, vcAt: 0, vcP: null };
+  // v59: أيقونات اللحظات والفلتر (خطية)
+  Object.assign(IC, { eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
+    replay: '<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/>' });
+  /* v59: مشاهدات اللحظات بالأشخاص. mom/v-{معرّف اللحظة}: كل شخص داخل باسمه ينحسب مرة لكل لحظة */
+  const MOM_VC = 'jnd-mom-vc', MOM_VID = /^(m[0-9a-z]{6,40}|[bne]:[\w:.\-]{1,120})$/;
+  const momVcOn = () => !!(S.site && S.site.momVc);
+  function momVcLoad(force) {
+    if (!momCloud() || !JNDCloud.momViews || !(isAdmin() || momVcOn())) return Promise.resolve(MOM.vc);
+    if (!force && MOM.vcAt && Date.now() - MOM.vcAt < 120000) return Promise.resolve(MOM.vc);
+    if (MOM.vcP) return MOM.vcP;
+    const ids = momList().map(x => x.id).filter(id => MOM_VID.test(id)); if (!ids.length) { MOM.vcAt = Date.now(); return Promise.resolve(MOM.vc); }
+    MOM.vcP = JNDCloud.momViews(ids).then(o => { MOM.vc = o; MOM.vcAt = Date.now(); return o; }).finally(() => { MOM.vcP = null; });
+    return MOM.vcP;
+  }
+  // نسجّل مشاهدة الشخص الداخل باسمه (مو المشرف)، مرة لكل لحظة، ونتذكرها على الجهاز عشان ما نكتب مرتين
+  function momView(m) {
+    if (isAdmin() || !momCloud() || !JNDCloud.momView || !MOM_VID.test(m.id)) return;
+    const n = gateNode(); if (!n || n.pending || !/^[0-9]{1,12}$/.test(String(n.id))) return;
+    const pk = 'p' + n.id, key = n.id + '|' + m.id; let s = []; try { s = JSON.parse(localStorage.getItem(MOM_VC) || '[]'); if (!Array.isArray(s)) s = []; } catch (e) { }
+    if (s.includes(key) || (MOM.vSend || (MOM.vSend = new Set())).has(key)) return; MOM.vSend.add(key);
+    const done = () => { s.push(key); try { localStorage.setItem(MOM_VC, JSON.stringify(s.slice(-600))); } catch (e) { } };
+    JNDCloud.momView(m.id, pk).then(st => {
+      if (st === 200) { done(); if (MOM.vcAt) { (MOM.vc[m.id] = MOM.vc[m.id] || {})[pk] = Date.now(); momSeenUi(); } } else if (st === 403) done();   // 403: انحسب قبل (الجهاز نسي)
+    }).catch(() => { }).finally(() => MOM.vSend.delete(key));
+  }
+  const momWhen = t => { if (!t) return ''; const d = new Date(t), hm = t12(String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0')), k = Math.round((momDay0(Date.now()) - momDay0(t)) / MOM_DAY);
+    return k <= 0 ? 'اليوم ' + hm : k === 1 ? 'أمس ' + hm : nDate(ymd(d)); };
+  // تحت العارض: المشرف يشوف «شافها N» ويضغطها للأسماء، والعضو يشوف العدد فقط إذا المشرف شغّل العرض
+  function momSeenUi() {
+    const V = MOM.v; if (!V) return; const el = $('.mv-seen', V.el), m = MOM.L[V.i]; if (!el) return;
+    const o = m && MOM.vc[m.id], n = o ? Object.keys(o).length : 0;
+    if (V.end || !m || !MOM.vcAt || !MOM_VID.test(m.id)) { el.hidden = true; return; }
+    if (isAdmin()) { el.hidden = false; el.innerHTML = n ? `<button type="button" class="mv-sb" data-mvwho="${esc(m.id)}">${sv('eye')}شافها ${esc(ar(n))}</button>` : `<span class="mv-sq">${sv('eye')}ما أحد شافها للحين</span>`;
+      const b = $('[data-mvwho]', el); if (b) b.onclick = e => { e.stopPropagation(); momWho(m.id); }; }
+    else if (momVcOn() && n) { el.hidden = false; el.innerHTML = `<span class="mv-sq">${sv('eye')}${esc(nCount(n, ['مشاهدة واحدة', 'مشاهدتان', 'مشاهدات', 'مشاهدة']))}</span>`; }
+    else el.hidden = true;
+  }
+  // ورقة الأسماء والوقت (للمشرف فقط): من العارض أو من اللوحة
+  async function momWho(id) {
+    if (!isAdmin()) return;
+    if (!MOM.vcAt) { try { await momVcLoad(true); } catch (e) { toast('ما قدرنا نجيب المشاهدات، جرّب مرة ثانية'); return; } }
+    const R = Object.entries(MOM.vc[id] || {}).map(([k, t]) => [S.byId[k.slice(1)], t]).sort((a, b) => b[1] - a[1]);
+    const V = MOM.v; if (V) { momPause(true); V.hold = true; }
+    const old = $('#mm-who'); if (old) old.remove(); const ret = document.activeElement;
+    const d = document.createElement('div'); d.className = 'sh mw-sh'; d.id = 'mm-who'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'mw-h');
+    d.innerHTML = `<div class="sh-c"><div class="sh-grip"></div>
+      <div class="sh-h"><h3 id="mw-h">${R.length ? 'شافها ' + esc(nCount(R.length, ['شخص واحد', 'شخصان', 'أشخاص', 'شخصاً'])) : 'ما أحد شافها للحين'}</h3><button class="sh-x" type="button" aria-label="إغلاق">${sv('xmark')}</button></div>
+      <p class="mw-sub">كل فرد ينحسب مرة وحدة، ولو تشاركوا نفس الجوال</p>
+      ${R.length ? `<ul class="mw-l">${R.map(([n, t]) => `<li><span class="mw-av">${sv('user')}</span><b>${esc(n ? lineage(n, 3) : 'اسم انحذف من الشجرة')}</b><time>${esc(momWhen(t))}</time></li>`).join('')}</ul>` : ''}
+      <p class="mw-lock">${sv('lock')}الأسماء تطلع للمشرف فقط</p></div>`;
+    document.body.appendChild(d); document.body.classList.add('sh-open');
+    const close = () => { d.remove(); if (!$('.sh:not(.mw-sh)')) document.body.classList.remove('sh-open'); document.removeEventListener('keydown', kd, true);
+      const W = MOM.v; if (W) { W.hold = false; momPause(false); } try { ret && document.body.contains(ret) && ret.focus({ preventScroll: true }); } catch (e) { } };
+    const kd = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close(); } };
+    document.addEventListener('keydown', kd, true);
+    d.onclick = e => { if (e.target === d) close(); }; $('.sh-x', d).onclick = close;
+    setTimeout(() => { try { $('.sh-x', d).focus({ preventScroll: true }); } catch (e) { } }, 30);
+  }
   const MOM_SEEN = 'jnd-mom-seen', MOM_TIP = 'jnd-mom-tip', MOM_MAX = 20, MOM_CAP = 120, MOM_DAY = 864e5, MOM_IDX_MAX = 60000;
   const MOM_ID = /^m[0-9a-z]{6,40}$/, MOM_B64 = /^[A-Za-z0-9+/]+={0,2}$/;
   const momCloud = () => !!(window.JNDCloud && JNDCloud.on && JNDCloud.momGet);
@@ -4819,21 +4878,21 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   // الشعار: إطار ذهبي وعلامة «جديد» إذا فيه لحظات ما شافها. ينرسم مرة وحدة في الجلسة ثم يثبت
   function momLogo() {
     const b = $('#br-logo'); if (!b) return;
-    MOM.L = momList(); const n = momNew().length;
+    MOM.L = momList(); const N = MOM.L.length, n = momNew().length;
+    // v59: ما فيه لحظات = شعار عادي يرجع للرئيسية. جديد = إطار أخضر + «جديد». شافها كلها = إطار ذهبي مقطّع بعدد اللحظات
+    if (!N) { b.classList.remove('has-mom', 'draw', 'mm-new', 'mm-all'); $$('.br-ring,.br-new', b).forEach(e => e.remove()); b.removeAttribute('aria-haspopup'); b.setAttribute('aria-label', 'الرئيسية'); momTipClose(); return; }
+    if (!$('.br-ring', b)) b.insertAdjacentHTML('beforeend', '<svg class="br-ring" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="25.5" pathLength="100"/></svg>');
+    const c = $('.br-ring circle', b); b.classList.add('has-mom'); b.setAttribute('aria-haspopup', 'dialog');
     if (n) {
-      b.classList.remove('seen');
-      if (!$('.br-ring', b)) {
-        b.insertAdjacentHTML('beforeend', '<svg class="br-ring" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="25.5" pathLength="100"/></svg><span class="br-new" aria-hidden="true">جديد</span>');
-        let drawn = false; try { drawn = sessionStorage.getItem('jnd-mom-drawn') === '1'; sessionStorage.setItem('jnd-mom-drawn', '1'); } catch (e) { }
-        b.classList.toggle('draw', !drawn);
-      }
-      b.classList.add('has-mom'); b.setAttribute('aria-haspopup', 'dialog'); b.setAttribute('aria-label', 'لحظات الأسرة، فيه جديد');
+      if (!b.classList.contains('mm-new')) { let drawn = false; try { drawn = sessionStorage.getItem('jnd-mom-drawn') === '1'; sessionStorage.setItem('jnd-mom-drawn', '1'); } catch (e) { } b.classList.toggle('draw', !drawn); }
+      b.classList.add('mm-new'); b.classList.remove('mm-all'); c.style.strokeDasharray = ''; c.style.strokeDashoffset = '';
+      if (!$('.br-new', b)) b.insertAdjacentHTML('beforeend', '<span class="br-new" aria-hidden="true">جديد</span>');
+      b.setAttribute('aria-label', 'لحظات الأسرة، فيه جديد');
     } else {
-      b.removeAttribute('aria-haspopup'); b.setAttribute('aria-label', 'الرئيسية'); momTipClose();
-      if (b.classList.contains('has-mom') && !b.classList.contains('seen')) {
-        b.classList.add('seen');   // شاف الكل: الإطار يتلاشى، ثم ينشال لين تنزل لحظة جديدة
-        setTimeout(() => { if (!b.classList.contains('seen')) return; b.classList.remove('has-mom', 'draw', 'seen'); $$('.br-ring,.br-new', b).forEach(e => e.remove()); }, dnRM() ? 0 : 450);
-      }
+      b.classList.remove('mm-new', 'draw'); b.classList.add('mm-all'); $$('.br-new', b).forEach(e => e.remove());
+      const seg = 100 / N, gap = N > 1 ? Math.min(4, seg * .35) : 8;
+      c.style.strokeDasharray = (seg - gap).toFixed(2) + ' ' + gap.toFixed(2); c.style.strokeDashoffset = (-gap / 2).toFixed(2);
+      b.setAttribute('aria-label', `لحظات الأسرة، ${nCount(N, ['لحظة واحدة', 'لحظتان', 'لحظات', 'لحظة'])}، تمت مشاهدتها كلها`);
     }
   }
   // التلميح أول مرة (مرة وحدة طول العمر): بعد البوابة والدليل وفقاعة الجرس
@@ -4886,26 +4945,30 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       p = l1.length > 90 ? l1.slice(0, 88) + '…' : l1; cta = 'اقرأ الخبر'; }
     return `<article class="mv-auto"><span class="mv-ai">${sv(ic)}</span><span class="mv-ak">${k}</span><h3>${esc(t)}</h3>${p ? `<p>${esc(p)}</p>` : ''}<button type="button" class="mv-cta">${esc(cta)}${ARW}</button></article>`;
   }
-  function momOpen() {
+  function momOpen(at) {
     MOM.L = momList(); if (!MOM.L.length) { toast('ما فيه لحظات الحين'); return; }
     momTipClose(); if (DN.cur) dnClose(true, 1); $$('.modal.open').forEach(m => m.classList.remove('open'));
     const s = momSeen(); let i = MOM.L.findIndex(x => !s.includes(x.id)); if (i < 0) i = 0;
+    if (typeof at === 'string') { const j = MOM.L.findIndex(x => x.id === at); if (j >= 0) i = j; }   // v59: المشرف يفتح لحظة محددة من لوحته
     const v = document.createElement('div'); v.className = 'mv'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-modal', 'true'); v.setAttribute('aria-label', 'لحظات الأسرة'); v.tabIndex = -1;
     v.innerHTML = `<div class="mv-in"><div class="mv-st"></div>
       <button class="mv-prev" type="button" aria-label="اللحظة السابقة"></button><button class="mv-next" type="button" aria-label="اللحظة التالية"></button>
       <div class="mv-top"><ol class="mv-bars" aria-hidden="true">${MOM.L.map(() => '<li><i></i></li>').join('')}</ol>
         <div class="mv-meta"><span class="mv-logo"><img src="${esc(momLogoSrc())}" alt=""></span><span class="mv-who"><b>لحظات الأسرة</b><small class="mv-src"></small></span><span class="mv-n"></span><button class="mv-x" type="button" aria-label="إغلاق">${sv('xmark')}</button></div></div>
-      <p class="mv-cap" hidden></p><p class="sr mv-live" aria-live="polite"></p></div>`;
+      <div class="mv-bot"><p class="mv-cap" hidden></p><div class="mv-seen" hidden></div>${MOM.L.length > 1 ? `<div class="mv-dots" role="group" aria-label="انتقل إلى لحظة">${MOM.L.map((x, k) => `<button type="button" data-mvd="${k}" aria-label="اللحظة ${ar(k + 1)} من ${ar(MOM.L.length)}"><i></i></button>`).join('')}</div>` : ''}</div>
+      <p class="sr mv-live" aria-live="polite"></p></div>`;
     document.body.appendChild(v); document.body.classList.add('mv-open');
     const V = MOM.v = { el: v, i, ret: document.activeElement, raf: 0, acc: 0, t0: 0, dur: 0, run: false, hold: false, drag: false, eat: false, n: 0 };
     // اللمس على المناطق: التركيز يرجع للعارض نفسه (ما يطلع إطار التركيز على نص الشاشة)، ولوحة المفاتيح تبقى على الزر
     const nav = (d, e) => { if (e && e.detail) { try { v.focus({ preventScroll: true }); } catch (x) { } } if (V.eat) { V.eat = false; return; } d > 0 ? momNext() : momPrev(); };
     $('.mv-next', v).onclick = e => nav(1, e); $('.mv-prev', v).onclick = e => nav(-1, e);
     $('.mv-x', v).onclick = () => momClose();
+    $$('[data-mvd]', v).forEach(b => b.onclick = e => { e.stopPropagation(); momShow(+b.dataset.mvd); });
+    momVcLoad().then(() => momSeenUi()).catch(() => { });
     // الضغطة المطوّلة توقف، والسحب للأسفل يقفل
     let x0 = 0, y0 = 0, pid = null, ht = 0;
     v.addEventListener('pointerdown', e => {
-      if (e.target.closest('.mv-x,.mv-cta,.mv-retry') || pid !== null) return; pid = e.pointerId; x0 = e.clientX; y0 = e.clientY; V.eat = false;
+      if (e.target.closest('.mv-x,.mv-cta,.mv-retry,.mv-bot button,.mv-end button') || pid !== null) return; pid = e.pointerId; x0 = e.clientX; y0 = e.clientY; V.eat = false;
       clearTimeout(ht); ht = setTimeout(() => { if (pid === null || V.drag) return; V.hold = true; v.classList.add('hold'); momPause(true); $('.mv-live', v).textContent = momGF() ? 'موقوفة، ارفعي إصبعك وتكمل' : 'موقوفة، ارفع إصبعك وتكمل'; }, 350);
     });
     v.addEventListener('pointermove', e => {
@@ -4924,6 +4987,9 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     // لوحة المفاتيح: Esc يقفل، والأسهم (RTL: اليسار للتالية)، والتركيز محبوس داخل العارض
     V.key = e => {
       if (!MOM.v) return;
+      const who = $('#mm-who');   // v59: ورقة الأسماء فوق العارض تاخذ المفاتيح
+      if (who) { if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); $('.sh-x', who).click(); }
+        else if (e.key === 'Tab') { const F = $$('button', who); e.preventDefault(); F.length && F[0].focus(); } return; }
       if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); momClose(); return; }
       if (e.key === 'ArrowLeft') { e.preventDefault(); momNext(); return; }
       if (e.key === 'ArrowRight') { e.preventDefault(); momPrev(); return; }
@@ -4938,6 +5004,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
   }
   async function momShow(i) {
     const V = MOM.v; if (!V) return; const L = MOM.L, m = L[i], v = V.el, tok = ++V.n; V.i = i; cancelAnimationFrame(V.raf); V.run = false; V.acc = 0;
+    V.end = false; v.classList.remove('end'); $$('[data-mvd]', v).forEach((b, k) => { if (k === i) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); });
     $$('.mv-bars li', v).forEach((li, k) => { li.className = k < i ? 'done' : ''; li.firstChild.style.setProperty('--p', k < i ? 1 : 0); });
     $('.mv-n', v).textContent = `${ar(i + 1)} من ${ar(L.length)}`;
     $('.mv-src', v).textContent = (m.k === 'p' ? 'من المشرف' : 'من أخبار الأسرة') + ' · ' + nDate(ymd(new Date(m.at)));
@@ -4956,7 +5023,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       const c = $('.mv-cta', st); c.onclick = e => { e.stopPropagation(); momClose(); setTimeout(() => {
         if (m.k === 'b') go('tree', S.byId[m.n.id]); else if (m.k === 'e') { W.sel = m.e.id; W.tab = 'up'; go('weddings'); } else { go('news'); setTimeout(() => openNews(m.n.id), 200); } }, 0); };
     }
-    momSee(m.id);
+    momSee(m.id); momView(m); momSeenUi();
     const nx = L[i + 1]; if (nx && nx.k === 'p') momImg(nx.id).then(s => { new Image().src = s; }).catch(() => { });
   }
   // خط التقدّم الحالي يتعبّى، وإذا كمل ننتقل للتالية
@@ -6841,6 +6908,9 @@ body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px +
 .mq-meta{display:flex;flex-wrap:wrap;gap:4px 12px}.mq-meta span{display:inline-flex;align-items:center;gap:4px}
 .mq-meta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:340px){.mq-trk li+li::before{width:12px;margin:0 4px}.mq-trk li{font-size:10.5px}}
+
+/* v59 · بطاقة المناسبة التفاعلية داخل «ملفي» (نفس بطاقة الرئيسية) */
+#mp-nx{margin:8px 0 10px}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
