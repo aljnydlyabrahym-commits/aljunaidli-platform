@@ -714,18 +714,18 @@
         it.choices = it.choose.map(function (e) { return { v: key(e), t: lin(e) + (e.tree ? ' · رقمه ' + e.id : ' · السطر ' + ar(e.line)) }; });
         return it.level;
       }
-      if (it.waitOn) { it.level = 'warn'; it.code = 'wait'; it.msg = 'ينتظر قرارك في السطر ' + ar(it.waitOn.line); it.wait = it.waitOn.line; return it.level; }
+      if (it.waitOn) { it.level = 'warn'; it.code = 'wait'; it.msg = (fem ? 'تنتظر' : 'ينتظر') + ' قرارك في السطر ' + ar(it.waitOn.line); it.wait = it.waitOn.line; return it.level; }
       if (it.dupOf && it.decision !== 'same' && it.decision !== 'new') {
         it.level = 'warn'; it.code = it.dup === 'tree' ? 'dup_tree' : 'dup_file';
-        it.msg = it.dup === 'tree' ? 'يمكن يكون موجود: ' + lin(it.dupOf) + ' (رقمه ' + it.dupOf.id + ')' : 'نفس الاسم والأب في السطر ' + ar(it.dupOf.line);
-        it.choices = [{ v: 'same', t: 'نفس الشخص، لا تضيفه' }, { v: 'new', t: it.dup === 'tree' ? 'شخص جديد، أضفه' : 'شخص ثاني، أضفه' }];
+        it.msg = it.dup === 'tree' ? (fem ? 'يمكن تكون موجودة: ' : 'يمكن يكون موجود: ') + lin(it.dupOf) + ' (رقمه ' + it.dupOf.id + ')' : 'نفس الاسم والأب في السطر ' + ar(it.dupOf.line);
+        it.choices = [{ v: 'same', t: fem ? 'نفس الشخص، لا تضيفها' : 'نفس الشخص، لا تضيفه' }, { v: 'new', t: (it.dup === 'tree' ? 'شخص جديد، ' : 'شخص ثاني، ') + (fem ? 'أضفها' : 'أضفه') }];
         return it.level;
       }
-      if (it.dupOf && it.decision === 'same') { it.level = 'skip'; it.code = 'same'; it.msg = 'ما ينضاف'; return it.level; }
+      if (it.dupOf && it.decision === 'same') { it.level = 'skip'; it.code = 'same'; it.msg = fem ? 'ما تنضاف' : 'ما ينضاف'; return it.level; }
       var F = entOf(it.fnode);
       if (!F.tree) {
         var fl = fin(F.it, (depth || 0) + 1);
-        if (fl === 'warn') { it.level = 'warn'; it.code = 'wait'; it.msg = 'ينتظر قرارك في السطر ' + ar(F.it.line); it.wait = F.it.line; return it.level; }
+        if (fl === 'warn') { it.level = 'warn'; it.code = 'wait'; it.msg = (fem ? 'تنتظر' : 'ينتظر') + ' قرارك في السطر ' + ar(F.it.line); it.wait = F.it.line; return it.level; }
         if (fl !== 'ok') { it.level = 'err'; it.code = 'father_row'; it.msg = 'الأب في سطر فيه خطأ (السطر ' + ar(F.it.line) + ')'; it.fix = 'صلّح سطر الأب أول'; return it.level; }
         it.level = 'ok'; it.code = 'ok_row'; it.fatherLine = F.it.line;
         it.msg = fem ? 'جاهزة · أبوها في السطر ' + ar(F.it.line) + '، تنضاف معه' : 'جاهز · أبوه في السطر ' + ar(F.it.line) + '، ينضاف معه';

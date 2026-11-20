@@ -414,6 +414,7 @@ window.JNDAdmin = function (J) {
     e.preventDefault(); adTab(ks[j], true);
   }
   // v58: التصدير والاستيراد بإكسل. القارئ assets/xl-58.js (window.JNDXL) ما يتحمّل إلا عند الضغط. كل نص منه يمر على esc()
+  const NPS = ['اسم واحد', 'اسمان', 'أسماء', 'اسماً'];
   const XL_URL = 'assets/xl-58.js';
   const XL = {
     p: null,
@@ -425,7 +426,7 @@ window.JNDAdmin = function (J) {
       document.head.appendChild(s); })); },
     async need() { if (!window.JNDXL) toast('جاري تجهيز قارئ الإكسل…'); try { return await XL.load(); } catch (e) { toast('ما تحمّل قارئ الإكسل، تأكد من النت وجرّب مرة ثانية'); return null; } },
     async tree() { const J = await XL.need(); if (!J) return;
-      try { J.save(J.exportTree(S.rows), J.names.tree(new Date())); toast(`نزّل ملف الشجرة (${nCount(S.rows.length, J.NP)})`); } catch (e) { toast('ما نزل الملف، جرّب مرة ثانية'); } },
+      try { J.save(J.exportTree(S.rows), J.names.tree(new Date())); toast(`نزل ملف الشجرة (${nCount(S.rows.length, J.NP)})`); } catch (e) { toast('ما نزل الملف، جرّب مرة ثانية'); } },
     async imp() { const J = await XL.need(); if (!J) return; impOpen(J); },
   };
   /* ── نافذة الاستيراد: الملف ← المراجعة ← الإضافة ── */
@@ -488,8 +489,8 @@ window.JNDAdmin = function (J) {
       foot = `<div class="imp-f"><button type="button" class="abtn pri imp-go"${R.need > 0 || !R.add || IMP.busy ? ' disabled' : ''}>${lab}</button><button type="button" class="abtn line imp-bk">${ARWB}غيّر الملف</button></div>`;
     } else {
       const D = IMP.done, miss = D.miss;
-      body = `<div class="imp-done"><i>${sv('check')}</i><h4>انضاف ${esc(nCount(D.n, J.NP))} للشجرة</h4><p>انحفظت نسخة احتياطية قبل الإضافة، وانسجّلت العملية في السجل.</p></div>
-        ${miss.length ? `<h4 class="adp-sub">ما انضاف ${esc(nCount(miss.length, ['سطر واحد', 'سطرين', 'أسطر', 'سطراً']))}:</h4>${miss.map(x => impRow(x, 1)).join('')}` : ''}
+      body = `<div class="imp-done"><i>${sv('check')}</i><h4>انضاف ${esc(nCount(D.n, NPS))} للشجرة</h4><p>انحفظت نسخة احتياطية قبل الإضافة، وانسجّلت العملية في السجل.</p></div>
+        ${miss.length ? `<h4 class="adp-sub">ما انضاف ${esc(nCount(miss.length, ['سطر واحد', 'سطران', 'أسطر', 'سطراً']))}:</h4>${miss.map(x => impRow(x, 1)).join('')}` : ''}
         ${IMP.undo ? `<div class="imp-undo" role="alert"><p>بتنمسح الأسماء اللي انضافت في هالاستيراد (${ar(D.n)}). متأكد؟</p><div class="adrow2"><button type="button" class="abtn imp-redf imp-uy">نعم، تراجع</button><button type="button" class="abtn line imp-un">لا</button></div></div>` : ''}`;
       foot = `<div class="imp-f"><button type="button" class="abtn pri imp-see">${sv('tree')}شوف الأسماء في الشجرة</button><button type="button" class="abtn imp-redl imp-u"${IMP.undo ? ' aria-expanded="true"' : ''}>تراجع</button></div>`;
     }
@@ -510,7 +511,7 @@ window.JNDAdmin = function (J) {
     IMP.busy = 'جاري الإضافة…'; impDraw();
     const J = IMP.J; let out;
     try { out = J.build(R.plan); } catch (e) { IMP.busy = ''; impDraw(); toast('ما تمت الإضافة، جرّب مرة ثانية'); return; }
-    S.rows.push(...out.rows); saveRows(); logIt('استيراد من إكسل', nCount(out.rec.n, J.NP));
+    S.rows.push(...out.rows); saveRows(); logIt('استيراد من إكسل', 'انضاف ' + nCount(out.rec.n, NPS));
     try { localStorage.setItem('jnd-imp-last', JSON.stringify(out.rec)); } catch (e) { }
     refresh(); bellBadge();
     IMP.rec = out.rec; IMP.added = out.rows; IMP.busy = ''; IMP.step = 3;
@@ -521,7 +522,7 @@ window.JNDAdmin = function (J) {
     const J = IMP.J; let u;
     try { u = J.undo(S.rows, IMP.rec); } catch (e) { toast('ما تم التراجع، جرّب مرة ثانية'); return; }
     if (!u || !u.ok) { IMP.undo = false; impDraw(); toast(u && u.msg ? u.msg : 'ما تم التراجع، جرّب مرة ثانية'); return; }
-    S.rows = u.rows; saveRows(); logIt('تراجع عن استيراد', nCount(u.n, J.NP));
+    S.rows = u.rows; saveRows(); logIt('تراجع عن استيراد', 'انمسح ' + nCount(u.n, NPS));
     try { localStorage.removeItem('jnd-imp-last'); } catch (e) { }
     impClose(); refresh(); bellBadge(); toast('تراجعنا، وانمسحت أسماء آخر استيراد');
   }

@@ -5104,7 +5104,7 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
       var adminKeys = ks.some(function (k) { return !isPub(k); });
       if (r.indexOf('nologin') >= 0) msg('التعديل محفوظ بجهازك بس — سجّل دخول الإدارة عشان يرتفع للجميع');
       else if (bad.length) { if (adminKeys) msg('ما ارتفع التعديل، بنحاول مرة ثانية — اضغط الزر الأحمر تحت'); }
-      else if (adminKeys && !document.querySelector('#toast.on')) msg('انحفظ التعديل وصار يطلع للجميع');
+      else if (adminKeys && !document.querySelector('#toast.on') && !document.getElementById('imp')) msg('انحفظ التعديل وصار يطلع للجميع');
       ui();
     });
   }
