@@ -1,0 +1,125 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>أقرب مناسبة: نموذج تفاعلي</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#2D6369;--deep:#1C4448;--gold:#C9A45C;--gold2:#E2C483;--paper:#F7F1E3}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--paper);color:#1F2E30;min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;padding:14px 16px 40px}
+.note{font-size:12px;color:#6B7A7B;text-align:center;margin:4px 0 10px}
+.seg{display:flex;gap:6px;justify-content:center;margin-bottom:12px}
+.seg button{font-family:inherit;font-size:12.5px;padding:8px 12px;min-height:36px;border-radius:99px;border:1px solid #d8cfb8;background:#fff;color:#2D6369;cursor:pointer}
+.seg button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+/* البطاقة */
+.nx{position:relative;display:block;width:100%;padding:13px 14px 12px;border:0;border-radius:22px;text-align:right;font-family:inherit;color:#fff;overflow:hidden;cursor:pointer;isolation:isolate;
+ background:radial-gradient(120% 100% at 100% 0%,#4A7F83 0%,transparent 60%),radial-gradient(80% 80% at 0% 100%,rgba(201,164,92,.30) 0%,transparent 60%),linear-gradient(160deg,#245457 0%,#2D6369 55%,#2F6E63 100%);
+ box-shadow:0 12px 26px rgba(28,68,72,.24);transition:transform .18s ease,box-shadow .18s ease;animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+.nx:active{transform:scale(.985);box-shadow:0 6px 14px rgba(28,68,72,.22)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.nx::after{content:"";position:absolute;inset-inline-start:-50px;top:-60px;width:150px;height:150px;border-radius:50%;border:1px solid rgba(226,196,131,.25);box-shadow:0 0 0 16px rgba(226,196,131,.04);pointer-events:none;animation:ring 8s ease-in-out infinite}
+@keyframes ring{50%{transform:scale(1.08);opacity:.7}}
+.shine{position:absolute;inset:0;pointer-events:none;z-index:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.10) 48%,transparent 60%);transform:translateX(120%);animation:shine 5.5s ease-in-out 1.2s infinite}
+@keyframes shine{0%{transform:translateX(120%)}35%,100%{transform:translateX(-120%)}}
+.conf{position:absolute;inset:0;pointer-events:none;z-index:0}
+.conf i{position:absolute;width:5px;height:5px;border-radius:1px;background:var(--gold2);opacity:0;animation:fall linear infinite}
+@keyframes fall{0%{transform:translateY(-12px) rotate(0);opacity:0}15%{opacity:.55}100%{transform:translateY(150px) rotate(240deg);opacity:0}}
+.nx>.c{position:relative;z-index:1}
+.t{display:flex;align-items:center;gap:8px}
+.p{background:linear-gradient(90deg,#D9B56E,#B8924C);color:#1C3A3D;font-weight:700;font-size:11.5px;padding:3px 10px;border-radius:99px}
+.k{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:#E9D7A8}
+.k svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8}
+.go{margin-inline-start:auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12);transition:transform .25s}
+.nx.open .go{transform:rotate(-90deg)}
+.go svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+h3{font-family:Amiri,serif;font-size:21px;line-height:1.35;margin:6px 0 2px}
+.s{font-size:12px;color:#CFE0DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.s b{color:#fff;font-weight:600}
+.cd{display:flex;align-items:center;gap:6px;margin-top:10px}
+.cd>span{font-size:11.5px;color:#E9D7A8;font-weight:600;white-space:nowrap}
+.u{flex:1;display:flex;align-items:baseline;justify-content:center;gap:3px;height:36px;padding-top:6px;border-radius:11px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);overflow:hidden}
+.u b{display:inline-block;font-size:17px;font-variant-numeric:tabular-nums;line-height:1}
+.u b.tick{animation:tick .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes tick{0%{transform:translateY(-70%);opacity:0}100%{transform:none;opacity:1}}
+.u small{font-size:10.5px;color:#CFE0DC}
+.u.sec b{color:#F1DDA9}
+.bar{height:3px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#E2C483,#F1DDA9);border-radius:3px;transition:width 1s linear}
+.now{display:none;align-items:center;gap:9px;margin-top:10px;padding:8px 10px;border-radius:12px;background:rgba(226,196,131,.14);border:1px solid rgba(226,196,131,.4);font-size:13px;font-weight:600}
+.now i{width:9px;height:9px;border-radius:50%;background:#F1DDA9;animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(241,221,169,.55)}100%{box-shadow:0 0 0 10px rgba(241,221,169,0)}}
+.nx.live .cd,.nx.live .bar{display:none}.nx.live .now{display:flex}
+/* التفاصيل المنسدلة */
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s cubic-bezier(.2,.8,.2,1)}
+.nx.open .more{grid-template-rows:1fr}
+.more>div{overflow:hidden}
+.acts{display:flex;gap:8px;padding-top:10px}
+.a{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border-radius:13px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-family:inherit;cursor:pointer}
+.a.wa{background:#1E8A4C;border-color:#1E8A4C}
+.a svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#1C4448;color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;transition:.25s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* سياق الرئيسية */
+.hd{height:64px;border-radius:0 0 24px 24px;background:linear-gradient(160deg,#2D6369,#1C4448);margin:-14px -16px 12px;display:flex;align-items:center;justify-content:flex-start;padding:0 18px;color:#F1DDA9;font-family:Amiri,serif;font-size:21px}
+.ph{height:120px;border-radius:22px;background:linear-gradient(160deg,#2A5F62,#1E4B4E);opacity:.9;margin-bottom:14px}
+.ph2{height:90px;border-radius:22px;background:#e9e2cf;margin-top:16px}
+@media (prefers-reduced-motion:reduce){.shine,.conf,.nx::after{display:none}.u b.tick{animation:none}.now i{animation:none}}
+
+/* مراحل الاقتراب: لون الشريط بس يتغيّر */
+.bar{height:4px}
+.bar i{transition:width 1s linear,background .8s ease,box-shadow .8s ease}
+.nx[data-st="far"] .bar i{background:linear-gradient(90deg,#7FC8A9,#4FA884)}
+.nx[data-st="week"] .bar i{background:linear-gradient(90deg,#F1DDA9,#E2B95E)}
+.nx[data-st="day"] .bar i{background:linear-gradient(90deg,#F7B267,#EE8B3A);box-shadow:0 0 8px rgba(238,139,58,.55)}
+.nx[data-st="hour"] .bar i{background:linear-gradient(90deg,#F26D5B,#D8392B);box-shadow:0 0 10px rgba(216,57,43,.65);animation:barb 1s ease-in-out infinite}
+@keyframes barb{50%{opacity:.7}}
+@media (prefers-reduced-motion:reduce){.nx[data-st="hour"] .bar i{animation:none}}
+.leg{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;font-size:11px;color:#6B7A7B;margin:10px 0 0}
+.leg span{display:inline-flex;align-items:center;gap:5px}.leg i{width:10px;height:10px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){.nx[data-st="hour"] .u.sec{animation:none}}
+</style></head><body><div class="app">
+<div class="hd">أسرة الجنيدلي</div>
+<div class="note">نموذج تفاعلي: العدّاد شغّال فعلياً، والبطاقة تنضغط وتنفتح</div>
+<div class="seg" style="flex-wrap:wrap"><button data-m="far">باقي أسبوعين</button><button data-m="week">باقي 4 أيام</button><button class="on" data-m="soon">باقي يوم</button><button data-m="near">باقي دقائق</button><button data-m="live">بدأت</button></div>
+<div class="ph"></div>
+
+<button class="nx" id="nx" type="button" aria-expanded="false">
+ <span class="shine"></span><span class="conf" id="conf"></span>
+ <div class="c">
+  <div class="t"><span class="p" id="pill">أقرب مناسبة</span><span class="k"><svg viewBox="0 0 24 24"><circle cx="9" cy="14" r="5.5"/><circle cx="15" cy="14" r="5.5"/></svg>زواج</span><span class="go"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span></div>
+  <h3>زواج الابن محمد بن فيصل</h3>
+  <div class="s"><b>الجمعة</b> 10 جمادى الآخرة · 8:00 م · قصر الرصافة</div>
+  <div class="cd" role="timer" aria-live="off"><span>باقي على الفرح</span>
+   <div class="u"><b id="d">00</b><small>يوم</small></div><div class="u"><b id="h">00</b><small>ساعة</small></div><div class="u"><b id="m">00</b><small>دقيقة</small></div><div class="u sec"><b id="sx">00</b><small>ثانية</small></div></div>
+  <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+  <div class="now"><i></i>الفرح قائم الحين، حيّاكم الله</div>
+  <div class="more"><div><div class="acts">
+   <span class="a wa" data-t="انفتح الواتس للمشاركة"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.6M8.2 13.2l7.6 4.6"/></svg>شارك</span>
+   <span class="a" data-t="انضافت للتقويم"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v4M10 15h4"/></svg>التقويم</span>
+   <span class="a" data-t="انفتحت الخريطة"><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>الموقع</span>
+  </div></div></div>
+ </div>
+</button>
+<div class="leg"><span><i style="background:#4FA884"></i>أبعد من أسبوع</span><span><i style="background:#E2B95E"></i>هذا الأسبوع</span><span><i style="background:#EE8B3A"></i>آخر يوم</span><span><i style="background:#D8392B"></i>آخر ساعة</span></div><div class="ph2"></div>
+<div class="toast" id="toast"></div>
+</div>
+<script>
+const $=s=>document.querySelector(s), nx=$('#nx');
+let target, start, mode='soon';
+function setMode(m){mode=m;const n=Date.now();start=n-3*864e5;
+ target= m==='far'? n+(14*864e5+5*36e5) : m==='week'? n+(4*864e5+3*36e5) : m==='soon'? n+(20*36e5+42*6e4+57e3) : m==='near'? n+(3*6e4+12e3) : n-20*6e4;
+ document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+ nx.style.animation='none';nx.offsetHeight;nx.style.animation='';render(true);}
+const pad=x=>String(x).padStart(2,'0');
+function put(id,v,force){const el=$('#'+id),t=pad(v);if(el.textContent!==t||force){el.textContent=t;el.classList.remove('tick');void el.offsetWidth;el.classList.add('tick');}}
+function render(force){const left=target-Date.now();
+ if(left<=0){nx.dataset.st='live';nx.classList.add('live');$('#pill').textContent='مناسبة اليوم';return;}
+ nx.classList.remove('live');nx.dataset.st= left>7*864e5?'far': left>864e5?'week': left>36e5?'day':'hour';$('#pill').textContent=left<864e5?'مناسبة اليوم':'أقرب مناسبة';
+ const s=Math.floor(left/1e3);put('d',Math.floor(s/86400),force);put('h',Math.floor(s%86400/3600),force);put('m',Math.floor(s%3600/60),force);put('sx',s%60,force);
+ $('#bar').style.width=Math.min(100,(Date.now()-start)/(target-start)*100).toFixed(2)+'%';}
+setInterval(render,1000);
+nx.addEventListener('click',e=>{const a=e.target.closest('.a');if(a){e.stopPropagation();const t=$('#toast');t.textContent=a.dataset.t;t.classList.add('on');clearTimeout(t._);t._=setTimeout(()=>t.classList.remove('on'),1600);return;}
+ nx.classList.toggle('open');nx.setAttribute('aria-expanded',nx.classList.contains('open'));});
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+const conf=$('#conf');for(let i=0;i<10;i++){const c=document.createElement('i');c.style.left=(5+Math.random()*90)+'%';c.style.animationDuration=(5+Math.random()*5)+'s';c.style.animationDelay=(-Math.random()*8)+'s';if(i%3==0)c.style.background='#fff';conf.appendChild(c);}
+setMode('soon');
+</script></body></html>
