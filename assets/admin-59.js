@@ -1078,7 +1078,7 @@ button.mm-th{border:0;padding:0;cursor:pointer;font:inherit}
 button.mm-th:focus-visible,.mm-vc:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .mm-vc{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:2px 4px;border-radius:12px;border:1px solid var(--line);background:#fff;font:inherit;cursor:pointer;color:var(--g-dark)}
 .mm-vc b{font-size:16px;line-height:1.2;font-variant-numeric:tabular-nums}
-.mm-vc span{font-size:11px;color:var(--muted)}
+.mm-vc span{font-size:12px;color:var(--muted)}
 .mm-vc:disabled{cursor:progress;opacity:.7}
 .mm-lock{display:flex;align-items:center;gap:6px;margin:10px 2px 0;font-size:12.5px;color:var(--muted)}
 .mm-lock svg{width:16px;height:16px;flex:none}
