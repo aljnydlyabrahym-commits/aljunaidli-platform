@@ -3963,7 +3963,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       el.querySelector('.nx2-p').textContent = nxPill(daysTo(e.date));
       el.querySelector('.nx2-bar i').style.width = (Math.min(1, Math.max(.04, 1 - ms / span)) * 100).toFixed(2) + '%';
       const D = Math.floor(ms / 864e5); ms -= D * 864e5; const H = Math.floor(ms / 36e5); ms -= H * 36e5; const M = Math.floor(ms / 6e4), Sx = Math.floor((ms - M * 6e4) / 1e3);
-      set('d', D); set('h', H); set('m', M); set('s', Sx);
+      set('d', D); set('h', H); set('m', M); set('s', Sx); const db = el.querySelector('[data-k="d"]'); if (db) db.parentNode.hidden = D === 0;
     };
     if (!hasT && daysTo(e.date) <= 0) { el.dataset.st = 'live'; el.classList.add('live'); }
     else { draw(); T[id] = setInterval(draw, 1000); }
@@ -6902,7 +6902,7 @@ body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px +
 .nx2-u b.tk{animation:nx2tk .45s cubic-bezier(.2,.8,.2,1)}
 @keyframes nx2tk{0%{transform:translateY(-70%);opacity:0}100%{transform:none;opacity:1}}
 .nx2-u small{font-size:10.5px;color:#CFE0DC}
-.nx2-u.s b{color:#F1DDA9}
+.nx2-u.s b{color:#F1DDA9}.nx2-u[hidden]{display:none}
 .nx2-bar{height:4px;border-radius:4px;background:rgba(255,255,255,.12);margin-top:9px;overflow:hidden}
 .nx2-bar i{display:block;height:100%;width:0;border-radius:4px;transition:width 1s linear,background .8s ease,box-shadow .8s ease}
 .nx2[data-st=far] .nx2-bar i{background:linear-gradient(90deg,#7FC8A9,#4FA884)}
@@ -6928,7 +6928,7 @@ body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px +
 .nt-mine{border-radius:16px!important;background:linear-gradient(180deg,#FFFBF0,#FBF3E0)!important}
 .nt-mine b{display:flex;flex-direction:column;gap:1px}.nt-mine b small{font-size:11.5px;font-weight:600;color:#8E7038}
 .nt-mine>svg{width:16px;height:16px;fill:none;stroke:#8E7038;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.nt-tasks{margin:0 14px 10px;padding:6px 6px 4px;border-radius:18px;background:linear-gradient(160deg,#245457,#1C4448);box-shadow:0 10px 22px rgba(28,68,72,.25);border-inline-start:4px solid #C9A45C}
+.nt-tasks{margin:0 0 10px;padding:6px 6px 4px;border-radius:18px;background:linear-gradient(160deg,#245457,#1C4448);box-shadow:0 10px 22px rgba(28,68,72,.25);border-inline-start:4px solid #C9A45C}
 .nt-tasks h6{display:flex;align-items:center;gap:6px;margin:6px 8px 4px;font-size:12px;color:#E9D7A8;font-weight:700}
 .nt-tasks h6 svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 .nt-task{display:flex;align-items:center;gap:10px;width:100%;padding:9px 8px;border:0;background:none;cursor:pointer;text-align:right;font-family:inherit;color:#fff;border-radius:12px}
