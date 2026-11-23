@@ -23,6 +23,12 @@ function limited(key, max, ms) {
   a.push(now); RL.set(key, a); if (RL.size > 5000) RL.clear(); return false;
 }
 
+// حد ثابت عبر كل النسخ (KV، ساعة): للأحداث النادرة فقط عشان ما نستهلك حصة الكتابة
+async function kvLimited(env, key, max) {
+  const n = +(await env.SUBS.get(key)) || 0; if (n >= max) return true;
+  await env.SUBS.put(key, String(n + 1), { expirationTtl: 3600 }); return false;
+}
+
 /* ---------- تشفير الرسالة (RFC 8291) ---------- */
 async function hmac(key, data) { const k = await crypto.subtle.importKey('raw', key, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); return new Uint8Array(await crypto.subtle.sign('HMAC', k, data)); }
 async function encrypt(sub, payload) {
@@ -148,7 +154,7 @@ async function handle(req, env, ctx) {
   }
   if (u.pathname === '/visitor-event') {
     // نص ثابت للمشرفين فقط، وبدون أي نص من الزائر. حد صارم لكل IP، وحد عام يمنع الإغراق
-    if (limited('v' + ip, 3, 3600e3) || limited('vall', 20, 3600e3)) return json(req, { ok: true, sent: 0, rate: true });
+    if (limited('v' + ip, 3, 3600e3) || limited('vall', 20, 3600e3) || await kvLimited(env, 'rl:v:' + ip, 3) || await kvLimited(env, 'rl:vall', 20)) return json(req, { ok: true, sent: 0, rate: true });
     const sug = b.kind === 'sug';
     const msg = msgOf({ title: sug ? 'وصل اقتراح جديد' : 'وصل طلب جديد', body: sug ? 'فيه اقتراح جديد بانتظار قرارك في لوحة المشرف' : 'فيه طلب جديد بانتظار قرارك في لوحة المشرف', url: './#admin' }, 'jnd-admin-inbox');
     const ids = await listIds(env, m => m.admin === true);

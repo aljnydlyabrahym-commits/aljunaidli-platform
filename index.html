@@ -5502,7 +5502,7 @@ if (!window.JNDCloud) window.JNDCloud = { start: function (c) { window.JunaidliA
     return Notification.requestPermission().then(function (p) {
       if (p !== 'granted') throw new Error(p === 'denied' ? 'denied' : 'dismissed');
       return reg();
-    }).then(function (r) { return r.pushManager.getSubscription().then(function (s) { return s || r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VK) }); }); })
+    }).then(function (r) { return r.pushManager.getSubscription().then(function (s) { return s || Promise.race([r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VK) }), new Promise(function (_, no) { setTimeout(function () { no(new Error('timeout')); }, 20000); })]); }); })
       .then(function (s) { return send(s, pid).then(function () { mark(1); return 'on'; }); });
   }
   function disable() {
