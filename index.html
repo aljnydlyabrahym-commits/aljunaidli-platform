@@ -4981,7 +4981,6 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
       const close = () => { c.classList.remove('on'); setTimeout(() => c.parentNode && c.parentNode.removeChild(c), 450); };
       $('.pv-no', c).onclick = close;
       $('.pv-go', c).onclick = () => { close(); pushCmd().then(pushRow, () => { }); };
-      $('.pv-go', c).focus({ preventScroll: true });
     }).catch(() => { });
   }
   // نقرأ الفهرس: من الجهاز أول (الشعار يطلع فوراً)، ثم من السحابة بقراءة وحدة
