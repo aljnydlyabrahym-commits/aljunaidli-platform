@@ -3627,7 +3627,7 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
   }
 
   /* ───────── بطاقات الأسرة (مناسبات) ───────── */
-  const CC_URL = 'assets/cc-59.js';
+  const CC_URL = 'assets/cc-60.js';
   const CC_OCC = [
     { k: 'birth', ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9.5" r="5"/><path d="M10.2 9.2h.01M13.8 9.2h.01M10.6 11.6c.8.5 2 .5 2.8 0"/><path d="M12 4.5c0-1.3 1.2-1.8 2.2-1.2"/><path d="M6.8 20c1.2-1.6 3-2.6 5.2-2.6s4 1 5.2 2.6"/></svg>', t: 'بشرى مولود', d: 'بشرى بمولود أو مولودة' }, { k: 'grad', ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9 12 4.5 21.5 9 12 13.5z"/><path d="M6.5 11v4.5c1.5 1.3 3.4 2 5.5 2s4-.7 5.5-2V11"/><path d="M21.5 9v5"/></svg>', t: 'مبروك التخرج', d: 'بكالوريوس، ماجستير، دكتوراه' },
     { k: 'quran', ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h6"/></svg>', t: 'ختم القرآن', d: 'إتمام حفظ كتاب الله' }, { k: 'hajj', ic: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l8-3.5L20 8v10l-8 3.5L4 18z"/><path d="M4 8l8 3.5L20 8M12 11.5V21.5M4 11.5l8 3.5 8-3.5"/></svg>', t: 'حج مبرور', d: 'تقبّل الله حجّه' },
@@ -4411,7 +4411,7 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
 
   /* ───────── v42: النسخ الاحتياطي / سجل الأخطاء / كشف التكرار ───────── */
   // v58: النسخة الاحتياطية فيها كل مفاتيح السحابة (jnd-sk ما تدخلها أبداً: مفتاح فك الأرقام يبقى في الجهاز)
-  const JND_V = '59'; window.JNDV = JND_V; const BKEYS = ['jnd-rows', 'jnd-events-all', 'jnd-news', 'jnd-news-del', 'jnd-reqs', 'jnd-sugs', 'jnd-log', 'jnd-site', 'jnd-admins', 'jnd-greet', 'jnd-pk'];
+  const JND_V = '60'; window.JNDV = JND_V; const BKEYS = ['jnd-rows', 'jnd-events-all', 'jnd-news', 'jnd-news-del', 'jnd-reqs', 'jnd-sugs', 'jnd-log', 'jnd-site', 'jnd-admins', 'jnd-greet', 'jnd-pk'];
   const bkDays = () => { const t = +localStorage.getItem('jnd-bk-at'); return t ? Math.floor((Date.now() - t) / 864e5) : Infinity; };
   const bkDue = () => isAdmin() && bkDays() >= 14 && (+localStorage.getItem('jnd-bk-snz') || 0) < Date.now();
    // أخضر لين أسبوع، أصفر لين أسبوعين، وبعدها أحمر
@@ -4476,8 +4476,8 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
 
 
 
-  /* ── أدوات المشرف في ملف منفصل (assets/admin-59.js): يتحمّل بعد دخول المشرف فقط، والزائر ما يحمّله ── */
-  const ADM_URL = 'assets/admin-59.js';
+  /* ── أدوات المشرف في ملف منفصل (assets/admin-60.js): يتحمّل بعد دخول المشرف فقط، والزائر ما يحمّله ── */
+  const ADM_URL = 'assets/admin-60.js';
   let ADM = null, admP = null;
   function admLoad() {
     return admP || (admP = new Promise((res, rej) => {

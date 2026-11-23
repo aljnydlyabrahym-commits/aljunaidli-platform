@@ -690,8 +690,8 @@ window.JNDAdmin = function (J) {
   function hlBars() {
     const { act } = hlItems(), days = []; for (let i = 6; i >= 0; i--) days.push(hlDay(Date.now() - i * 864e5));
     const v = days.map(d => act.reduce((a, o) => a + ((o.days || {})[d] ? o.days[d].n : 0), 0)), mx = Math.max(1, ...v), W = 7 * 30;
-    const wd = d => sd(() => new Date(d + 'T12:00:00Z').toLocaleDateString('ar-SA', { weekday: 'short' })) || '';
-    return `<figure class="hl-w"><figcaption>آخر ٧ أيام <small>${nCount(v.reduce((a, b) => a + b, 0), ['مرة واحدة', 'مرتين', 'مرات', 'مرة'])}</small></figcaption>
+    const wd = d => d === days[6] ? 'اليوم' : (sd(() => new Date(d + 'T12:00:00Z').toLocaleDateString('ar-SA', { weekday: 'long' })) || '').replace(/^ال/, '');
+    return `<figure class="hl-w"><figcaption>آخر 7 أيام <small>${nCount(v.reduce((a, b) => a + b, 0), ['مرة واحدة', 'مرتين', 'مرات', 'مرة'])}</small></figcaption>
       <svg viewBox="0 0 ${W} 64" role="img" aria-label="عدد المشاكل يومياً لآخر سبعة أيام: ${v.map(ar).join('، ')}">${v.map((n, i) => { const h = n ? Math.max(4, Math.round(n / mx * 44)) : 2; return `<rect x="${(6 - i) * 30 + 7}" y="${48 - h}" width="16" height="${h}" rx="4" class="${n ? 'on' : ''}${i === 6 ? ' td' : ''}"><title>${esc(wd(days[i]))}: ${ar(n)}</title></rect>`; }).join('')}
       ${days.map((d, i) => `<text x="${(6 - i) * 30 + 15}" y="62" text-anchor="middle">${esc(wd(d))}</text>`).join('')}</svg></figure>`;
   }
@@ -700,11 +700,11 @@ window.JNDAdmin = function (J) {
     const { act, hid } = hlItems();
     const list = act.length ? `<ol class="hl-l">${act.slice(0, 20).map(o => { const [ck, ct] = hlChip(o);
       return `<li class="hl-i"><div class="hl-it"><b>${esc(hlDesc(o))}</b><span class="hl-st ${ck}">${ct}</span></div>
-        <p class="hl-m">${sv('users')}<span>${nCount(Math.max(1, o.dev || 1), ['جهاز واحد', 'جهازين', 'أجهزة', 'جهازاً'])} تقريباً · من ${esc(hlRel(o.first).replace(/^قبل /, ''))}${ck === 'gone' ? ' · آخر مرة ' + esc(hlRel(o.last)) : ''}</span></p>
-        <button type="button" class="hl-hide" data-hl="fx" data-fp="${esc(o.fp)}">إخفاء</button></li>`; }).join('')}</ol>`
+        <div class="hl-ft"><p class="hl-m">${sv('users')}<span>${nCount(Math.max(1, o.dev || 1), ['جهاز واحد', 'جهازين', 'أجهزة', 'جهازاً'])} تقريباً · من ${esc(hlRel(o.first).replace(/^قبل /, ''))}${ck === 'gone' ? ' · آخر مرة ' + esc(hlRel(o.last)) : ''}</span></p>
+        <button type="button" class="hl-hide" data-hl="fx" data-fp="${esc(o.fp)}">إخفاء</button></div></li>`; }).join('')}</ol>`
       : `<div class="hl-ok"><span>${sv('shield')}</span><b>المنصة تعمل بشكل سليم</b><small>ما وصلت أي مشكلة من أجهزة الأسرة. لو صار شي يوصلك هنا تلقائياً، بدون ما أحد يرسل لك.</small></div>`;
     return `${hlBars()}${list}${hid ? `<p class="hl-hid">${nCount(hid, ['مشكلة وحدة مخفية', 'مشكلتين مخفيتين', 'مشاكل مخفية', 'مشكلة مخفية'])} لأنك أخفيتها، وترجع لو تكررت. <button type="button" data-hl="un">أظهرها</button></p>` : ''}
-      <p class="hl-pv">${sv('lock')}التقارير مجهولة: ما فيها أسماء ولا أرقام ولا نصوص كتبها أحد، وتنحذف تلقائياً بعد ٣٠ يوم.</p>`;
+      <p class="hl-pv">${sv('lock')}التقارير مجهولة: ما فيها أسماء ولا أرقام ولا نصوص كتبها أحد، وتنحذف تلقائياً بعد 30 يوم.</p>`;
   }
   function hlHead() {
     const st = hlState(), lv = st ? st.lv : 'ld';
@@ -1171,8 +1171,9 @@ button.mm-th:focus-visible,.mm-vc:focus-visible{outline:3px solid var(--gold);ou
 .hl-w figcaption{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:700;color:var(--ink)}
 .hl-w figcaption small{font-weight:400;font-size:12.5px;color:var(--muted)}
 .hl-w svg{display:block;width:100%;height:auto;margin-top:6px}
+.hl-w svg *{stroke:none}
 .hl-w rect{fill:#DCE3DF}.hl-w rect.on{fill:#C9A866}.hl-w rect.on.td{fill:#A8432C}
-.hl-w text{font-size:9px;fill:#7A857F;font-family:inherit}
+.hl-w text{font-size:8.5px;fill:#7A857F;font-family:inherit}
 .hl-l{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
 .hl-i{padding:12px;border-radius:16px;border:1px solid var(--line);background:#FFFEFA}
 .hl-it{display:flex;align-items:flex-start;gap:10px}
@@ -1192,8 +1193,10 @@ button.mm-th:focus-visible,.mm-vc:focus-visible{outline:3px solid var(--gold);ou
 .hl-pv svg{width:15px;height:15px;flex:none;margin-top:3px}
 .hl-st{flex:none;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;white-space:nowrap}
 .hl-st.new{background:#FBE7E2;color:#A8432C}.hl-st.on{background:#FBF1DC;color:#7A5A1E}.hl-st.gone{background:#E6F3EC;color:#2F7A57}
+.hl-ft{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:2px}
+.hl-ft .hl-m{flex:1;min-width:0;margin:0}
 .hl-m{display:flex;align-items:center;gap:6px}.hl-m svg{width:15px;height:15px;flex:none}
-.hl-hide{display:inline-flex;align-items:center;min-height:44px;margin-top:2px;padding:0 4px;border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);text-decoration:underline dotted;text-underline-offset:4px;cursor:pointer}
+.hl-hide{flex:none;display:inline-flex;align-items:center;min-height:44px;margin:0;padding:0 4px;border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);text-decoration:underline dotted;text-underline-offset:4px;cursor:pointer}
 @media (max-width:340px){.hl .atl-h{flex-wrap:wrap}}
 `;
   // أنماط اللوحة نفسها: كانت في index.html، وانتقلت هنا عشان الزائر ما يحمّلها. ترجع لنفس مكانها بالضبط (وسوم style[data-adm] فاضية في index.html) فترتيب الأنماط ما يتغيّر

@@ -1,7 +1,7 @@
 /* منصة أسرة الجنيدلي — تشغيل بدون نت + فتح فوري */
-// v58: ملفات الإدارة (admin-59.js) وقارئ الإكسل (xl-58.js) والبطاقات (cc-59.js) مستثناة من SHELL عن قصد: الزائر ما يحمّل الأولين أبد، والثالث يتحمّل لما يفتح البطاقات،
+// v58: ملفات الإدارة (admin-60.js) وقارئ الإكسل (xl-58.js) والبطاقات (cc-60.js) مستثناة من SHELL عن قصد: الزائر ما يحمّل الأولين أبد، والثالث يتحمّل لما يفتح البطاقات،
 // وتنحفظ في الكاش أول ما تنطلب (مسار /assets/ تحت). رقم الكاش الجديد يمسح كاش 57 كامل عند التفعيل
-const V = 'jnd-v32', SHELL = ['./', 'index.html', 'og5.jpg', 'manifest.webmanifest', 'assets/logo.png', 'assets/poster.jpg', 'assets/icon-192.png', 'assets/apple-touch-icon.png', 'assets/invite-1.jpg', 'assets/invite-2.jpg'];
+const V = 'jnd-v33', SHELL = ['./', 'index.html', 'og5.jpg', 'manifest.webmanifest', 'assets/logo.png', 'assets/poster.jpg', 'assets/icon-192.png', 'assets/apple-touch-icon.png', 'assets/invite-1.jpg', 'assets/invite-2.jpg'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => Promise.all(SHELL.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => { })))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 const tag = r => r && (r.headers.get('etag') || r.headers.get('last-modified') || r.headers.get('content-length'));
