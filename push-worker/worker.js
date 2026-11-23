@@ -11,7 +11,7 @@ const clip = (s, n) => String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f]
 
 function cors(req) {
   const o = req.headers.get('Origin') || '';
-  return ORIGINS.some(r => r.test(o)) ? { 'Access-Control-Allow-Origin': o, 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization', 'Access-Control-Max-Age': '86400', Vary: 'Origin' } : { Vary: 'Origin' };
+  return ORIGINS.some(r => r.test(o)) ? { 'Access-Control-Allow-Origin': o, 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type, Authorization', 'Access-Control-Max-Age': '86400', Vary: 'Origin' } : { Vary: 'Origin' };
 }
 const json = (req, o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'Content-Type': 'application/json', ...cors(req) } });
 
@@ -118,9 +118,100 @@ function goodSub(s) {
 }
 const msgOf = (o, tag) => ({ title: clip(o.title, 60) || 'منصة أسرة الجنيدلي', body: clip(o.body, 160), url: (/^[#./a-z0-9_?=&-]*$/i.test(o.url || '') ? String(o.url || './').slice(0, 120) : './') || './', tag, icon: ICON });
 
+/* ---------- v60: تقرير المشاكل التقنية (مجهول) ----------
+   الجهاز يرسل دفعة: {items:[{fp,t,msg,where,ver,n}], fam}. ما نخزن IP ولا اسم ولا رقم: عدد الأجهزة من هاش مملّح يتغيّر كل يوم.
+   التخزين مجمّع بالبصمة في مفتاح واحد e:<fp> وينتهي تلقائياً بعد 30 يوم من آخر ظهور. حد يومي للكتابة عشان حصة KV */
+const ERR_TTL = 30 * 86400, ERR_DAY_MAX = 400, ERR_KEYS_MAX = 300;
+const dayOf = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+const scrub = (s, n) => clip(s, 400).replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '<email>').replace(/[0-9٠-٩۰-۹]+/g, '#').slice(0, n);
+async function errPost(req, env, b, ip) {
+  if (limited('e' + ip, 6, 600e3) || limited('eall', 120, 600e3)) return { ok: true, rate: true };
+  const items = Array.isArray(b.items) ? b.items.slice(0, 8) : [];
+  if (!items.length) return { ok: true, n: 0 };
+  const day = dayOf(), ck = 'ec:' + day, used = +(await env.SUBS.get(ck)) || 0;
+  if (used >= ERR_DAY_MAX) return { ok: true, cap: true };
+  const fam = /^[A-Za-z]{2,10}·[A-Za-z]{2,12}$/.test(b.fam || '') ? b.fam : 'Other·Other';
+  // بصمة الجهاز لليوم: هاش (ملح سري + اليوم + IP + المتصفح)، ما ينحفظ منه إلا 8 حروف وما يرجع للـ IP
+  const dv = b64u(await crypto.subtle.digest('SHA-256', enc.encode((env.FANOUT_KEY || 'salt') + '|' + day + '|' + ip + '|' + (req.headers.get('User-Agent') || '')))).slice(0, 8);
+  let w = 0;
+  for (const it of items) {
+    if (!it || !/^[a-z0-9]{6,16}$/.test(it.fp || '')) continue;
+    if (used + w >= ERR_DAY_MAX) break;
+    const k = 'e:' + it.fp, now = Date.now(), n = Math.max(1, Math.min(50, it.n | 0));
+    const o = (await env.SUBS.get(k, 'json')) || { fp: it.fp, t: '', msg: '', where: '', first: now, last: now, n: 0, vers: {}, fam: {}, days: {} };
+    o.t = /^[a-z]{2,10}$/.test(it.t || '') ? it.t : 'js'; o.msg = scrub(it.msg, 160); o.where = scrub(it.where, 80);
+    o.last = now; o.n += n;
+    const ver = /^[0-9]{1,4}$/.test(String(it.ver || '')) ? String(it.ver) : '?'; o.vers[ver] = (o.vers[ver] || 0) + n;
+    o.fam[fam] = (o.fam[fam] || 0) + n;
+    const d = o.days[day] || { n: 0, d: [] }; d.n += n; if (!d.d.includes(dv) && d.d.length < 60) d.d.push(dv); o.days[day] = d;
+    Object.keys(o.days).sort().slice(0, -30).forEach(x => delete o.days[x]);
+    if (Object.keys(o.vers).length > 12) Object.keys(o.vers).sort((a, c) => o.vers[a] - o.vers[c]).slice(0, -12).forEach(x => delete o.vers[x]);
+    if (Object.keys(o.fam).length > 12) Object.keys(o.fam).sort((a, c) => o.fam[a] - o.fam[c]).slice(0, -12).forEach(x => delete o.fam[x]);
+    await env.SUBS.put(k, JSON.stringify(o), { expirationTtl: ERR_TTL, metadata: { last: now } }); w++;
+  }
+  if (w) await env.SUBS.put(ck, String(used + w), { expirationTtl: 2 * 86400 });
+  return { ok: true, n: w };
+}
+async function errList(env) {
+  const keys = []; let cursor;
+  do { const l = await env.SUBS.list({ prefix: 'e:', cursor }); keys.push(...l.keys); cursor = l.list_complete ? null : l.cursor; } while (cursor && keys.length < 1000);
+  keys.sort((a, c) => ((c.metadata || {}).last || 0) - ((a.metadata || {}).last || 0));
+  const out = (await Promise.all(keys.slice(0, ERR_KEYS_MAX).map(k => env.SUBS.get(k.name, 'json')))).filter(Boolean)
+    .map(o => ({ ...o, dev: Object.values(o.days || {}).reduce((a, d) => a + (d.d || []).length, 0), days: Object.fromEntries(Object.entries(o.days || {}).map(([k, d]) => [k, { n: d.n, dv: (d.d || []).length }])) }));
+  return { ok: true, now: Date.now(), items: out };
+}
+
+/* ---------- v60: تذكير المناسبات (Cron يومي 05:00 UTC = 8 الصبح بالرياض) ---------- */
+const FS = env => 'https://firestore.googleapis.com/v1/projects/' + env.FB_PROJECT + '/databases/(default)/documents/jnd/';
+async function fsRead(env, k) {
+  const g = async n => { const r = await fetch(FS(env) + encodeURIComponent(n)); if (r.status === 404) return null; if (!r.ok) throw new Error('fs ' + r.status); return r.json(); };
+  const j = await g(k); if (!j || !j.fields || !j.fields.v) return null;
+  let v = j.fields.v.stringValue || ''; const n = j.fields.n ? +j.fields.n.integerValue : 1;
+  for (let i = 1; i < n; i++) { const x = await g(k + '~' + i); if (!x) throw new Error('chunk'); v += x.fields.v.stringValue; }
+  return JSON.parse(v);
+}
+const AR = s => String(s).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+function timeAr(t) {
+  const m = /^(\d{1,2}):(\d{2})/.exec(t || ''); if (!m) return '';
+  let h = +m[1]; const mm = m[2], p = h < 5 ? 'فجراً' : h < 12 ? 'صباحاً' : h < 15 ? 'ظهراً' : h < 18 ? 'عصراً' : 'مساءً';
+  h = h % 12 || 12; return AR(h + (mm !== '00' ? ':' + mm : '')) + ' ' + p;
+}
+async function remind(env) {
+  const now = Date.now() + 3 * 3600e3, today = dayOf(now), tom = dayOf(now + 86400e3);
+  const evs = await fsRead(env, 'jnd-events-all'); if (!Array.isArray(evs)) return { ok: true, n: 0, why: 'no events' };
+  const due = evs.filter(e => e && e.id && (e.date === today || e.date === tom) && !e.cancelled && !e.hidden);
+  if (!due.length) return { ok: true, n: 0 };
+  let rows = null;
+  const title = async e => {
+    if (e.title) return clip(e.title, 70);
+    if (e.person_id != null) {
+      if (!rows) { try { rows = await fsRead(env, 'jnd-rows'); } catch (x) { rows = []; } if (!Array.isArray(rows)) rows = []; }
+      const p = rows.find(r => String(r.id) === String(e.person_id)), f = p && rows.find(r => String(r.id) === String(p.father_id));
+      if (p) return clip((e.person_role || 'العريس') === 'العريس' ? `زواج ${p.name}${f ? ' بن ' + f.name : ''}` : `زواج كريمة ${p.name}${f ? ' بن ' + f.name : ''}`, 70);
+    }
+    return 'مناسبة للأسرة';
+  };
+  let ids = null, sent = 0;
+  for (const e of due.slice(0, 6)) {
+    const w = e.date === today ? 'd' : 't', mk = 'rm:' + clip(e.id, 40) + ':' + e.date + ':' + w;
+    if (await env.SUBS.get(mk)) continue;
+    await env.SUBS.put(mk, '1', { expirationTtl: 4 * 86400 });
+    const t = await title(e), tm = timeAr(e.time);
+    const msg = msgOf({ title: (w === 'd' ? 'اليوم: ' : 'غداً: ') + t, body: [w === 'd' && tm ? 'الساعة ' + tm : (tm ? 'بكرة الساعة ' + tm : ''), e.venue ? clip(e.venue, 50) : ''].filter(Boolean).join(' · ') || 'لا تفوّتها', url: './#events' }, 'jnd-ev-' + clip(e.id, 20).replace(/[^A-Za-z0-9_-]/g, '') + '-' + w);
+    if (!ids) ids = await listIds(env, null);
+    await deliver(env, ids, msg); sent++;
+  }
+  return { ok: true, n: sent };
+}
+
 async function handle(req, env, ctx) {
   const u = new URL(req.url), ip = req.headers.get('CF-Connecting-IP') || 'x';
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(req) });
+  if (u.pathname === '/err' && req.method === 'GET') {
+    if (limited('g' + ip, 30, 60e3)) return json(req, { error: 'rate' }, 429);
+    if (!await verifyAdmin(env, req)) return json(req, { error: 'auth' }, 401);
+    return json(req, await errList(env));
+  }
   if (req.method !== 'POST') return json(req, { ok: true, name: 'junaidli-push' });
   if (u.pathname === '/fanout') {
     if (!env.FANOUT_KEY || req.headers.get('X-Fanout') !== env.FANOUT_KEY) return json(req, { error: 'forbidden' }, 403);
@@ -152,6 +243,7 @@ async function handle(req, env, ctx) {
     else if (b.to !== 'all') return json(req, { error: 'to' }, 400);
     const r = await deliver(env, await listIds(env, pick), msg); return json(req, { ok: true, ...r });
   }
+  if (u.pathname === '/err') return json(req, await errPost(req, env, b, ip));
   if (u.pathname === '/visitor-event') {
     // نص ثابت للمشرفين فقط، وبدون أي نص من الزائر. حد صارم لكل IP، وحد عام يمنع الإغراق
     if (limited('v' + ip, 3, 3600e3) || limited('vall', 20, 3600e3) || await kvLimited(env, 'rl:v:' + ip, 3) || await kvLimited(env, 'rl:vall', 20)) return json(req, { ok: true, sent: 0, rate: true });
@@ -162,4 +254,7 @@ async function handle(req, env, ctx) {
   }
   return json(req, { error: 'not found' }, 404);
 }
-export default { fetch: (req, env, ctx) => handle(req, env, ctx).catch(e => json(req, { error: 'server' }, 500)) };
+export default {
+  fetch: (req, env, ctx) => handle(req, env, ctx).catch(e => json(req, { error: 'server' }, 500)),
+  scheduled: (ev, env, ctx) => ctx.waitUntil(remind(env).catch(() => null))
+};
