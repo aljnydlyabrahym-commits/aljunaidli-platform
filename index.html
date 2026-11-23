@@ -2010,7 +2010,7 @@ if(i>=0){var x=L.splice(i,1)[0];x.n=(x.n||1)+1;x.at=Date.now();L.unshift(x)}else
 localStorage.setItem(K,JSON.stringify(L.slice(0,MAX)))}catch(e){}}
 window.addEventListener('error',function(e){if(e&&e.target&&e.target!==window&&e.target.tagName)return;push('js',e&&e.message,((e&&e.filename)||'').split('/').pop()+':'+((e&&e.lineno)||0))});
 window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;push('promise',r&&r.message?r.message:r,r&&r.stack?String(r.stack).split('\n')[1]||'':'')});
-window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){}}}})();</script>
+window.JNDERR={read:rd,add:push,clear:function(){try{localStorage.removeItem(K)}catch(e){}}}})();</script>
 <script>/* ═══════════════════════════════════════════════
    موقع أسرة الجنيدلي — الواجهة التفاعلية (بدون مكتبات خارجية)
    JunaidliApp.init({ people:[...] | url, poster, logo, suggest:async fn })
@@ -2890,7 +2890,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     if (T.svg) treeRender(); meBtn(); if (S.view && !['tree', 'poster'].includes(S.view)) rerenderView();
     applyRole();
     if (window.__afterGate) { const f = window.__afterGate; window.__afterGate = null; setTimeout(f, 1900); }
-    sd(momLogo); setTimeout(() => sd(momTipLater), 2600);
+    sd(momLogo); setTimeout(() => sd(momTipLater), 2600); if (window.JNDPush) JNDPush.refresh(n.id);
   }
   function gateChips() {
     const box = $('#gt-chips'), go = $('#gt-go'); if (!box) return;
@@ -3338,7 +3338,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     try { f.scrollIntoView({ block: 'nearest', behavior: dnRM() ? 'auto' : 'smooth' }); } catch (e) { }
   }
   const rqActs = (r, yes, extra) => `<div class="rq-a">${extra || ''}${r.rev ? '<span class="rq-rv">قيد المراجعة</span>' : `<button type="button" class="rq-rvb" data-rrv="${esc(r.id)}">بنراجعه</button>`}<button type="button" class="rq-yes" data-rok="${esc(r.id)}">${yes}</button><button type="button" class="rq-no" data-rno="${esc(r.id)}" aria-expanded="false">ارفض</button></div>${rjPanel(r.id, true)}`;
-  const rqDone = r => { AD.just.add(String(r.id)); rqRerender(); };
+  const rqDone = r => { AD.just.add(String(r.id)); rqRerender(); try { rqPush(r); } catch (e) { } };
   function reviewReq(id) { const r = (S.reqs || []).find(x => String(x.id) === String(id)); if (!r || r.status !== 'pending' || r.rev) return; stamp(r, 'review'); saveReqs(); rqDone(r); toast('صار قيد المراجعة، وبلّغنا صاحب الطلب'); }
   function saveReqs() { if (S.cfg.persistLocal) try { localStorage.setItem('jnd-reqs', JSON.stringify(S.reqs)); } catch (e) { } }
   function openReq() {
@@ -3356,7 +3356,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       if (!r.title || !r.date || !r.by) { toast('أكمل العنوان والتاريخ واسمك'); return; }
       const wq = await waGet('rq'); if (wq === null) return; Object.assign(r, wq);
       try { if (S.cfg.addRequest) { const x = await S.cfg.addRequest(r); if (x && x.id) r.id = x.id; } } catch (x) { toast('ما انرسل الطلب، جرّب مرة ثانية'); return; }
-      S.reqs = (S.reqs || []).concat(r); saveReqs(); phqMark(r);
+      S.reqs = (S.reqs || []).concat(r); saveReqs(); phqMark(r); if (S.cfg.addRequest && window.JNDPush) JNDPush.visitor('req');
       $('#rq-form').hidden = true; $('#rq-done').hidden = false;
       $('#rq-done-t').textContent = 'وصل طلبك للإدارة، وأول ما توافق عليه ينزل في المناسبات. الله يتمم على خير.' + (r.phq ? ' ' + WA_Q() + '.' : '');
       $('#rq-done-a').innerHTML = '<button class="btn" type="button" data-close>تمام</button>';
@@ -3463,7 +3463,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
         if (S.cfg.saveNews) { const r = await S.cfg.saveNews(n, NE.imgs, !!NE.edit); if (r) Object.assign(n, r); }
         const old = S.news.slice(); S.news = NE.edit ? S.news.map(x => x === NE.edit ? n : x) : S.news.concat(n);
         try { saveNews(); } catch (x) { S.news = old; btn.disabled = false; return; }
-        logIt(NE.edit ? 'تعديل خبر' : 'إضافة خبر', n.title); $('#newsm').classList.remove('open'); toast(NE.edit ? 'تم حفظ التعديل' : 'نُشر الخبر'); if (S.view === 'admin') adminRender(); else { go('news'); newsRender(); }
+        logIt(NE.edit ? 'تعديل خبر' : 'إضافة خبر', n.title); if (!NE.edit && window.JNDPush) JNDPush.notify({ kind: 'news', title: 'خبر جديد من الأسرة', body: n.title.replace(/\s+/g, ' ').slice(0, 90), url: './#news', to: 'all' }); $('#newsm').classList.remove('open'); toast(NE.edit ? 'تم حفظ التعديل' : 'نُشر الخبر'); if (S.view === 'admin') adminRender(); else { go('news'); newsRender(); }
       } catch (x) { toast('ما انحفظ، جرّب مرة ثانية'); }
       btn.disabled = false;
     });
@@ -3494,7 +3494,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       if (!x.text || !x.by) { toast('اكتب الاقتراح واسمك'); return; }
       const wq = await waGet('sg'); if (wq === null) return; Object.assign(x, wq);
       try { if (S.cfg.addSuggestion) { const r = await S.cfg.addSuggestion(x); if (r && r.id) x.id = r.id; } } catch (er) { toast('ما انرسل، جرّب مرة ثانية'); return; }
-      S.sugs = (S.sugs || []).concat(x); saveSugs(); phqMark(x);
+      S.sugs = (S.sugs || []).concat(x); saveSugs(); phqMark(x); if (S.cfg.addSuggestion && window.JNDPush) JNDPush.visitor('sug');
       const f = S.me && S.me.gender === 'female';
       $('#sg-form').hidden = true; $('#sg-done').hidden = false; $('#sg-done-h').textContent = f ? 'شكراً لكِ' : 'شكراً لك';
       $('#sg-done-t').textContent = (f ? 'وصل اقتراحك للإدارة، جزاكِ الله خيراً على حرصكِ' : 'وصل اقتراحك للإدارة، جزاك الله خيراً على حرصك') + '.' + (x.phq ? ' ' + WA_Q() + '.' : '');
@@ -4174,6 +4174,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       if (cmd === 'more') openMore();
       if (cmd === 'suggest') openSug();
       if (cmd === 'notifs') openNotifs();
+      if (cmd === 'push') pushCmd();
       if (cmd === 'install') { document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); window.showInstall && window.showInstall(); }
       if (cmd === 'guide') { document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); window.openGuide && window.openGuide(); }
       if (cmd === 'moments') momOpen();
@@ -4235,6 +4236,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       ${MOM.L.length ? `<button class="gd-entry" data-cmd="moments"><span class="gd-e-ic mom">${sv('mom')}</span><span class="st-t"><b>لحظات الأسرة</b><small>${momNew().length ? nCount(momNew().length, ['لحظة جديدة', 'لحظتان جديدتان', 'لحظات جديدة', 'لحظة جديدة']) : 'صور وأخبار الأسرة لهالأيام'}</small></span><i>شوفها ${ARW}</i></button>` : ''}
       <button class="gd-entry" data-cmd="guide"${MOM.L.length ? ' style="margin-top:8px"' : ''}><span class="gd-e-ic"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12H9a4 4 0 0 1-4-4z"/><path d="M9 9h6M9 13h4"/></svg></span><span class="st-t"><b>الدليل الإرشادي</b><small>${gdSt() === 'new' ? 'فيه جديد: ردّ الإدارة يطلع لك من الجرس' : 'جولة سريعة في المنصة'}</small></span><i>${gdSt() === 'new' ? 'جديد' : 'ابدأ'} ${ARW}</i></button>
       <button class="gd-entry" data-cmd="install" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#3F7C69,#2D6369)"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M12 7v7M9 11l3 3 3-3"/></svg></span><span class="st-t"><b>ثبّت المنصة كتطبيق</b><small>على الشاشة الرئيسية لجوالك</small></span><i>ثبّت ${ARW}</i></button>
+      <button class="gd-entry" data-cmd="push" id="st-push" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#C9A45C,#A8842F)">${sv('bell')}</span><span class="st-t"><b>التنبيهات على الجوال</b><small>توصلك الأخبار والمناسبات أول بأول</small></span><i>فعّل ${ARW}</i></button>
       ${S.site.contact ? `<a class="gd-entry st-wa" target="_blank" rel="noopener" href="https://wa.me/${esc(String(S.site.contact).replace(/\D/g, '').replace(/^0/, '966'))}" style="margin-top:8px"><span class="gd-e-ic" style="background:linear-gradient(135deg,#25D366,#128C7E)"><svg viewBox="0 0 24 24"><path d="M5 19l1.2-3.6A7.5 7.5 0 1 1 9 18.2z"/></svg></span><span class="st-t"><b>تواصل مع الإدارة</b><small>واتساب مباشر مع مشرف المنصة</small></span><i>راسل ${ARW}</i></a>` : ''}
       <h5>العرض</h5>
       <div class="st-grp st-pad">
@@ -4253,7 +4255,33 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
       <p class="st-foot"><b>${esc(S.site.name)}</b><span class="st-ver" id="st-ver">الإصدار 2.0 · صُنعت بحب لأهل الأسرة</span><span class="st-off${navigator.onLine ? '' : ' off'}">${navigator.onLine ? 'متصل — البيانات تتحدث مباشرة' : 'بدون نت — نعرض لك آخر نسخة محفوظة'}</span></p>`;
     $$('#fz [data-fz]').forEach(b => b.onclick = () => { try { localStorage.setItem('jnd-fz', b.dataset.fz); } catch (e) { } document.documentElement.dataset.fz = b.dataset.fz; $$('#fz button').forEach(x => x.classList.toggle('on', x === b)); });
     { const vv = $('#st-ver'); if (vv) { let c = 0, t = 0; vv.onclick = () => { const n = Date.now(); c = n - t < 1500 ? c + 1 : 1; t = n; if (c >= 5) { c = 0; errOpen(); } }; } }
+    pushRow();
     $('#morem').classList.add('open');
+  }
+  // v60: حالة التنبيهات في «المزيد»
+  const PUSH_T = { on: ['التنبيهات مفعّلة', 'اضغط للإيقاف', 'إيقاف'], off: ['التنبيهات على الجوال', 'توصلك الأخبار والمناسبات أول بأول', 'فعّل'], ios: ['التنبيهات على الجوال', 'تحتاج تثبيت المنصة على الشاشة الرئيسية أول', 'كيف'], denied: ['التنبيهات موقوفة', 'من إعدادات المتصفح', 'كيف'], no: ['التنبيهات على الجوال', 'جهازك أو متصفحك ما يدعمها', ''] };
+  function pushRow() {
+    if (!window.JNDPush) return; JNDPush.status().then(st => {
+      const b = $('#st-push'); if (!b) return; const f = !!(S.me && S.me.gender === 'female'), t = PUSH_T[st] || PUSH_T.no;
+      $('b', b).textContent = t[0]; $('small', b).textContent = f ? t[1].replace('اضغط', 'اضغطي').replace('تحتاج', 'تحتاجين').replace('جهازك أو متصفحك', 'جهازكِ أو متصفحكِ').replace('توصلك', 'توصلكِ') : t[1];
+      const i = $('i', b); i.hidden = !t[2]; if (t[2]) i.innerHTML = (f && t[2] === 'فعّل' ? 'فعّلي' : t[2]) + ' ' + ARW; b.dataset.st = st;
+    }).catch(() => { });
+  }
+  async function pushCmd() {
+    if (!window.JNDPush) return; const f = !!(S.me && S.me.gender === 'female'), st = await JNDPush.status().catch(() => 'no');
+    if (st === 'ios') { document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open')); window.showInstallHow && window.showInstallHow(); toast(f ? 'بعد التثبيت افتحي المنصة من الشاشة الرئيسية وفعّلي التنبيهات' : 'بعد التثبيت افتح المنصة من الشاشة الرئيسية وفعّل التنبيهات'); return; }
+    if (st === 'denied') { toast(f ? 'التنبيهات مرفوضة في المتصفح، فعّليها من إعدادات الموقع' : 'التنبيهات مرفوضة في المتصفح، فعّلها من إعدادات الموقع'); return; }
+    if (st === 'no') { toast('جهازك ما يدعم التنبيهات'); return; }
+    if (st === 'on') { await JNDPush.disable().catch(() => { }); toast('وقّفنا التنبيهات'); return; }
+    try { await JNDPush.enable(S.me ? S.me.id : null); toast(f ? 'أبشري، فعّلنا التنبيهات' : 'أبشر، فعّلنا التنبيهات'); }
+    catch (e) { const m = String(e && e.message); if (m !== 'dismissed') toast(m === 'denied' ? 'ما تم السماح بالتنبيهات' : 'ما تفعّلت التنبيهات، جرّب مرة ثانية'); try { window.JNDERR && JNDERR.add('push', m, 'enable'); } catch (x) { } }
+  }
+  // يرسل تنبيه لصاحب الطلب بعد القرار (موافقة أو رفض). صامت لو فشل
+  function rqPush(r) {
+    if (!window.JNDPush || !r || !r.byId || !['ok', 'no'].includes(r.status) || !/^[0-9]{1,12}$/.test(String(r.byId))) return;
+    const p = S.byId[r.byId], f = !!(p && p.gender === 'female'), ok = r.status === 'ok', t = String(r.title || '').replace(/\s+/g, ' ').trim().slice(0, 70);
+    JNDPush.notify({ kind: 'decision', title: ok ? (f ? 'أبشري، انقبل طلبكِ' : 'أبشر، انقبل طلبك') : (f ? 'وصلكِ رد على طلبكِ' : 'وصلك رد على طلبك'),
+      body: ok ? (t ? t : (f ? 'افتحي المنصة وشوفي التفاصيل' : 'افتح المنصة وشف التفاصيل')) : (f ? 'افتحي المنصة وشوفي رد الإدارة' : 'افتح المنصة وشف رد الإدارة'), url: './', to: { pids: [String(r.byId)] } });
   }
 
   /* ───────── notifications ───────── */
@@ -4445,7 +4473,7 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     return admP || (admP = new Promise((res, rej) => {
       if (window.JNDAdmin) return res();
       const sc = document.createElement('script'); sc.src = ADM_URL; sc.onload = () => res(); sc.onerror = () => { sc.remove(); rej(new Error('adm-load')); }; document.head.appendChild(sc);
-    }).then(() => { if (!ADM) ADM = window.JNDAdmin({ $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, momOpen, momVcLoad, momWho,RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd }); return ADM; }).catch(e => { admP = null; throw e; }));
+    }).then(() => { if (!ADM) ADM = window.JNDAdmin({ rqPush, $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, momOpen, momVcLoad, momWho,RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd }); return ADM; }).catch(e => { admP = null; throw e; }));
   }
   const admFail = () => toast('ما انحمّلت أدوات الإدارة، تأكد من النت وجرّب مرة ثانية');
   const admCall = (k, a) => { if (ADM) return ADM[k](...a); admLoad().then(M => M[k](...a)).catch(admFail); };
@@ -5440,9 +5468,56 @@ window.JND_CLOUD = { projectId: 'aljunaidli', apiKey: 'AIzaSyAtonrOZaeNOZlQSN3MU
         Object.keys((f && f.fields) || {}).forEach(function (k) { if (/^p[0-9]{1,12}$/.test(k)) m[k] = Date.parse(f.fields[k].timestampValue || '') || 0; }); o[id] = m; }); return o; });
   }
   window.JNDCloud = { start: function (cfg) { try { start(cfg); } catch (e) { console.error(e); window.JunaidliApp.init(cfg); } }, on: ON, poll: poll, need: need, verify: function (pw) { return signIn(pw); },
-    momGet: momGet, momPut: momPut, momDel: momDel, momList: momList, momView: momView, momViews: momViews, hasTok: function () { return !!tok(); } };
+    momGet: momGet, momPut: momPut, momDel: momDel, momList: momList, momView: momView, momViews: momViews, hasTok: function () { return !!tok(); }, idTok: idToken };
 })();
 if (!window.JNDCloud) window.JNDCloud = { start: function (c) { window.JunaidliApp.init(c); }, on: false };
+</script>
+<script>
+/* v60: التنبيهات الفورية (Web Push). الخادم: junaidli-push (Cloudflare Worker). الإذن ما ينطلب إلا لما يضغط الزائر الزر.
+   أي فشل في الإرسال صامت ويتسجل في سجل الأخطاء، وما يأثر على الحفظ أبداً */
+(function () {
+  var API = 'https://junaidli-push.aljunaidli.workers.dev', VK = 'BGz_9_pLGlOzKx511V8rhWbQ2f5A_4WA4Jw58_sROQuPO5lK9855kF_lHc4be5Q1FATokiyJtaMLFCss1yurqDY', LK = 'jnd-push';
+  var ua = navigator.userAgent || '', ios = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var standalone = !!((window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone);
+  function log(m) { try { window.JNDERR && JNDERR.add && JNDERR.add('push', String(m || '').slice(0, 120), 'push'); } catch (e) { } }
+  function sup() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && window.isSecureContext; }
+  function u8(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); var r = atob(s + '==='.slice((s.length + 3) % 4)), o = new Uint8Array(r.length); for (var i = 0; i < r.length; i++) o[i] = r.charCodeAt(i); return o; }
+  function mark(v) { try { v ? localStorage.setItem(LK, '1') : localStorage.removeItem(LK); } catch (e) { } }
+  function post(path, body, tok) {
+    var h = { 'Content-Type': 'application/json' }; if (tok) h.Authorization = 'Bearer ' + tok;
+    return fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body), mode: 'cors', keepalive: true }).then(function (r) { if (!r.ok) throw new Error(path + ' ' + r.status); return r.json(); });
+  }
+  function adminTok() { return window.JNDCloud && JNDCloud.hasTok && JNDCloud.hasTok() && JNDCloud.idTok ? JNDCloud.idTok() : Promise.resolve(null); }
+  function reg() { return navigator.serviceWorker.getRegistration().then(function (r) { return r || navigator.serviceWorker.register('sw.js'); }).then(function () { return navigator.serviceWorker.ready; }); }
+  function cur() { return sup() ? navigator.serviceWorker.getRegistration().then(function (r) { return r ? r.pushManager.getSubscription() : null; }).catch(function () { return null; }) : Promise.resolve(null); }
+  // الحالة: no (ما يدعم) · ios (آيفون بالمتصفح: لازم يثبتها أول) · denied (رفض الإذن) · on · off
+  function status() {
+    if (!sup()) return Promise.resolve(ios && !standalone ? 'ios' : 'no');
+    if (Notification.permission === 'denied') return Promise.resolve('denied');
+    return cur().then(function (s) { return s && Notification.permission === 'granted' ? 'on' : 'off'; });
+  }
+  function send(s, pid) { return adminTok().then(function (t) { return post('/subscribe', { sub: s.toJSON(), pid: pid != null ? String(pid) : null, admin: !!t }, t); }); }
+  function enable(pid) {
+    if (!sup()) return Promise.reject(new Error('unsupported'));
+    return Notification.requestPermission().then(function (p) {
+      if (p !== 'granted') throw new Error(p === 'denied' ? 'denied' : 'dismissed');
+      return reg();
+    }).then(function (r) { return r.pushManager.getSubscription().then(function (s) { return s || r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VK) }); }); })
+      .then(function (s) { return send(s, pid).then(function () { mark(1); return 'on'; }); });
+  }
+  function disable() {
+    mark(0);
+    return cur().then(function (s) { if (!s) return 'off'; var ep = s.endpoint; return s.unsubscribe().catch(function () { }).then(function () { return post('/unsubscribe', { endpoint: ep }).catch(function (e) { log(e && e.message); }); }).then(function () { return 'off'; }); });
+  }
+  // نحدّث الاشتراك بهدوء (رقم الفرد وصفة المشرف) إذا كان مفعّل من قبل
+  function refresh(pid) { cur().then(function (s) { if (s && Notification.permission === 'granted') return send(s, pid); }).catch(function (e) { log(e && e.message); }); }
+  // للمشرف: إرسال للكل أو لأفراد. ما يرمي خطأ أبداً
+  function notify(o) {
+    try { return adminTok().then(function (t) { if (!t) return null; return post('/notify', o, t); }).catch(function (e) { log(e && e.message); return null; }); } catch (e) { log(e && e.message); return Promise.resolve(null); }
+  }
+  function visitor(kind) { try { return post('/visitor-event', { kind: kind === 'sug' ? 'sug' : 'req' }).catch(function (e) { log(e && e.message); }); } catch (e) { return Promise.resolve(); } }
+  window.JNDPush = { status: status, enable: enable, disable: disable, refresh: refresh, notify: notify, visitor: visitor, ios: ios, standalone: standalone, API: API };
+})();
 </script>
 <script>
 JNDCloud.start({
@@ -5509,7 +5584,7 @@ JNDCloud.start({
   var tm;function hide(){el.classList.remove('on');clearTimeout(tm)}
   el.querySelector('.ins-x').onclick=function(){hide();mark()};
   el.querySelector('.ins-go').onclick=function(){hide();mark();if(dp){dp.prompt();dp=null}else how.classList.add('on')};
-  window.showInstall=function(){el.classList.add('on');clearTimeout(tm);tm=setTimeout(function(){hide();mark()},14000)};
+  window.showInstallHow=function(){how.classList.add('on')};window.showInstall=function(){el.classList.add('on');clearTimeout(tm);tm=setTimeout(function(){hide();mark()},14000)};
   if(mob&&!standalone&&!seen()){setTimeout(function wait(){var g=document.getElementById('guidem');if(document.body.classList.contains('gated')||window.__afterGate||(g&&g.classList.contains('open'))){setTimeout(wait,1000);return}setTimeout(function(){var g2=document.getElementById('guidem');if(document.body.classList.contains('gated')||window.__afterGate||(g2&&g2.classList.contains('open')))wait();else window.showInstall()},2500)},6000)}
 })();
 </script>

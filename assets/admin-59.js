@@ -10,7 +10,7 @@ window.JNDAdmin = function (J) {
       const row = S.rows.find(x => String(x.id) === String(r.pid)); if (!row) { toast('الشخص مو موجود'); return; }
       row.birth = String(r.y); row.bfull = r.m ? `${r.y}-${r.m}-${r.d || 0}` : null;
       (S.reqs || []).forEach(x => { if (x !== r && x.type === 'birth' && x.status === 'pending' && String(x.pid) === String(r.pid)) { x.status = 'no'; stamp(x, 'no', 'اعتمدنا تاريخ ثاني لنفس الشخص'); } });
-      r.status = 'ok'; stamp(r, 'ok'); saveRows(); logIt('تاريخ ميلاد', `${p ? lineage(p, 3) : ''} ← ${bFmt(r.y, r.m, r.d)}`); saveReqs(); AD.just.add(String(r.id)); refresh(); bellBadge(); toast('تمت الموافقة، واعتمدنا التاريخ');
+      r.status = 'ok'; stamp(r, 'ok'); saveRows(); logIt('تاريخ ميلاد', `${p ? lineage(p, 3) : ''} ← ${bFmt(r.y, r.m, r.d)}`); saveReqs(); AD.just.add(String(r.id)); refresh(); bellBadge(); try { J.rqPush && J.rqPush(r); } catch (e) { } toast('تمت الموافقة، واعتمدنا التاريخ');
     } else { r.status = 'no'; stamp(r, 'no', why); saveReqs(); rqDone(r); toast('لم تتم الموافقة، وبلّغنا صاحب الطلب'); }
   }
   function saveAdmins(ids, msg) { try { localStorage.setItem('jnd-admins', JSON.stringify(ids)); } catch (e) { } logIt('المشرفون', msg); adminRender(); toast('انحفظت قائمة المشرفين'); }
@@ -43,7 +43,7 @@ window.JNDAdmin = function (J) {
   function phBind() {
     const go = $('#ph-go'); if (!go) return; const err = m => { const e = $('#ph-err'); if (e) { e.textContent = m; e.hidden = !m; } };
     const run = async force => { const pw = ($('#ph-pw') || {}).value; if (!pw) { err('اكتب كلمة المرور'); return; } go.disabled = true; err('');
-      try { if (window.JNDCloud && JNDCloud.verify) await JNDCloud.verify(pw); } catch (e) { err('كلمة المرور غير صحيحة'); go.disabled = false; return; }
+      try { if (window.JNDCloud && JNDCloud.verify) await JNDCloud.verify(pw); } catch (e) { err('كلمة المرور غير صحيحة'); go.disabled = false; return; } if (window.JNDPush) JNDPush.refresh(S.me ? S.me.id : null);
       const hadPk = JNDKey.hasPk(), r = await JNDKey.unlock(pw, force);
       if (r === 'bad') { err('كلمة المرور ما تطابق اللي فعّلت فيها الحماية. إذا غيّرتها اضغط «ابدأ الحماية من جديد»'); go.disabled = false; return; }
       toast(r === 'nocrypto' ? 'المتصفح ما يدعم التشفير' : hadPk && !force ? 'انفتحت الأرقام' : 'تفعّلت حماية الأرقام'); await afterUnlock(r || 'ok'); };
@@ -957,7 +957,7 @@ window.JNDAdmin = function (J) {
         const now = Date.now();
         try { await momIdxWrite(I => { if (I.l.filter(x => x.exp > now).length >= MOM_MAX) throw new Error('full'); I.l.push({ id, at: now, exp: now + dur * MOM_DAY, cap: c }); }); }
         catch (e) { JNDCloud.momDel(id).catch(() => { }); throw e; }
-        IDB.set('img:' + id, MA.b); logIt('لحظات الأسرة', 'نشر لحظة' + (c ? ': ' + c : '')); close(); toast('نُشرت اللحظة، وتطلع للأسرة في الشعار'); adminRender();
+        IDB.set('img:' + id, MA.b); logIt('لحظات الأسرة', 'نشر لحظة' + (c ? ': ' + c : '')); close(); if (window.JNDPush) JNDPush.notify({ kind: 'moment', title: 'لحظة جديدة من الأسرة', body: c ? c.slice(0, 90) : 'افتحوا المنصة وشوفوا اللحظة من الشعار', url: './', to: 'all' }); toast('نُشرت اللحظة، وتطلع للأسرة في الشعار'); adminRender();
       } catch (e) { go.disabled = false; go.textContent = 'انشر اللحظة'; $('#ma-no', d).disabled = false; err(String(e && e.message) === 'full' ? 'مساحة اللحظات امتلأت، احذف لحظة أول' : 'ما تم النشر، جرّب مرة ثانية'); }
     };
     setTimeout(() => { const b = $('#ma-pick', d); try { b && b.focus({ preventScroll: true }); } catch (e) { } }, 50);
