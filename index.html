@@ -4924,6 +4924,9 @@ window.JNDERR={read:rd,add:push,clear:function(){try{localStorage.removeItem(K)}
       c.style.strokeDasharray = D.join(' '); c.style.strokeDashoffset = '-59.72';
       b.setAttribute('aria-label', `لحظات الأسرة، ${nCount(N, ['لحظة واحدة', 'لحظتان', 'لحظات', 'لحظة'])}، تمت مشاهدتها كلها`);
     }
+    // v60: قوس مقسوم بعدد اللحظات، كل جزء بلونه: أخضر للجديدة وذهبي للي شافها (مثل الحالات)
+    { const Sn = momSeen(), k = Math.min(N, 12), open = 19.44, g = k > 1 ? 2.22 : 0, seg = (100 - open - (k - 1) * g) / k;
+      $('.br-ring', b).innerHTML = MOM.L.slice(0, k).map((m, i) => `<circle cx="27" cy="27" r="25.5" pathLength="100" class="${Sn.includes(m.id) ? 'sg' : 'nw'}" style="stroke-dasharray:${seg.toFixed(2)} ${(100 - seg).toFixed(2)};stroke-dashoffset:${(-(59.72 + i * (seg + g))).toFixed(2)}"/>`).join(''); }
   }
   // التلميح أول مرة (مرة وحدة طول العمر): بعد البوابة والدليل وفقاعة الجرس
   function momTipLater(k = 0) {
@@ -7062,6 +7065,10 @@ body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px +
 .br-logo.mm-new .br-new{background:#5FCB8F;color:#1C4448;font-weight:600}
 .br-logo.has-mom.draw .br-ring circle{animation:none}
 .mv-bot .mv-cap{text-align:center;text-wrap:balance}
+
+/* v60 · أجزاء الحلقة: أخضر للجديدة، ذهبي للمشاهدة */
+.br-logo .br-ring circle.nw{stroke:#5FCB8F;stroke-opacity:1;stroke-width:3;stroke-linecap:round}
+.br-logo .br-ring circle.sg{stroke:#C9A45C;stroke-opacity:.85;stroke-width:2.5;stroke-linecap:round}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
