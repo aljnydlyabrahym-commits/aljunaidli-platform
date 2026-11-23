@@ -4885,13 +4885,15 @@ window.JNDERR={read:rd,clear:function(){try{localStorage.removeItem(K)}catch(e){
     const c = $('.br-ring circle', b); b.classList.add('has-mom'); b.setAttribute('aria-haspopup', 'dialog');
     if (n) {
       if (!b.classList.contains('mm-new')) { let drawn = false; try { drawn = sessionStorage.getItem('jnd-mom-drawn') === '1'; sessionStorage.setItem('jnd-mom-drawn', '1'); } catch (e) { } b.classList.toggle('draw', !drawn); }
-      b.classList.add('mm-new'); b.classList.remove('mm-all'); c.style.strokeDasharray = ''; c.style.strokeDashoffset = '';
+      b.classList.add('mm-new'); b.classList.remove('mm-all'); c.style.strokeDasharray = '80.56 19.44'; c.style.strokeDashoffset = '-59.72';
       if (!$('.br-new', b)) b.insertAdjacentHTML('beforeend', '<span class="br-new" aria-hidden="true">جديد</span>');
       b.setAttribute('aria-label', 'لحظات الأسرة، فيه جديد');
     } else {
       b.classList.remove('mm-new', 'draw'); b.classList.add('mm-all'); $$('.br-new', b).forEach(e => e.remove());
-      const seg = 100 / N, gap = N > 1 ? Math.min(7, seg * .4) : 10;
-      c.style.strokeDasharray = (seg - gap).toFixed(2) + ' ' + gap.toFixed(2); c.style.strokeDashoffset = (-gap / 2).toFixed(2);
+      // v60: قوس مفتوح من الأسفل (70°) مقسوم بعدد اللحظات بفواصل 8°
+      const open = 19.44, g = 2.22, k = Math.min(N, 12), seg = (100 - open - (k - 1) * g) / k, D = [];
+      for (let i = 0; i < k; i++) D.push(seg.toFixed(2), (i < k - 1 ? g : open).toFixed(2));
+      c.style.strokeDasharray = D.join(' '); c.style.strokeDashoffset = '-59.72';
       b.setAttribute('aria-label', `لحظات الأسرة، ${nCount(N, ['لحظة واحدة', 'لحظتان', 'لحظات', 'لحظة'])}، تمت مشاهدتها كلها`);
     }
   }
@@ -6977,6 +6979,14 @@ body[data-view="admin"] .jnd-msg{top:auto;bottom:calc(var(--bnav,68px) + 112px +
 
 /* v59 · بطاقة المناسبة التفاعلية داخل «ملفي» (نفس بطاقة الرئيسية) */
 #mp-nx{margin:8px 0 10px}
+
+/* v60 · حلقة لحظات الأسرة: قوس مفتوح من الأسفل، «جديد» في الفتحة (قرار اللجنة: البديل 3 بسماكة البديل 2) */
+.br-logo.has-mom .br-ring circle{stroke-linecap:round}
+.br-logo.mm-new .br-ring circle{stroke:#5FCB8F;stroke-width:3}
+.br-logo.mm-all .br-ring circle{stroke:#C9A45C;stroke-opacity:.85;stroke-width:2.5;stroke-linecap:round}
+.br-logo.mm-new .br-new{background:#5FCB8F;color:#1C4448;font-weight:600}
+.br-logo.has-mom.draw .br-ring circle{animation:none}
+.mv-bot .mv-cap{text-align:center;text-wrap:balance}
 </style>
 <script>
 (function(){var nav=document.querySelector('.bnav');if(!nav)return;
