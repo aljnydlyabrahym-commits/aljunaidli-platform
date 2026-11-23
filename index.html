@@ -1563,6 +1563,21 @@ html,body{overflow-x:hidden}
  background:radial-gradient(130% 160% at 100% 0%,#4A8A75,#2D6369 55%,#173A3E);box-shadow:0 18px 40px rgba(10,30,32,.4),inset 0 0 0 1px rgba(227,201,142,.25);
  transform:translateY(140%);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
 .ins.on{transform:none;opacity:1}
+.pv-card{position:fixed;z-index:79;left:12px;right:12px;bottom:calc(var(--bnav,76px) + 10px + env(safe-area-inset-bottom));max-width:460px;margin:0 auto;display:flex;align-items:flex-start;gap:12px;padding:14px 14px 12px;border-radius:22px;
+ background:#FFFEFA;border:1px solid rgba(201,168,102,.55);box-shadow:0 18px 40px rgba(10,30,32,.22);transform:translateY(140%);opacity:0;transition:transform .5s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.pv-card.on{transform:none;opacity:1}
+.pv-ic{position:relative;flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;color:#FFFEFA;background:radial-gradient(130% 160% at 100% 0%,#4A8A75,#2D6369 55%,#173A3E);box-shadow:0 0 0 2px #E3C98E}
+.pv-ic svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transform-origin:50% 10%;animation:pvRing 2.4s ease-in-out 1s 2}
+.pv-ic i{position:absolute;top:8px;inset-inline-end:9px;width:8px;height:8px;border-radius:50%;background:#E3C98E;box-shadow:0 0 0 2px #2D6369}
+@keyframes pvRing{0%,40%,100%{transform:none}8%{transform:rotate(14deg)}16%{transform:rotate(-12deg)}24%{transform:rotate(8deg)}32%{transform:rotate(-4deg)}}
+.pv-tx{flex:1;min-width:0}
+.pv-tx b{display:block;font-size:15px;line-height:1.5;color:#1C4448}
+.pv-tx p{margin:2px 0 0;font-size:13px;line-height:1.7;color:#5E6B66}
+.pv-a{display:flex;gap:8px;margin-top:10px}
+.pv-a button{min-height:44px;padding:0 18px;border-radius:13px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.pv-go{flex:1;border:0;background:#2D6369;color:#fff}
+.pv-no{border:1.5px solid #E5DBC6;background:#fff;color:#5E6B66}
+@media (prefers-reduced-motion:reduce){.pv-card{transition:none}.pv-ic svg{animation:none}}
 .ins-ic{flex-shrink:0;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#FFFEFA;box-shadow:0 0 0 2px #C9A866}
 .ins-ic img{width:34px;height:34px;object-fit:contain}
 .ins-t{flex:1;min-width:0}.ins-t b{display:block;font-size:14.5px}.ins-t small{display:block;font-size:12.5px;color:#D6E4DF;line-height:1.6}
@@ -2017,7 +2032,7 @@ function norm(m){return String(m||'').replace(/https?:\/\/\S+/gi,'<url>').replac
 function fph(s){var h1=0x811c9dc5,h2=0x1505,i,c;for(i=0;i<s.length;i++){c=s.charCodeAt(i);h1=Math.imul(h1^c,16777619)>>>0;h2=(Math.imul(h2,33)+c)>>>0}return(h1.toString(36)+h2.toString(36)).slice(0,14)}
 function fam(){var u=navigator.userAgent||'',o=/iPhone|iPad|iPod/.test(u)||(/Macintosh/.test(u)&&navigator.maxTouchPoints>1)?'iOS':/Android/.test(u)?'Android':'Desktop',b=/SamsungBrowser/.test(u)?'Samsung':/Edg\//.test(u)?'Edge':/CriOS|Chrome\//.test(u)?'Chrome':/FxiOS|Firefox\//.test(u)?'Firefox':/Safari\//.test(u)?'Safari':'Other';return o+'·'+b}
 function qrd(){try{return JSON.parse(localStorage.getItem(QK)||'{}')||{}}catch(e){return{}}}
-function enq(t,m,w){try{var nm=norm(m),wh=norm(String(w||'').split('?')[0]);if(!nm)return;var fp=fph(t+'|'+nm+'|'+wh),Q=qrd(),x=Q[fp];if(x)x.n=Math.min(50,(x.n||1)+1);else{if(Object.keys(Q).length>=20)return;Q[fp]={fp:fp,t:t,msg:nm,where:wh,n:1}}localStorage.setItem(QK,JSON.stringify(Q))}catch(e){}}
+function enq(t,m,w){try{var nm=norm(m),wh=norm(String(w||'').split('?')[0]);if(!nm)return;var fp=fph(t+'|'+nm+'|'+wh),Q=qrd(),x=Q[fp];if(x)x.n=Math.min(50,(x.n||1)+1);else{if(Object.keys(Q).length>=20)return;Q[fp]={fp:fp,t:t,msg:nm,where:wh,n:1,pg:(String(location.hash||'').replace('#','').match(/^[a-z]{1,12}/)||['home'])[0]}}localStorage.setItem(QK,JSON.stringify(Q))}catch(e){}}
 function flush(){try{if(!navigator.onLine||!/^https:/.test(location.protocol)&&!/^127\.0\.0\.1$/.test(location.hostname))return;var Q=qrd(),it=Object.keys(Q).map(function(k){var x=Q[k];x.ver=String(window.JNDV||'');return x}).slice(0,8);if(!it.length)return;
 var body=JSON.stringify({items:it,fam:fam()}),ok=false;try{ok=navigator.sendBeacon&&navigator.sendBeacon(API,new Blob([body],{type:'text/plain'}))}catch(e){}
 if(!ok)try{fetch(API,{method:'POST',body:body,headers:{'Content-Type':'text/plain'},keepalive:true,mode:'cors'}).catch(function(){})}catch(e){}
@@ -2905,7 +2920,7 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
     if (T.svg) treeRender(); meBtn(); if (S.view && !['tree', 'poster'].includes(S.view)) rerenderView();
     applyRole();
     if (window.__afterGate) { const f = window.__afterGate; window.__afterGate = null; setTimeout(f, 1900); }
-    sd(momLogo); setTimeout(() => sd(momTipLater), 2600); if (window.JNDPush) JNDPush.refresh(n.id);
+    sd(momLogo); setTimeout(() => sd(momTipLater), 2600); setTimeout(() => sd(pushInvLater), 4000); if (window.JNDPush) JNDPush.refresh(n.id);
   }
   function gateChips() {
     const box = $('#gt-chips'), go = $('#gt-go'); if (!box) return;
@@ -4411,7 +4426,6 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
     return out;
   }
   // ----- v60: المشاكل التقنية ترتفع تلقائياً (مجهولة) وتنعرض للمشرف في «الأدوات ← صحة المنصة» -----
-  const errList = () => (window.JNDERR ? window.JNDERR.read() : []);
   function errOpen() { if (!isAdmin()) return; AD.tab = 'tools'; AD.sec = 'err'; AD.to = 'ad-s-err'; go('admin'); }
 
   /* لوحة المشرف (v58): رأس مختصر، ثم شريط أقسام ثابت بأربعة أقسام (بانتظارك، الشجرة، اللحظات، الأدوات).
@@ -4469,7 +4483,7 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
     return admP || (admP = new Promise((res, rej) => {
       if (window.JNDAdmin) return res();
       const sc = document.createElement('script'); sc.src = ADM_URL; sc.onload = () => res(); sc.onerror = () => { sc.remove(); rej(new Error('adm-load')); }; document.head.appendChild(sc);
-    }).then(() => { if (!ADM) ADM = window.JNDAdmin({ rqPush, $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, momOpen, momVcLoad, momWho,RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errList, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd }); return ADM; }).catch(e => { admP = null; throw e; }));
+    }).then(() => { if (!ADM) ADM = window.JNDAdmin({ rqPush, $, $$, A, AD, AD_TAB, AD_TABS, ARW, ARWB, BKEYS, CC_OCC, GR, HMS, IDB, JND_V, LK, MOM, MOM_CAP, MOM_DAY, MOM_IDX_MAX, MOM_MAX, NOSELF, momOpen, momVcLoad, momWho,RJ, ROLE, S, SECS, SEG, SITE0, adOpen, adSave, adScroller, adTop, addRow, admPend, adminIds, afterUnlock, applySite, ar, armDelete, bFmt, bFull, bReqOf, bellBadge, bkDays, bkDue, ccLoad, ccMeta, ccModal, ccPreview, ccTitle, chain, cloudOn, daysTo, daysWord, decOf, descendants, dispName, dnRM, drawRows, dupScan, errOpen, esc, evSorted, evTitle, gStr, gateId, gateNode, go, grActive, grList, greetOpen, hStr, hasPh, hp, isAdmin, iso, lineage, logIt, meRender, momClean, momCloud, momDay0, momImg, momList, momLogo, mqDays, mqT, nCount, nDate, newsSorted, norm, nz, openEvent, openNewsEd, phDisp, quad, refresh, relTag, reload, removeEvent, rjOpen, rqBind, rqDone, rqRerender, rsGen, rsSub, rsWhen, saveEvents, saveNews, saveReqs, saveRows, saveSugs, sd, search, segHtml, sgOpen, stPill, stamp, sv, t12, toLat, toast, today, treeFocus, upcoming, utc, wday, ymd }); return ADM; }).catch(e => { admP = null; throw e; }));
   }
   const admFail = () => toast('ما انحمّلت أدوات الإدارة، تأكد من النت وجرّب مرة ثانية');
   const admCall = (k, a) => { if (ADM) return ADM[k](...a); admLoad().then(M => M[k](...a)).catch(admFail); };
@@ -4943,6 +4957,33 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
     EV.forEach(ev => window.addEventListener(ev, h, { capture: true, passive: true }));
   }
   function momTipClose() { const t = $('#mm-tip'); if (t) t.remove(); }
+  /* v60: بطاقة «فعّل التنبيهات» مرة وحدة بعد الدخول. تنتظر دورها: بعد فقاعة الجرس وتلميح اللحظات والدليل وشريط التثبيت.
+     ما تطلع لو التنبيهات مفعّلة أو مرفوضة أو الجهاز ما يدعمها. آيفون بالمتصفح: رابط شرح التثبيت بدل التفعيل */
+  const PINV = 'jnd-pinv';
+  function pushInvLater(k = 0) {
+    clearTimeout(pushInvLater.t); let done = '1'; try { done = localStorage.getItem(PINV) || ''; } catch (e) { }
+    if (done || !window.JNDPush || $('#pv-card') || k > 80 || !(S.me || gateNode())) return;
+    let tipDone = '1'; try { tipDone = localStorage.getItem(MOM_TIP) || ''; } catch (e) { }
+    const g = $('#guidem'), ins = $('.ins.on'), again = () => { pushInvLater.t = setTimeout(() => pushInvLater(k + 1), 1500); };
+    if (performance.now() < 6000 || document.body.classList.contains('gated') || window.__afterGate || $$('.modal.open').length || DN.cur || DN.q.length || MOM.v || document.hidden || $('.sh')
+      || $('#mm-tip') || (!tipDone && momNew().length) || (g && g.classList.contains('open')) || ins || document.body.dataset.view === 'admin') return again();
+    JNDPush.status().then(st => {
+      if (st === 'on' || st === 'no' || st === 'denied') { try { localStorage.setItem(PINV, '1'); } catch (e) { } return; }
+      if ($('#pv-card') || $('#mm-tip') || DN.cur || $$('.modal.open').length) return again();
+      try { localStorage.setItem(PINV, '1'); } catch (e) { }
+      const f = !!((S.me || gateNode() || {}).gender === 'female'), ios = st === 'ios';
+      document.body.insertAdjacentHTML('beforeend', `<aside class="pv-card" id="pv-card" role="dialog" aria-labelledby="pv-t" aria-describedby="pv-d">
+        <span class="pv-ic" aria-hidden="true"><svg viewBox="0 0 24 24">${IC.bell}</svg><i></i></span>
+        <div class="pv-tx"><b id="pv-t">${ios ? (f ? 'ثبّتي المنصة وتوصلكِ التنبيهات' : 'ثبّت المنصة وتوصلك التنبيهات') : (f ? 'خلّي أخبار الأسرة توصلكِ أول بأول' : 'خلّ أخبار الأسرة توصلك أول بأول')}</b>
+        <p id="pv-d">${ios ? 'في آيفون التنبيهات تشتغل بعد ما تضيف المنصة للشاشة الرئيسية' : 'تنبيه لطيف على الجوال إذا نزل خبر أو قربت مناسبة، بدون إزعاج'}</p>
+        <div class="pv-a"><button type="button" class="pv-go">${ios ? 'كيف أثبّتها' : (f ? 'فعّليها' : 'فعّلها')}</button><button type="button" class="pv-no">لاحقاً</button></div></div></aside>`);
+      const c = $('#pv-card'); requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('on')));
+      const close = () => { c.classList.remove('on'); setTimeout(() => c.parentNode && c.parentNode.removeChild(c), 450); };
+      $('.pv-no', c).onclick = close;
+      $('.pv-go', c).onclick = () => { close(); pushCmd().then(pushRow, () => { }); };
+      $('.pv-go', c).focus({ preventScroll: true });
+    }).catch(() => { });
+  }
   // نقرأ الفهرس: من الجهاز أول (الشعار يطلع فوراً)، ثم من السحابة بقراءة وحدة
   async function momLoad() {
     if (MOM.busy) return; MOM.busy = 1;
@@ -4955,7 +4996,7 @@ window.JNDERR={read:rd,add:function(t,m,w){push(t,m,w)},clear:function(){try{loc
       }
     } catch (e) { }
     if (!MOM.idx) MOM.idx = momClean({});
-    MOM.busy = 0; momLogo(); momTipLater();
+    MOM.busy = 0; momLogo(); momTipLater(); pushInvLater();
     if (isAdmin() && S.view === 'admin' && AD.tab === 'mom') adminRender();
   }
   async function momImg(id) {
@@ -6242,12 +6283,6 @@ body.hide-reqs .cc-pub,body.hide-news .cc-pub{display:none!important}
 .dp-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed #E5DBC6;font-size:13.5px;color:#4A5A55}
 .dp-row:first-of-type{border-top:0}.dp-row span{flex:1;min-width:0;line-height:1.55}.dp-row button{padding:6px 11px;border-radius:10px;border:1.5px solid #E5DBC6;background:#fff;font:inherit;font-size:12.5px;font-weight:700;color:#1C4448;cursor:pointer;flex-shrink:0}
 .dp-ok{margin:6px 0 0;font-size:13.5px;color:#2D6F4B;font-weight:700}
-.er-sum{margin:8px 4px 10px;font-size:13px;color:#5E6B66;line-height:1.7}
-.er-it{padding:10px 12px;border-radius:14px;border:1px solid #E5DBC6;background:#fff;margin-bottom:7px}
-.er-it b{display:block;font-size:13.5px;color:#7A2B2B;direction:ltr;text-align:left;word-break:break-word;line-height:1.5}
-.er-it small{display:block;margin-top:3px;font-size:12px;color:#7A857F;direction:rtl}
-.er-box{width:100%;box-sizing:border-box;min-height:92px;margin-top:8px;padding:10px;border-radius:12px;border:1.5px solid #E5DBC6;font:12px/1.55 ui-monospace,Menlo,monospace;direction:ltr;text-align:left;background:#FBF8F0;color:#333}
-.er-ac{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.er-ac .rp-b{margin-top:0;padding:13px;font-size:15px}
 .st-ver{cursor:default;-webkit-tap-highlight-color:transparent;user-select:none}
 /* ===== v42b: تباين الألوان + أحجام اللمس (مراجعة اللجنة) ===== */
 .btn.gold,.ro-father{background:#8B703E}.btn.gold:hover{background:#6F5830}

@@ -140,6 +140,7 @@ async function errPost(req, env, b, ip) {
     const k = 'e:' + it.fp, now = Date.now(), n = Math.max(1, Math.min(50, it.n | 0));
     const o = (await env.SUBS.get(k, 'json')) || { fp: it.fp, t: '', msg: '', where: '', first: now, last: now, n: 0, vers: {}, fam: {}, days: {} };
     o.t = /^[a-z]{2,10}$/.test(it.t || '') ? it.t : 'js'; o.msg = scrub(it.msg, 160); o.where = scrub(it.where, 80);
+    if (/^[a-z]{1,12}$/.test(it.pg || '')) o.pg = it.pg;
     o.last = now; o.n += n;
     const ver = /^[0-9]{1,4}$/.test(String(it.ver || '')) ? String(it.ver) : '?'; o.vers[ver] = (o.vers[ver] || 0) + n;
     o.fam[fam] = (o.fam[fam] || 0) + n;
